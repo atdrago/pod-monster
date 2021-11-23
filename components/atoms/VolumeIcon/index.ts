@@ -1,0 +1,1 @@
+export { VolumeIcon } from './VolumeIcon';

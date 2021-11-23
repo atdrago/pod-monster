@@ -1,0 +1,1 @@
+export { CenteredPageLayout } from './CenteredPageLayout';

@@ -1,22 +1,72 @@
 {
-  "name": "podcast-fish",
+  "name": "podcast.fish",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "analyze": "ANALYZE=true npm run build",
+    "dev": "rm -rf .next out && next dev",
+    "build": "rm -rf .next out && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint --fix .",
+    "format": "npx prettier --write .",
+    "prepare": "husky install"
   },
   "dependencies": {
+    "@vanilla-extract/babel-plugin": "^1.1.2",
+    "@vanilla-extract/css": "^1.6.3",
+    "@vanilla-extract/css-utils": "^0.1.1",
+    "@vanilla-extract/next-plugin": "^1.0.1",
+    "capsize": "^2.0.0",
     "next": "12.0.4",
+    "next-plugin-svgr": "^1.0.0",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-markdown": "^7.1.0",
+    "react-polymorphic-box": "^3.0.3",
+    "react-query": "^3.33.2",
+    "react-window": "^1.8.6",
+    "rehype-raw": "^6.1.0",
+    "rehype-sanitize": "^5.0.0",
+    "sharp": "^0.29.3",
+    "srt-parser-2": "^1.1.7",
+    "use-debounce": "^7.0.1"
   },
   "devDependencies": {
-    "@types/node": "16.11.9",
-    "@types/react": "17.0.36",
-    "eslint": "7.32.0",
+    "@next/bundle-analyzer": "^12.0.4",
+    "@types/react": "17.0.35",
+    "@types/react-window": "^1.8.5",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "env-cmd": "^10.1.0",
+    "eslint": "^7.32.0",
     "eslint-config-next": "12.0.4",
-    "typescript": "4.5.2"
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^7.0.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-sort-destructure-keys": "^1.4.0",
+    "eslint-plugin-sort-keys-fix": "^1.1.2",
+    "eslint-plugin-typescript-sort-keys": "^2.0.0",
+    "husky": "^7.0.4",
+    "import-sort-style-atdrago": "^0.1.4",
+    "lint-staged": "^12.0.3",
+    "podcastdx-client": "^5.0.0",
+    "prettier": "2.4.1",
+    "prettier-plugin-import-sort": "^0.0.7",
+    "typescript": "^4.4.4",
+    "webpack": "^5.64.2"
+  },
+  "importSort": {
+    ".js, .jsx, .ts, .tsx": {
+      "style": "atdrago",
+      "parser": "typescript"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix --max-warnings 0",
+    "*.{ts,tsx}": "eslint --fix --max-warnings 0",
+    "*.{gql,md,js,json,svg,ts,tsx}": "prettier --write"
   }
 }
