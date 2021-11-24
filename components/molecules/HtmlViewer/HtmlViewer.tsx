@@ -22,7 +22,7 @@ export const HtmlViewer = memo(
       <div className={baseClassName}>
         <ReactMarkdown
           components={{
-            blockquote({ node: _node, ...props }) {
+            blockquote({ className: _className, node: _node, ...props }) {
               return <Blockquote {...props} />;
             },
             code({
@@ -78,16 +78,33 @@ export const HtmlViewer = memo(
                 />
               );
             },
-            img({ alt, height, node: _node, src, width }) {
+            img({
+              alt,
+              className: _className,
+              height,
+              node: _node,
+              src,
+              width,
+            }) {
               return <img alt={alt} height={height} src={src} width={width} />;
             },
-            li({ node: _node, ordered: _ordered, ...props }) {
+            li({
+              className: _className,
+              node: _node,
+              ordered: _ordered,
+              ...props
+            }) {
               return <li className={listItem} {...props} />;
             },
-            ol({ node: _node, ordered: _ordered, ...props }) {
+            ol({
+              className: _className,
+              node: _node,
+              ordered: _ordered,
+              ...props
+            }) {
               return <ol className={listLayout} {...props} />;
             },
-            p({ node: _node, ...props }) {
+            p({ className: _className, node: _node, ...props }) {
               return (
                 <Typography
                   shouldUseCapsize={shouldUseCapsize}
@@ -97,7 +114,7 @@ export const HtmlViewer = memo(
                 />
               );
             },
-            pre({ node: _node, ...props }) {
+            pre({ className: _className, node: _node, ...props }) {
               return (
                 <Typography
                   shouldUseCapsize={shouldUseCapsize}
@@ -107,7 +124,7 @@ export const HtmlViewer = memo(
                 />
               );
             },
-            small({ node: _node, ...props }) {
+            small({ className: _className, node: _node, ...props }) {
               return (
                 <Typography
                   shouldUseCapsize={shouldUseCapsize}
@@ -117,7 +134,12 @@ export const HtmlViewer = memo(
                 />
               );
             },
-            ul({ node: _node, ordered: _ordered, ...props }) {
+            ul({
+              className: _className,
+              node: _node,
+              ordered: _ordered,
+              ...props
+            }) {
               return <ul className={listLayout} {...props} />;
             },
           }}

@@ -53,4 +53,5 @@ export const listItem = style({
    */
   lineHeight: '27.3281px',
   margin: '-0.5195em 0',
+  wordWrap: 'break-word',
 });
