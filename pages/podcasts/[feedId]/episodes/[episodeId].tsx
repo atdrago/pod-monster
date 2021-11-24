@@ -207,8 +207,8 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
         <meta name="description" content={episode.description} />
       </Head>
 
-      <Stack as="main">
-        <Stack as="article" maxWidth="small">
+      <Stack as="main" maxWidth="small">
+        <Stack as="article">
           <Header feedTitle={episode.feedTitle} feedId={episode.feedId} />
           {episodeArtwork && (
             <Artwork

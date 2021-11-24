@@ -2,7 +2,7 @@ import type { GetStaticPaths, NextPage } from 'next';
 import Head from 'next/head';
 
 import { Artwork } from 'components/atoms/Artwork';
-import { Blockquote } from 'components/atoms/Blockquote';
+import { Details } from 'components/atoms/Details';
 import { Label } from 'components/atoms/Label';
 import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
@@ -63,39 +63,40 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
         <meta name="description" content={feed.description} />
       </Head>
       <Stack as="main" maxWidth="small">
-        <Stack space="small">
+        <Stack as="article">
           <Header feedId={feed.id} feedTitle={feed.title} />
-          <Stack kind="flexRow" space="small" align="center">
-            <Artwork width={128} height={128} src={proxyFeedImage.toString()} />
-            <Stack space="small">
-              <Typography as="h3" size="paragraph">
-                {feed.author}
-              </Typography>
-              {feed.link && (
-                <Typography as="p" size="paragraph">
-                  <Link
-                    anchorProps={{
-                      rel: 'noreferrer noopener',
-                      target: '_blank',
-                    }}
-                    className={headingLink}
-                    href={feed.link}
-                  >
-                    {feed.link}
-                  </Link>
+          <Stack space="small">
+            <Stack kind="flexRow" space="small" align="center">
+              <Artwork
+                width={128}
+                height={128}
+                src={proxyFeedImage.toString()}
+              />
+              <Stack space="small">
+                <Typography as="h3" size="paragraph">
+                  {feed.author}
                 </Typography>
-              )}
+                {feed.link && (
+                  <Typography as="p" size="paragraph">
+                    <Link
+                      anchorProps={{
+                        rel: 'noreferrer noopener',
+                        target: '_blank',
+                      }}
+                      className={headingLink}
+                      href={feed.link}
+                    >
+                      {feed.link}
+                    </Link>
+                  </Typography>
+                )}
+                {feed.explicit ? (
+                  <div>
+                    <Label>Explicit</Label>
+                  </div>
+                ) : null}
+              </Stack>
             </Stack>
-          </Stack>
-          <SubscribeButton
-            feedId={feed.id}
-            image={feed.image}
-            title={feed.title}
-          />
-          <div>
-            <Label>{feed.explicit ? 'Explicit' : 'Clean'}</Label>
-          </div>
-          <Stack space="xsmall">
             {feed.categories && (
               <Stack kind="flexRow" space="xsmall" style={{ flexWrap: 'wrap' }}>
                 {Object.entries(feed.categories).map(([key, value]) => {
@@ -103,16 +104,27 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                 })}
               </Stack>
             )}
+            <SubscribeButton
+              feedId={feed.id}
+              image={feed.image}
+              title={feed.title}
+            />
           </Stack>
-          <Blockquote>
-            <Typography as="p" size="paragraph">
-              {feed.description}
-            </Typography>
-          </Blockquote>
         </Stack>
+        <Details
+          summary={
+            <Typography as="h4" size="headingSmaller">
+              About
+            </Typography>
+          }
+        >
+          <Typography as="p" size="paragraph">
+            {feed.description}
+          </Typography>
+        </Details>
         {feed.funding && (
           <Stack space="small">
-            <Typography as="h4" size="headingSmall">
+            <Typography as="h4" size="headingSmaller">
               Donations
             </Typography>
             <Typography as="p" size="paragraph">
@@ -130,7 +142,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
           </Stack>
         )}
         <Stack space="small">
-          <Typography as="h4" size="headingSmall">
+          <Typography as="h4" size="headingSmaller">
             Episodes
           </Typography>
           {episodes.map((episode) => {
