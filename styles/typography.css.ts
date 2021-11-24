@@ -14,6 +14,11 @@ export const headingLink = style({
   textDecoration: 'none',
 });
 
+export const nonUnderlinedLink = style({
+  color: vars.color.foreground,
+  textDecoration: 'none',
+});
+
 export const underlinedLink = style({
   color: vars.color.foreground,
   textDecoration: 'underline',

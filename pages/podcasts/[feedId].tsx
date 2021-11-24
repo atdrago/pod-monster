@@ -10,10 +10,11 @@ import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { Header } from 'components/molecules/Header';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
-import { headingLink } from 'styles';
+import { headingLink, nonUnderlinedLink } from 'styles';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { getEpisodePath } from 'utils/paths';
 import { episodesByFeedId, podcastsByFeedId } from 'utils/podcastIndex';
 
 export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
@@ -159,7 +160,12 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
             return (
               <Stack
                 align="center"
-                as="article"
+                as={Link}
+                className={nonUnderlinedLink}
+                href={getEpisodePath({
+                  episodeId: episode.id,
+                  feedId: feed.id,
+                })}
                 key={episode.id}
                 kind="flexRow"
                 space="small"
@@ -174,18 +180,13 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                   space="small"
                   style={{ overflowY: 'hidden', padding: '4px 0' }}
                 >
-                  <Link
-                    className={headingLink}
-                    href={`/podcasts/${feed.id}/episodes/${episode.id}`}
+                  <Typography
+                    as="h3"
+                    size="headingSmaller"
+                    whitespace="ellipsis"
                   >
-                    <Typography
-                      as="h3"
-                      size="headingSmaller"
-                      whitespace="ellipsis"
-                    >
-                      {episode.title}
-                    </Typography>
-                  </Link>
+                    {episode.title}
+                  </Typography>
                   <Typography as="p" size="paragraph" whitespace="ellipsis">
                     {noteDateTimeFormat.format(
                       new Date(episode.datePublished * 1000)
