@@ -16,7 +16,7 @@ import { InputField } from 'components/molecules/InputField';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
-import { headingLink } from 'styles';
+import { nonUnderlinedLink } from 'styles';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
@@ -115,7 +115,15 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
       <Stack maxWidth="small">
         <InputField
           feedback={isSearchLoading ? 'Loading...' : null}
-          label="Search"
+          label={
+            <Typography
+              as="h2"
+              size="headingSmall"
+              style={{ display: 'inline-block' }}
+            >
+              Search
+            </Typography>
+          }
           type="search"
           value={search}
           onChange={handleSearchChange}
@@ -136,10 +144,12 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
               return (
                 <Stack
-                  as="article"
+                  as={Link}
+                  className={nonUnderlinedLink}
                   key={feed.id}
                   kind="flexRow"
                   space="small"
+                  href={getPodcastPath({ id: `${feed.id}` })}
                   align="center"
                 >
                   <Artwork
@@ -149,12 +159,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                   />
                   <Typography as="h2" size="headingSmaller">
                     {`${index + 1}. `}
-                    <Link
-                      className={headingLink}
-                      href={getPodcastPath({ id: `${feed.id}` })}
-                    >
-                      {feed.title}
-                    </Link>
+                    {feed.title}
                   </Typography>
                 </Stack>
               );
@@ -163,7 +168,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
         )}
         {feedSettingsEntries.length > 0 && (
           <Stack space="small">
-            <Typography as="h4" size="headingSmall">
+            <Typography as="h2" size="headingSmall">
               Subscriptions
             </Typography>
             {feedSettingsEntries.map(([feedId, { image, title }]) => {
@@ -175,7 +180,15 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
               proxyFeedImage.searchParams.set('url', image ?? '');
 
               return (
-                <Stack key={feedId} kind="flexRow" space="small" align="center">
+                <Stack
+                  align="center"
+                  as={Link}
+                  className={nonUnderlinedLink}
+                  href={getPodcastPath({ id: `${feedId}` })}
+                  key={feedId}
+                  kind="flexRow"
+                  space="small"
+                >
                   <Artwork
                     width={80}
                     height={80}
@@ -183,12 +196,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                   />
                   <Stack space="small">
                     <Typography as="h2" size="headingSmaller">
-                      <Link
-                        className={headingLink}
-                        href={getPodcastPath({ id: `${feedId}` })}
-                      >
-                        {title}
-                      </Link>
+                      {title}
                     </Typography>
                   </Stack>
                 </Stack>
