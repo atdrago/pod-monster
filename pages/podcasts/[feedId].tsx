@@ -62,15 +62,12 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
         <title>{feed.title} - podcast.fish</title>
         <meta name="description" content={feed.description} />
       </Head>
-      <Header />
       <Stack as="main" maxWidth="small">
         <Stack space="small">
+          <Header feedId={feed.id} feedTitle={feed.title} />
           <Stack kind="flexRow" space="small" align="center">
             <Artwork width={128} height={128} src={proxyFeedImage.toString()} />
             <Stack space="small">
-              <Typography as="h2" size="headingSmaller">
-                {feed.title}
-              </Typography>
               <Typography as="h3" size="paragraph">
                 {feed.author}
               </Typography>

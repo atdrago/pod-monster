@@ -19,23 +19,26 @@ export const vars = createGlobalTheme(':root', {
     colorSchemeFilter: 'none',
     foreground: '#272822',
     noteBorderColor: '#e5e5e5',
-    shadowElevationHigh: `-0.2px -0.5px 0.6px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -1.4px -2.9px 3.6px -0.4px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -2.7px -5.4px 6.8px -0.7px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -4.4px -8.8px 11.1px -1.1px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -7px -14.1px 17.7px -1.4px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -11px -22px 27.7px -1.8px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -16.7px -33.5px 42.1px -2.1px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -24.5px -49.4px 62px -2.5px hsl(${SHADOW_COLOR_LIGHT} / 0.34)
+    shadowElevationHigh: `
+      0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      1.5px 2.9px 3.7px -0.4px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      2.7px 5.4px 6.8px -0.7px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      4.5px 8.9px 11.2px -1.1px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      7.1px 14.3px 18px -1.4px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      11.2px 22.3px 28.1px -1.8px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      17px 33.9px 42.7px -2.1px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      25px 50px 62.9px -2.5px hsl(${SHADOW_COLOR_LIGHT} / 0.34)
     `,
-    shadowElevationLow: `-0.2px -0.5px 0.6px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -0.4px -0.8px 1px -1.2px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
-      -1px -2px 2.5px -2.5px hsl(${SHADOW_COLOR_LIGHT} / 0.34)
+    shadowElevationLow: `
+      0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      0.4px 0.8px 1px -1.2px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
+      1px 2px 2.5px -2.5px hsl(${SHADOW_COLOR_LIGHT} / 0.34)
     `,
-    shadowElevationMedium: `-0.2px -0.5px 0.6px hsl(${SHADOW_COLOR_LIGHT} / 0.36),
-      -0.8px -1.6px 2px -0.8px hsl(${SHADOW_COLOR_LIGHT} / 0.36),
-      -2px -4.1px 5.1px -1.7px hsl(${SHADOW_COLOR_LIGHT} / 0.36),
-      -4.9px -9.9px 12.4px -2.5px hsl(${SHADOW_COLOR_LIGHT} / 0.36)
+    shadowElevationMedium: `
+      0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_LIGHT} / 0.36),
+      0.8px 1.6px 2px -0.8px hsl(${SHADOW_COLOR_LIGHT} / 0.36),
+      2.1px 4.1px 5.2px -1.7px hsl(${SHADOW_COLOR_LIGHT} / 0.36),
+      5px 10px 12.6px -2.5px hsl(${SHADOW_COLOR_LIGHT} / 0.36)
     `,
   },
   /**
@@ -96,23 +99,26 @@ globalStyle(':root', {
         colorSchemeFilter: 'invert(1)',
         foreground: '#d0d0d0',
         noteBorderColor: '#3e3e40',
-        shadowElevationHigh: `-0.2px -0.5px 0.6px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -1.4px -2.9px 3.6px -0.4px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -2.7px -5.4px 6.8px -0.7px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -4.4px -8.8px 11.1px -1.1px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -7px -14.1px 17.7px -1.4px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -11px -22px 27.7px -1.8px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -16.7px -33.5px 42.1px -2.1px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -24.5px -49.4px 62px -2.5px hsl(${SHADOW_COLOR_DARK} / 0.34)
+        shadowElevationHigh: `
+          0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          1.5px 2.9px 3.7px -0.4px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          2.7px 5.4px 6.8px -0.7px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          4.5px 8.9px 11.2px -1.1px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          7.1px 14.3px 18px -1.4px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          11.2px 22.3px 28.1px -1.8px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          17px 33.9px 42.7px -2.1px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          25px 50px 62.9px -2.5px hsl(${SHADOW_COLOR_DARK} / 0.34)
         `,
-        shadowElevationLow: `-0.2px -0.5px 0.6px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -0.4px -0.8px 1px -1.2px hsl(${SHADOW_COLOR_DARK} / 0.34),
-          -1px -2px 2.5px -2.5px hsl(${SHADOW_COLOR_DARK} / 0.34)
+        shadowElevationLow: `
+          0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          0.4px 0.8px 1px -1.2px hsl(${SHADOW_COLOR_DARK} / 0.34),
+          1px 2px 2.5px -2.5px hsl(${SHADOW_COLOR_DARK} / 0.34)
         `,
-        shadowElevationMedium: `-0.2px -0.5px 0.6px hsl(${SHADOW_COLOR_DARK} / 0.36),
-          -0.8px -1.6px 2px -0.8px hsl(${SHADOW_COLOR_DARK} / 0.36),
-          -2px -4.1px 5.1px -1.7px hsl(${SHADOW_COLOR_DARK} / 0.36),
-          -4.9px -9.9px 12.4px -2.5px hsl(${SHADOW_COLOR_DARK} / 0.36)
+        shadowElevationMedium: `
+          0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_DARK} / 0.36),
+          0.8px 1.6px 2px -0.8px hsl(${SHADOW_COLOR_DARK} / 0.36),
+          2.1px 4.1px 5.2px -1.7px hsl(${SHADOW_COLOR_DARK} / 0.36),
+          5px 10px 12.6px -2.5px hsl(${SHADOW_COLOR_DARK} / 0.36)
         `,
       }),
     },

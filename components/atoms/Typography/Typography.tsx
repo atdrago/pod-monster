@@ -1,6 +1,7 @@
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
+import { vars } from 'styles';
 import { TypographyComponent } from 'types/Typography';
 
 import {
@@ -34,6 +35,21 @@ export const Typography: TypographyComponent = ({
     <Box as="span" className={rootClassName} {...spanProps}>
       {whitespace === 'ellipsis' && shouldUseCapsize ? (
         <span className={ellipsisContainer}>{children}</span>
+      ) : typeof whitespace === 'number' && shouldUseCapsize ? (
+        <span
+          style={{
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: whitespace,
+            background: 'none',
+            border: 0,
+            color: vars.color.foreground,
+            display: '-webkit-box',
+            overflow: 'hidden',
+            wordBreak: 'break-word',
+          }}
+        >
+          {children}
+        </span>
       ) : (
         children
       )}

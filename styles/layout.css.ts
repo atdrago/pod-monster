@@ -11,7 +11,7 @@ export const centeredPageLayout = style({
   margin: '0 auto',
   maxWidth: '102.4rem',
   minHeight: ['100vh', 'calc(var(--vh, 1vh) * 100)'],
-  padding: `${vars.spacing.s040} ${vars.spacing.s016}`,
+  padding: `${vars.spacing.s032} ${vars.spacing.s016}`,
   width: '100%',
 });
 

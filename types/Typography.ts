@@ -11,7 +11,7 @@ export type TypographyComponent = PolymorphicComponent<
     shouldUseCapsize?: boolean;
     size: keyof typeof sizeVariant;
     textAlign?: keyof typeof textAlignVariant;
-    whitespace?: 'ellipsis' | 'normal';
+    whitespace?: 'ellipsis' | 'normal' | number;
   },
   'span'
 >;

@@ -1,4 +1,3 @@
-import { calc } from '@vanilla-extract/css-utils';
 import { FunctionComponent, ReactEventHandler, useEffect } from 'react';
 
 import { Audio } from 'components/atoms/Audio';
@@ -15,7 +14,7 @@ import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import CircleDownIcon from 'icons/circle-down.svg';
 import CircleUpIcon from 'icons/circle-up.svg';
 import SpinnerIcon from 'icons/spinner11.svg';
-import { underlinedLink, vars } from 'styles';
+import { underlinedLink } from 'styles';
 import {
   iconButton,
   player,
@@ -135,9 +134,11 @@ export const AudioPlayer: FunctionComponent = () => {
       }}
     >
       <div
-        style={{
-          margin: `${calc(vars.spacing.s016).negate().toString()}`,
-        }}
+        style={
+          {
+            // margin: `${calc(vars.spacing.s016).negate().toString()}`,
+          }
+        }
       >
         <Stack className={player} space="small">
           {playerTitle && isPlayerOpen && (

@@ -29,7 +29,6 @@ import type {
 } from 'types';
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { getPodcastPath } from 'utils/paths';
 import { episodeById } from 'utils/podcastIndex';
 import { toTitleCase } from 'utils/toTitleCase';
 
@@ -207,10 +206,26 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
         </title>
         <meta name="description" content={episode.description} />
       </Head>
-      <Header />
+
       <Stack as="main">
         <Stack as="article" maxWidth="small">
-          <Stack kind="flexRow" space="small" align="center">
+          <Header feedTitle={episode.feedTitle} feedId={episode.feedId} />
+          {episodeArtwork && (
+            <Artwork
+              alt="Podcast episode or chapter artwork"
+              edge="overflow"
+              priority={true}
+              src={artworkProxyImage.toString()}
+            />
+          )}
+          <Stack
+            as="label"
+            kind="flexRow"
+            space="small"
+            align="center"
+            justify="center"
+            style={{ width: 'auto' }}
+          >
             <IconButton
               background="circle"
               label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
@@ -243,27 +258,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
             >
               <PlayPauseIcon size="medium" isPaused={isThisEpisodePaused} />
             </IconButton>
-            <Stack as="span" space="small">
-              <Typography as="h2" size="headingSmaller">
-                <Link
-                  className={headingLink}
-                  href={getPodcastPath({ id: `${episode.feedId}` })}
-                >
-                  {episode.feedTitle}
-                </Link>
-              </Typography>
-              <Typography as="h3" size="paragraph">
-                {episode.title}
-              </Typography>
-            </Stack>
+            <Typography size="headingSmaller" as="h3" whitespace={2}>
+              {episode.title}
+            </Typography>
           </Stack>
-          {episodeArtwork && (
-            <Artwork
-              alt="Podcast episode or chapter artwork"
-              edge="overflow"
-              src={artworkProxyImage.toString()}
-            />
-          )}
+
           <Stack space="large">
             {episode.persons && episode.persons.length ? (
               <Details
