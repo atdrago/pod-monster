@@ -7,7 +7,7 @@ import HomeIcon from 'icons/home.svg';
 import { headingLink } from 'styles';
 import { getPodcastPath } from 'utils/paths';
 
-import { headerBaseClassName } from './header.css';
+import { headerBaseClassName, homeLinkClassName } from './header.css';
 
 interface IHeaderProps {
   feedId?: number | string;
@@ -26,7 +26,7 @@ export const Header: FunctionComponent<IHeaderProps> = ({
         style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
         shouldUseCapsize={false}
       >
-        <Link aria-label="podcast.fish" href="/" className={headingLink}>
+        <Link aria-label="podcast.fish" href="/" className={homeLinkClassName}>
           <Icon size="small">
             <HomeIcon />
           </Icon>
