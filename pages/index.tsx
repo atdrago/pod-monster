@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import type { ApiResponse } from 'podcastdx-client/src/types';
 import {
   ChangeEventHandler,
@@ -50,6 +51,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
   podcastIndexAuthTime,
   podcastIndexAuthToken,
 }) => {
+  const router = useRouter();
   const { feedSettings } = useSettingsContext();
   const [search, searchDebounced, setSearch] = useStateWithDebounce(
     initialSearchResponse?.query ?? '',
@@ -91,11 +93,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
   const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setSearch(event.currentTarget.value);
-    window.history.replaceState(
-      null,
-      'Podcasts - podcast.fish',
-      `?term=${event.currentTarget.value}`
-    );
+    router.replace(`?term=${event.currentTarget.value}`);
   };
 
   const isSearchLoading = isLoading || searchDebounced !== search;
