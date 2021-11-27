@@ -75,78 +75,77 @@ export const SettingsContext = createContext<ISettingsContext>({
 
 const SETTINGS_VERSION = '1';
 
-export const SettingsProvider: FunctionComponent<PropsWithChildren<unknown>> =
-  ({ children }) => {
-    const [audioPlayerSettings, setAudioPlayerSettings] = useState<
-      AudioPlayerSettings | undefined
-    >();
-    const [episodeSettings, setEpisodeSettings] = useState<EpisodeSettings>({});
-    const [feedSettings, setFeedSettings] = useState<FeedSettings>({});
-    const [
-      isDoneHydratingFromLocalStorage,
-      setIsDoneHydratingFromLocalStorage,
-    ] = useState(false);
+export const SettingsProvider: FunctionComponent<
+  PropsWithChildren<unknown>
+> = ({ children }) => {
+  const [audioPlayerSettings, setAudioPlayerSettings] = useState<
+    AudioPlayerSettings | undefined
+  >();
+  const [episodeSettings, setEpisodeSettings] = useState<EpisodeSettings>({});
+  const [feedSettings, setFeedSettings] = useState<FeedSettings>({});
+  const [isDoneHydratingFromLocalStorage, setIsDoneHydratingFromLocalStorage] =
+    useState(false);
 
-    // Read from localStorage on mount
-    useEffect(() => {
-      const settingsFromLocalStorage = tryLocalStorageGetItem('pod2.settings');
+  // Read from localStorage on mount
+  useEffect(() => {
+    const settingsFromLocalStorage = tryLocalStorageGetItem('pod2.settings');
 
-      let settings = null;
+    let settings = null;
 
-      if (settingsFromLocalStorage) {
-        try {
-          settings = JSON.parse(settingsFromLocalStorage);
-        } catch (err) {
-          // TODO: Capture exception?
-        }
-      }
-
-      if (settings) {
-        if (settings._version === SETTINGS_VERSION) {
-          setAudioPlayerSettings(settings.audioPlayerSettings);
-          setEpisodeSettings(settings.episodeSettings);
-          setFeedSettings(settings.feedSettings);
-        } else {
-          tryLocalStorageRemoveItem('pod2.settings');
-        }
-      }
-
-      setIsDoneHydratingFromLocalStorage(true);
-    }, []);
-
-    // Write to localStorage when any settings change
-    useEffect(() => {
+    if (settingsFromLocalStorage) {
       try {
-        tryLocalStorageSetItem(
-          'pod2.settings',
-          JSON.stringify({
-            _version: SETTINGS_VERSION,
-            audioPlayerSettings,
-            episodeSettings,
-            feedSettings,
-          })
-        );
+        settings = JSON.parse(settingsFromLocalStorage);
       } catch (err) {
         // TODO: Capture exception?
       }
-    }, [audioPlayerSettings, episodeSettings, feedSettings]);
+    }
 
-    return (
-      <SettingsContext.Provider
-        value={{
+    if (settings) {
+      if (settings._version === SETTINGS_VERSION) {
+        setAudioPlayerSettings(settings.audioPlayerSettings);
+        setEpisodeSettings(settings.episodeSettings);
+        setFeedSettings(settings.feedSettings);
+      } else {
+        tryLocalStorageRemoveItem('pod2.settings');
+      }
+    }
+
+    setIsDoneHydratingFromLocalStorage(true);
+  }, []);
+
+  // Write to localStorage when any settings change
+  useEffect(() => {
+    try {
+      tryLocalStorageSetItem(
+        'pod2.settings',
+        JSON.stringify({
+          _version: SETTINGS_VERSION,
           audioPlayerSettings,
           episodeSettings,
           feedSettings,
-          isDoneHydratingFromLocalStorage,
-          setAudioPlayerSettings,
-          setEpisodeSettings,
-          setFeedSettings,
-        }}
-      >
-        {children}
-      </SettingsContext.Provider>
-    );
-  };
+        })
+      );
+    } catch (err) {
+      // TODO: Capture exception?
+    }
+  }, [audioPlayerSettings, episodeSettings, feedSettings]);
+
+  return (
+    <SettingsContext.Provider
+      value={{
+        audioPlayerSettings,
+        episodeSettings,
+        feedSettings,
+        isDoneHydratingFromLocalStorage,
+        setAudioPlayerSettings,
+        setEpisodeSettings,
+        setFeedSettings,
+      }}
+    >
+      {children}
+    </SettingsContext.Provider>
+  );
+};
 
 export const useSettingsContext = (): ISettingsContext =>
   useContext(SettingsContext);
