@@ -1,13 +1,7 @@
 import NextLink from 'next/link';
-import type { LinkProps } from 'next/link';
-import type { FunctionComponent, PropsWithChildren } from 'react';
+import type { FunctionComponent } from 'react';
 
-interface ILinkProps extends PropsWithChildren<unknown> {
-  anchorProps?: Omit<JSX.IntrinsicElements['a'], 'href'>;
-  className?: string;
-  href: LinkProps['href'];
-  linkProps?: Omit<LinkProps, 'href'>;
-}
+import { ILinkProps } from 'types';
 
 export const Link: FunctionComponent<ILinkProps> = ({
   anchorProps,

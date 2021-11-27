@@ -8,13 +8,13 @@ import {
   spaceVariant,
 } from 'components/layouts/Stack/stack.css';
 
-export type StackComponent = PolymorphicComponent<
-  {
-    align?: keyof typeof alignVariant;
-    justify?: keyof typeof justifyVariant;
-    kind?: keyof typeof kindVariant;
-    maxWidth?: keyof typeof maxWidthVariant;
-    space?: keyof typeof spaceVariant;
-  },
-  'div'
->;
+export type StackProps = {
+  align?: keyof typeof alignVariant;
+  className?: string;
+  justify?: keyof typeof justifyVariant;
+  kind?: keyof typeof kindVariant;
+  maxWidth?: keyof typeof maxWidthVariant;
+  space?: keyof typeof spaceVariant;
+};
+
+export type StackComponent = PolymorphicComponent<StackProps, 'div'>;

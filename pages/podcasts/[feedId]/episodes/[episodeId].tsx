@@ -8,7 +8,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
 import { IconButton } from 'components/atoms/IconButton';
-import { Link } from 'components/atoms/Link';
+import { LinkStack } from 'components/atoms/LinkStack';
 import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
@@ -21,7 +21,6 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
-import { headingLink } from 'styles';
 import type {
   EpisodePageGetStaticProps,
   IEpisodePageProps,
@@ -277,7 +276,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                 <Stack space="small">
                   {episode.persons.map((person, index) => {
                     return (
-                      <Stack
+                      <LinkStack
+                        anchorProps={{
+                          rel: 'noreferrer noopener',
+                          target: '_blank',
+                        }}
+                        href={person.href}
                         align="center"
                         space="small"
                         kind="flexRow"
@@ -300,20 +304,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                           )}
                           {person.href && (
                             <Typography as="p" size="legal">
-                              <Link
-                                anchorProps={{
-                                  rel: 'noreferrer noopener',
-                                  target: '_blank',
-                                }}
-                                className={headingLink}
-                                href={person.href}
-                              >
-                                {person.href}
-                              </Link>
+                              {person.href}
                             </Typography>
                           )}
                         </Stack>
-                      </Stack>
+                      </LinkStack>
                     );
                   })}
                 </Stack>
