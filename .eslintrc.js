@@ -30,14 +30,14 @@ module.exports = {
           'error',
           {
             format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
-            leadingUnderscore: 'allow',
+            leadingUnderscore: 'allowSingleOrDouble',
             selector: 'default',
             trailingUnderscore: 'allow',
           },
           {
             format: ['strictCamelCase', 'StrictPascalCase', 'UPPER_CASE'],
 
-            leadingUnderscore: 'allow',
+            leadingUnderscore: 'allowSingleOrDouble',
             // strictCamelCase is preferred but allow StrictPascalCase for React
             // components and other new-able classLikes, and UPPER_CASE for
             // constants
@@ -47,7 +47,7 @@ module.exports = {
           {
             format: ['strictCamelCase', 'StrictPascalCase'],
 
-            leadingUnderscore: 'allow',
+            leadingUnderscore: 'allowSingleOrDouble',
             // strictCamelCase is preferred but allow StrictPascalCase for React
             // components and other new-able classLikes
             selector: 'function',
@@ -55,7 +55,7 @@ module.exports = {
           },
           {
             format: ['camelCase', 'PascalCase', 'UPPER_CASE', 'snake_case'],
-            leadingUnderscore: 'allow',
+            leadingUnderscore: 'allowSingleOrDouble',
             selector: 'property',
             trailingUnderscore: 'allow',
           },
