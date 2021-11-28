@@ -30,11 +30,13 @@ interface IAudioContext {
   episodeId: number | null;
   episodeImage: string | null;
   episodeTitle: string | null;
+  feedId: number | null;
   feedImage: string | null;
   feedTitle: string | null;
   isMuted: boolean;
   isPaused: boolean;
   isPlayerOpen: boolean;
+  resetAudioContext: () => void;
   setAudioPlayerCurrentTime: Dispatch<SetStateAction<number>>;
   setChaptersUrl: Dispatch<SetStateAction<string | null>>;
   setCurrentTime: Dispatch<SetStateAction<number>>;
@@ -42,6 +44,7 @@ interface IAudioContext {
   setEpisodeId: Dispatch<SetStateAction<number | null>>;
   setEpisodeImage: Dispatch<SetStateAction<string | null>>;
   setEpisodeTitle: Dispatch<SetStateAction<string | null>>;
+  setFeedId: Dispatch<SetStateAction<number | null>>;
   setFeedImage: Dispatch<SetStateAction<string | null>>;
   setFeedTitle: Dispatch<SetStateAction<string | null>>;
   setIsMuted: Dispatch<SetStateAction<boolean>>;
@@ -67,11 +70,13 @@ export const audioContextDefaults: IAudioContext = {
   episodeId: null,
   episodeImage: null,
   episodeTitle: null,
+  feedId: null,
   feedImage: null,
   feedTitle: null,
   isMuted: false,
   isPaused: true,
   isPlayerOpen: false,
+  resetAudioContext: () => {},
   setAudioPlayerCurrentTime: (_) => {},
   setChaptersUrl: (_) => {},
   setCurrentTime: (_) => {},
@@ -79,6 +84,7 @@ export const audioContextDefaults: IAudioContext = {
   setEpisodeId: (_) => {},
   setEpisodeImage: (_) => {},
   setEpisodeTitle: (_) => {},
+  setFeedId: (_) => {},
   setFeedImage: (_) => {},
   setFeedTitle: (_) => {},
   setIsMuted: (_) => {},
@@ -130,6 +136,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [episodeTitle, setEpisodeTitle] = useState(
     audioContextDefaults.episodeTitle
   );
+  const [feedId, setFeedId] = useState(audioContextDefaults.feedId);
   const [feedImage, setFeedImage] = useState(audioContextDefaults.feedImage);
   const [feedTitle, setFeedTitle] = useState(audioContextDefaults.feedTitle);
   const [isMuted, setIsMuted] = useState<boolean>(audioContextDefaults.isMuted);
@@ -172,20 +179,39 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     !audioPlayerSettingsRef.current &&
     isDoneHydratingFromLocalStorage;
 
+  const resetAudioContext = () => {
+    setAudioPlayerCurrentTime(audioContextDefaults.audioPlayerCurrentTime);
+    setChaptersUrl(audioContextDefaults.chaptersUrl);
+    setCurrentTime(audioContextDefaults.currentTime);
+    setDateCrawled(audioContextDefaults.dateCrawled);
+    setEpisodeId(audioContextDefaults.episodeId);
+    setEpisodeImage(audioContextDefaults.episodeImage);
+    setEpisodeTitle(audioContextDefaults.episodeTitle);
+    setFeedId(audioContextDefaults.feedId);
+    setFeedImage(audioContextDefaults.feedImage);
+    setFeedTitle(audioContextDefaults.feedTitle);
+    setIsMuted(audioContextDefaults.isMuted);
+    setIsPaused(audioContextDefaults.isPaused);
+    setIsPlayerOpen(audioContextDefaults.isPlayerOpen);
+    setSrc(audioContextDefaults.src);
+    setVolume(audioContextDefaults.volume);
+  };
+
   useEffect(() => {
     if (isFirstRenderAfterHydration) {
-      setChaptersUrl(audioPlayerSettings.chaptersUrl);
       setAudioPlayerCurrentTime(audioPlayerSettings.currentTime);
+      setChaptersUrl(audioPlayerSettings.chaptersUrl);
       setCurrentTime(audioPlayerSettings.currentTime);
       setDateCrawled(audioPlayerSettings.dateCrawled);
       setEpisodeId(audioPlayerSettings.episodeId);
+      setEpisodeImage(audioPlayerSettings.episodeImage);
+      setEpisodeTitle(audioPlayerSettings.episodeTitle);
+      setFeedId(audioPlayerSettings.feedId);
+      setFeedImage(audioPlayerSettings.feedImage);
+      setFeedTitle(audioPlayerSettings.feedTitle);
       setIsMuted(audioPlayerSettings.isMuted);
       setIsPlayerOpen(audioPlayerSettings.isPlayerOpen);
       setSrc(audioPlayerSettings.src);
-      setFeedImage(audioPlayerSettings.feedImage);
-      setFeedTitle(audioPlayerSettings.feedTitle);
-      setEpisodeTitle(audioPlayerSettings.episodeTitle);
-      setEpisodeImage(audioPlayerSettings.episodeImage);
       setVolume(audioPlayerSettings.volume);
     }
 
@@ -229,6 +255,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         episodeId,
         episodeImage,
         episodeTitle,
+        feedId,
         feedImage,
         feedTitle,
         isMuted,
@@ -244,6 +271,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     episodeId,
     episodeImage,
     episodeTitle,
+    feedId,
     feedImage,
     feedTitle,
     isDoneHydratingFromLocalStorage,
@@ -293,11 +321,13 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         episodeId,
         episodeImage,
         episodeTitle,
+        feedId,
         feedImage,
         feedTitle,
         isMuted,
         isPaused,
         isPlayerOpen,
+        resetAudioContext,
         setAudioPlayerCurrentTime,
         setChaptersUrl,
         setCurrentTime,
@@ -305,6 +335,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setEpisodeId,
         setEpisodeImage,
         setEpisodeTitle,
+        setFeedId,
         setFeedImage,
         setFeedTitle,
         setIsMuted,

@@ -5,7 +5,7 @@ import { vars } from 'styles';
 export const player = style({
   backdropFilter: 'blur(6px)',
   backgroundColor: vars.color.backgroundBlurred,
-  boxShadow: vars.color.shadowElevationMedium,
+  boxShadow: vars.color.shadowElevationHigh,
   margin: `${vars.spacing.s016} 0`,
   padding: `${vars.spacing.s016}`,
 });

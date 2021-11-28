@@ -38,6 +38,7 @@ type AudioPlayerSettings = {
   episodeId: number | null;
   episodeImage: string | null;
   episodeTitle: string | null;
+  feedId: number | null;
   feedImage: string | null;
   feedTitle: string | null;
   /**

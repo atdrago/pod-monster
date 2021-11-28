@@ -8,6 +8,19 @@ export const artwork = style({
   position: 'absolute',
 });
 
+export const shadowVariant = styleVariants({
+  high: {
+    boxShadow: vars.color.shadowElevationHigh,
+  },
+  low: {
+    boxShadow: vars.color.shadowElevationLow,
+  },
+  medium: {
+    boxShadow: vars.color.shadowElevationMedium,
+  },
+  none: {},
+});
+
 export const sizeVariant = styleVariants({
   full: {
     height: 'auto',

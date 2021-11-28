@@ -115,6 +115,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     setEpisodeId,
     setEpisodeImage,
     setEpisodeTitle,
+    setFeedId,
     setFeedImage,
     setFeedTitle,
     setIsPaused,
@@ -214,6 +215,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
               alt="Podcast episode or chapter artwork"
               edge="overflow"
               priority={true}
+              shadow="medium"
               src={artworkProxyImage.toString()}
             />
           )}
@@ -238,6 +240,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                   setEpisodeId(episode.id);
                   setEpisodeImage(episode.image);
                   setEpisodeTitle(episode.title);
+                  setFeedId(episode.feedId);
                   setFeedImage(episode.feedImage);
                   setFeedTitle(episode.feedTitle);
                   setSrc(episode.enclosureUrl);

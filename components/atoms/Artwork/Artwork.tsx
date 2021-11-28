@@ -2,15 +2,21 @@ import Image from 'next/image';
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { vars } from 'styles';
 import type { ArtworkComponent } from 'types';
 
-import { artwork, sizeVariant, square, squareInner } from './artwork.css';
+import {
+  artwork,
+  shadowVariant,
+  sizeVariant,
+  square,
+  squareInner,
+} from './artwork.css';
 
 export const Artwork: ArtworkComponent = ({
   className,
   edge = 'normal',
   height = 512,
+  shadow = 'none',
   size = 'full',
   src,
   width = 512,
@@ -21,14 +27,11 @@ export const Artwork: ArtworkComponent = ({
 
   return (
     <div
+      className={shadowVariant[shadow]}
       style={
         edge === 'normal'
           ? { flex: '0 0 auto', height: `${height}px`, width: `${width}px` }
-          : {
-              boxShadow: vars.color.shadowElevationMedium,
-              margin: 0,
-              padding: 0,
-            }
+          : { margin: 0, padding: 0 }
       }
     >
       <div className={baseClassName}>
