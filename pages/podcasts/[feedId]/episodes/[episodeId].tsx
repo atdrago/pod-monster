@@ -252,9 +252,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                   if (nextIsPaused) {
                     audioRef.current.pause();
                   } else {
-                    audioRef.current.onloadeddata = async () => {
-                      await audioRef.current?.play();
-                    };
+                    await audioRef.current?.play();
                   }
                 }
               }}
