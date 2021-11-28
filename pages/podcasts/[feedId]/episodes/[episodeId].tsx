@@ -1,6 +1,7 @@
 import type { GetStaticPaths, NextPage } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
+import ReactDomServer from 'react-dom/server';
 import { useQuery } from 'react-query';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
@@ -80,6 +81,17 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
 
         return personA.role === 'Host' ? -1 : 1;
       });
+  }
+
+  if (episode.description) {
+    episode.description = ReactDomServer.renderToStaticMarkup(
+      <HtmlViewer
+        shouldUseCapsize={false}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+      >
+        {episode.description}
+      </HtmlViewer>
+    );
   }
 
   return {
@@ -343,12 +355,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                 </Typography>
               }
             >
-              <HtmlViewer
-                shouldUseCapsize={false}
-                rehypePlugins={[rehypeRaw, rehypeSanitize]}
-              >
-                {episode.description}
-              </HtmlViewer>
+              <span dangerouslySetInnerHTML={{ __html: episode.description }} />
             </Details>
           </Stack>
           <Typography as="p" size="paragraph">
