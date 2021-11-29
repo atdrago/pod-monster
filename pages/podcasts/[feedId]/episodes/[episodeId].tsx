@@ -99,8 +99,8 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
     props: {
       episode,
     },
-    // one hour, in seconds
-    revalidate: 3600,
+    // 12 hours, in seconds
+    revalidate: 3600 * 12,
   };
 };
 
