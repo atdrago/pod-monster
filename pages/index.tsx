@@ -25,6 +25,7 @@ import { searchByTerm, setConfig } from 'utils/podcastIndex';
 
 export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
   query,
+  res,
 }) => {
   const [authTime, authToken] = await fetchPodcastIndexAuth();
 
@@ -36,6 +37,11 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
       getPodcastIndexConfig(authTime, authToken)
     );
   }
+
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
 
   return {
     props: {
