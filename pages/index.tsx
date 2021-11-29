@@ -30,7 +30,7 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
 
   let initialSearchResponse: ApiResponse.Search | null = null;
 
-  if (typeof query.term === 'string') {
+  if (typeof query.term === 'string' && !!query.term) {
     initialSearchResponse = await searchByTerm(
       query.term,
       getPodcastIndexConfig(authTime, authToken)

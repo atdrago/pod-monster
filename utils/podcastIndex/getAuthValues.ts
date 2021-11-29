@@ -9,7 +9,7 @@ import crypto from 'crypto';
  * @returns An array where the first item is auth time in seconds, and the
  * second item is auth token.
  */
-export const getAuthValues = /*#__PURE__*/ (
+export const getAuthValues = (
   apiKey: string,
   apiSecret: string
 ): [number, string] => {

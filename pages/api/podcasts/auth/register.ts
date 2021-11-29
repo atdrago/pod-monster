@@ -2,7 +2,7 @@ import { NextApiHandler } from 'next';
 
 import { getAuthValues } from 'utils/podcastIndex/getAuthValues';
 
-const handler: NextApiHandler = (req, res) => {
+const handler: NextApiHandler = (_req, res) => {
   res
     .status(200)
     .json(
