@@ -331,7 +331,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                             {index + 1}.
                           </Typography>
                         )}
-                        <Stack space="small" style={{ flex: '1 0 auto' }}>
+                        <Stack space="small" style={{ flex: '0 1 auto' }}>
                           <Typography as="h5" size="paragraph">
                             {person.name}
                           </Typography>
