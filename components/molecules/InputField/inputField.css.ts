@@ -5,6 +5,7 @@ import { vars } from 'styles';
 export const inputField = style({
   background: vars.color.background,
   border: `1px solid ${vars.color.buttonBorder}`,
+  borderRadius: 0,
   color: vars.color.foreground,
   fontSize: vars.typography.fontSize.s16,
   padding: vars.spacing.s008,
@@ -12,8 +13,11 @@ export const inputField = style({
     '&::-webkit-calendar-picker-indicator': {
       filter: vars.color.colorSchemeFilter,
     },
-    '&::-webkit-search-results-button': {
-      display: 'none',
+    '&::-webkit-search-cancel-button': {
+      filter: vars.color.colorSchemeFilter,
+    },
+    '&::-webkit-search-decoration': {
+      filter: vars.color.colorSchemeFilter,
     },
   },
   width: '100%',
