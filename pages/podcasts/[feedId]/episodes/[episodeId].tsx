@@ -22,6 +22,7 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
+import { vars } from 'styles';
 import type {
   EpisodePageGetStaticProps,
   IEpisodePageProps,
@@ -290,23 +291,47 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                   {episode.persons.map((person, index) => {
                     return (
                       <LinkStack
-                        anchorProps={{
-                          rel: 'noreferrer noopener',
-                          target: '_blank',
-                        }}
-                        href={person.href}
                         align="center"
                         space="small"
                         kind="flexRow"
                         key={index}
+                        {...(person.href
+                          ? {
+                              anchorProps: {
+                                rel: 'noreferrer noopener',
+                                target: '_blank',
+                              },
+                              href: person.href,
+                            }
+                          : undefined)}
                       >
-                        <Artwork
-                          alt={person.name}
-                          src={person.img}
-                          width={100}
-                          height={100}
-                        />
-                        <Stack space="small">
+                        {person.img ? (
+                          <Artwork
+                            alt={person.name}
+                            src={person.img}
+                            width={80}
+                            height={80}
+                          />
+                        ) : (
+                          <Typography
+                            as="span"
+                            size="headingLarge"
+                            style={{
+                              alignItems: 'center',
+                              background: vars.color.backgroundBlurred,
+                              display: 'flex',
+                              flex: '0 0 auto',
+                              height: '80px',
+                              justifyContent: 'center',
+                              padding: vars.spacing.s016,
+                              whiteSpace: 'nowrap',
+                              width: '80px',
+                            }}
+                          >
+                            {index + 1}.
+                          </Typography>
+                        )}
+                        <Stack space="small" style={{ flex: '1 0 auto' }}>
                           <Typography as="h5" size="paragraph">
                             {person.name}
                           </Typography>
