@@ -154,6 +154,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                     width={80}
                     height={80}
                     src={proxyFeedImage.toString()}
+                    shadow="medium"
                   />
                   <Typography as="h2" size="headingSmaller">
                     {`${index + 1}. `}
@@ -191,6 +192,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                     width={80}
                     height={80}
                     src={proxyFeedImage.toString()}
+                    shadow="medium"
                   />
                   <Stack space="small">
                     <Typography as="h2" size="headingSmaller">

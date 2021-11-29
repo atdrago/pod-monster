@@ -69,9 +69,10 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
           <Stack space="small">
             <Stack kind="flexRow" space="small" align="center">
               <Artwork
-                width={128}
                 height={128}
+                shadow="medium"
                 src={proxyFeedImage.toString()}
+                width={128}
               />
               <Stack space="small">
                 <Typography as="h3" size="paragraph">
@@ -172,9 +173,10 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
               >
                 <Artwork
                   alt=""
-                  width={80}
                   height={80}
+                  shadow="medium"
                   src={proxyImage.toString()}
+                  width={80}
                 />
                 <Stack
                   space="small"
