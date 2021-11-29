@@ -65,14 +65,15 @@ export const AudioPlayer: FunctionComponent = () => {
 
   const isMobileDevice = useIsMobileDevice();
 
-  const handleLoadedMetaData: ReactEventHandler<HTMLAudioElement> =
-    async () => {
-      if (audioRef.current) {
-        if (audioRef.current.paused && !isPaused) {
-          await audioRef.current.play();
-        }
+  const handleLoadedMetaData: ReactEventHandler<
+    HTMLAudioElement
+  > = async () => {
+    if (audioRef.current) {
+      if (audioRef.current.paused && !isPaused) {
+        await audioRef.current.play();
       }
-    };
+    }
+  };
 
   const handleLoadedData: ReactEventHandler<HTMLAudioElement> = async () => {
     if (audioRef.current) {

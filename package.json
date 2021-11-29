@@ -54,7 +54,7 @@
     "import-sort-style-atdrago": "^0.1.4",
     "lint-staged": "^12.1.2",
     "podcastdx-client": "^5.0.0",
-    "prettier": "2.4.1",
+    "prettier": "2.5.0",
     "prettier-plugin-import-sort": "^0.0.7",
     "typescript": "^4.5.2",
     "webpack": "^5.64.4"
