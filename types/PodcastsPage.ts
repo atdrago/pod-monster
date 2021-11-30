@@ -1,8 +1,9 @@
 import type { GetServerSideProps } from 'next';
-import type { ApiResponse } from 'podcastdx-client/src/types';
+import { dehydrate } from 'react-query';
 
 export interface IPodcastsPageProps {
-  initialSearchResponse: ApiResponse.Search | null;
+  dehydratedState: ReturnType<typeof dehydrate>;
+  initialSearchTerm: string | null;
   podcastIndexAuthTime: string;
   podcastIndexAuthToken: string;
 }

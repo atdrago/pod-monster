@@ -1,12 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import type { ApiResponse } from 'podcastdx-client/src/types';
-import {
-  ChangeEventHandler,
-  FunctionComponent,
-  useEffect,
-  useState,
-} from 'react';
+import { ChangeEventHandler, FunctionComponent, useEffect } from 'react';
+import { QueryClient, dehydrate, useQuery } from 'react-query';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Link } from 'components/atoms/Link';
@@ -27,25 +22,39 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
   query,
   res,
 }) => {
+  const queryClient = new QueryClient();
   const [authTime, authToken] = await fetchPodcastIndexAuth();
 
-  let initialSearchResponse: ApiResponse.Search | null = null;
+  let searchTerm: string | null = null;
 
-  if (typeof query.term === 'string' && !!query.term) {
-    initialSearchResponse = await searchByTerm(
-      query.term,
-      getPodcastIndexConfig(authTime, authToken)
+  const { term } = query;
+
+  if (typeof term === 'string' && !!term) {
+    searchTerm = term;
+
+    await queryClient.prefetchQuery(
+      ['searchByTerm', term],
+      async () =>
+        await searchByTerm(term, getPodcastIndexConfig(authTime, authToken))
+    );
+
+    // If a search term is present, stay fresh for 60 seconds, stale for 1 hour
+    res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=60, stale-while-revalidate=3600'
+    );
+  } else {
+    // If no search term, stay fresh for 1 hour, and stale for 12 hours
+    res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=3600, stale-while-revalidate=43200'
     );
   }
 
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
-
   return {
     props: {
-      initialSearchResponse,
+      dehydratedState: dehydrate(queryClient),
+      initialSearchTerm: searchTerm,
       podcastIndexAuthTime: authTime,
       podcastIndexAuthToken: authToken,
     },
@@ -53,19 +62,26 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
 };
 
 const HomePage: FunctionComponent<IPodcastsPageProps> = ({
-  initialSearchResponse,
+  initialSearchTerm,
   podcastIndexAuthTime,
   podcastIndexAuthToken,
 }) => {
   const router = useRouter();
   const { feedSettings } = useSettingsContext();
-  const [search, searchDebounced, setSearch] = useStateWithDebounce(
-    initialSearchResponse?.query ?? '',
+  const [searchTerm, searchTermDebounced, setSearchTerm] = useStateWithDebounce(
+    initialSearchTerm ?? '',
     1000
   );
-  const [searchResponse, setSearchResponse] =
-    useState<ApiResponse.Search | null>(initialSearchResponse);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { data: searchResponse, isLoading } = useQuery(
+    ['searchByTerm', searchTermDebounced],
+    async () => await searchByTerm(searchTermDebounced),
+    {
+      enabled: !!searchTermDebounced,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   useEffect(() => {
     setConfig(
@@ -73,36 +89,12 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
     );
   }, [podcastIndexAuthTime, podcastIndexAuthToken]);
 
-  useEffect(() => {
-    (async () => {
-      if (!searchDebounced) {
-        setSearchResponse(null);
-
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-
-        const response = await searchByTerm(searchDebounced);
-
-        if (response) {
-          setSearchResponse(response);
-        }
-      } catch (err) {
-        // TODO: Capture exception
-      }
-
-      setIsLoading(false);
-    })();
-  }, [searchDebounced]);
-
   const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    setSearch(event.currentTarget.value);
+    setSearchTerm(event.currentTarget.value);
     router.replace(`?term=${event.currentTarget.value}`);
   };
 
-  const isSearchLoading = isLoading || searchDebounced !== search;
+  const isSearchLoading = isLoading || searchTermDebounced !== searchTerm;
 
   const feedSettingsEntries = Object.entries(feedSettings);
 
@@ -129,7 +121,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
             </Typography>
           }
           type="search"
-          value={search}
+          value={searchTerm}
           onChange={handleSearchChange}
         />
         {searchResponse && (
