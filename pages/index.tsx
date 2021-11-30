@@ -25,17 +25,16 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
   const queryClient = new QueryClient();
   const [authTime, authToken] = await fetchPodcastIndexAuth();
 
-  let searchTerm: string | null = null;
+  const searchTerm = typeof query.term === 'string' ? query.term : null;
 
-  const { term } = query;
-
-  if (typeof term === 'string' && !!term) {
-    searchTerm = term;
-
+  if (searchTerm) {
     await queryClient.prefetchQuery(
-      ['searchByTerm', term],
+      ['searchByTerm', searchTerm],
       async () =>
-        await searchByTerm(term, getPodcastIndexConfig(authTime, authToken))
+        await searchByTerm(
+          searchTerm,
+          getPodcastIndexConfig(authTime, authToken)
+        )
     );
 
     // If a search term is present, stay fresh for 60 seconds, stale for 1 hour
