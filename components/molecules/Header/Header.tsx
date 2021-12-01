@@ -12,11 +12,13 @@ import { headerBaseClassName, homeLinkClassName } from './header.css';
 interface IHeaderProps {
   feedId?: number | string;
   feedTitle?: string;
+  isLoading?: boolean;
 }
 
 export const Header: FunctionComponent<IHeaderProps> = ({
   feedId,
   feedTitle,
+  isLoading = false,
 }) => {
   return (
     <div className={headerBaseClassName}>
@@ -32,7 +34,7 @@ export const Header: FunctionComponent<IHeaderProps> = ({
           </Icon>
         </Link>
       </Typography>
-      {feedId && feedTitle ? (
+      {isLoading || (feedId && feedTitle) ? (
         <>
           <Typography
             as="span"
@@ -49,9 +51,18 @@ export const Header: FunctionComponent<IHeaderProps> = ({
             style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
             shouldUseCapsize={false}
           >
-            <Link href={getPodcastPath({ id: feedId })} className={headingLink}>
-              {feedTitle}
-            </Link>
+            {isLoading ? (
+              'Loading...'
+            ) : feedId ? (
+              <Link
+                href={getPodcastPath({ id: feedId })}
+                className={headingLink}
+              >
+                {feedTitle}
+              </Link>
+            ) : (
+              ''
+            )}
           </Typography>
         </>
       ) : null}

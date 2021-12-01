@@ -106,7 +106,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    fallback: 'blocking',
+    fallback: true,
     paths: [],
   };
 };
@@ -114,7 +114,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
   const { episodeSettings } = useSettingsContext();
   const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
-    episodeSettings[episode.id]?.currentTime ?? 0
+    episode ? episodeSettings[episode.id]?.currentTime ?? 0 : 0
   );
 
   const {
@@ -136,7 +136,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     src,
   } = useAudioContext() || audioContextDefaults;
 
-  const isThisEpisodeInThePlayer = episodeId === episode.id;
+  const isThisEpisodeInThePlayer = episodeId === episode?.id;
   const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;
 
   const interprettedCurrentTime = isThisEpisodeInThePlayer
@@ -144,8 +144,9 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     : episodeCurrentTime;
 
   const { data: transcript } = useQuery(
-    ['transcript', episode.transcripts?.length, episode.dateCrawled],
-    async () => await fetchPodcastEpisodeTranscript(episode.transcripts),
+    ['transcript', episode?.transcripts?.length, episode?.dateCrawled],
+    async () =>
+      await fetchPodcastEpisodeTranscript(episode?.transcripts ?? null),
     {
       refetchOnMount: false,
       refetchOnReconnect: false,
@@ -154,10 +155,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
   );
 
   const { data: chapters } = useQuery(
-    ['chapters', episode.chaptersUrl, episode.dateCrawled],
-    async () => await fetchPodcastEpisodeChapters(episode.chaptersUrl),
+    ['chapters', episode?.chaptersUrl, episode?.dateCrawled],
+    async () => await fetchPodcastEpisodeChapters(episode?.chaptersUrl),
     {
       enabled:
+        episode &&
         typeof episode.dateCrawled === 'number' &&
         typeof episode.chaptersUrl === 'string' &&
         episode.chaptersUrl.length > 0,
@@ -179,14 +181,18 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
       : null;
 
   const episodeArtwork =
-    currentChapter?.img || episode.image || episode.feedImage;
+    currentChapter?.img || episode?.image || episode?.feedImage;
 
-  const artworkProxyImage = new URL(
-    '/api/images/proxy',
-    process.env.NEXT_PUBLIC_BASE_URL
-  );
+  let artworkProxyImage = null;
 
-  artworkProxyImage.searchParams.set('url', episodeArtwork);
+  if (episodeArtwork) {
+    artworkProxyImage = new URL(
+      '/api/images/proxy',
+      process.env.NEXT_PUBLIC_BASE_URL
+    );
+
+    artworkProxyImage.searchParams.set('url', episodeArtwork);
+  }
 
   const currentTranscriptIndex =
     transcript && transcript.length > 0
@@ -213,25 +219,28 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {episode.title} - {episode.feedTitle} - podcast.fish
-        </title>
-        <meta name="description" content={episode.description} />
-      </Head>
-
+      {episode && (
+        <Head>
+          <title>
+            {episode.title} - {episode.feedTitle} - podcast.fish
+          </title>
+          <meta name="description" content={episode.description} />
+        </Head>
+      )}
       <Stack as="main" maxWidth="small">
         <Stack as="article">
-          <Header feedTitle={episode.feedTitle} feedId={episode.feedId} />
-          {episodeArtwork && (
-            <Artwork
-              alt="Podcast episode or chapter artwork"
-              edge="overflow"
-              priority={true}
-              shadow="medium"
-              src={artworkProxyImage.toString()}
-            />
-          )}
+          <Header
+            isLoading={!episode}
+            feedTitle={episode?.feedTitle}
+            feedId={episode?.feedId}
+          />
+          <Artwork
+            alt="Podcast episode or chapter artwork"
+            edge="overflow"
+            priority={true}
+            shadow="medium"
+            src={artworkProxyImage?.toString()}
+          />
           <Stack
             as="label"
             kind="flexRow"
@@ -244,6 +253,10 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
               background="circle"
               label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
               onClick={async () => {
+                if (!episode) {
+                  return;
+                }
+
                 const nextIsPaused = !isThisEpisodePaused;
 
                 if (!nextIsPaused && episode.enclosureUrl !== src) {
@@ -274,12 +287,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
               <PlayPauseIcon size="medium" isPaused={isThisEpisodePaused} />
             </IconButton>
             <Typography size="headingSmaller" as="h3" whitespace={2}>
-              {episode.title}
+              {episode?.title}
             </Typography>
           </Stack>
 
           <Stack space="large">
-            {episode.persons && episode.persons.length ? (
+            {episode && episode.persons && episode.persons.length ? (
               <Details
                 summary={
                   <Typography as="h4" size="headingSmaller">
@@ -380,18 +393,26 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                 </Typography>
               }
             >
-              <span dangerouslySetInnerHTML={{ __html: episode.description }} />
+              <span
+                dangerouslySetInnerHTML={{ __html: episode?.description ?? '' }}
+              />
             </Details>
           </Stack>
           <Typography as="p" size="paragraph">
             Published:{' '}
-            {noteDateTimeFormat.format(new Date(episode.datePublished * 1000))}
+            {episode
+              ? noteDateTimeFormat.format(
+                  new Date(episode.datePublished * 1000)
+                )
+              : null}
           </Typography>
-          <SubscribeButton
-            feedId={episode.feedId}
-            image={episode.feedImage}
-            title={episode.feedTitle}
-          />
+          {episode && (
+            <SubscribeButton
+              feedId={episode.feedId}
+              image={episode.feedImage}
+              title={episode.feedTitle}
+            />
+          )}
         </Stack>
       </Stack>
     </>
