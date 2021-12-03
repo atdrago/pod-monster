@@ -217,6 +217,37 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     }
   };
 
+  const handlePlayPauseClick = async () => {
+    if (!episode) {
+      return;
+    }
+
+    const nextIsPaused = !isThisEpisodePaused;
+
+    if (!nextIsPaused && episode.enclosureUrl !== src) {
+      setChaptersUrl(episode.chaptersUrl);
+      setCurrentTime(episodeCurrentTime);
+      setDateCrawled(episode.dateCrawled);
+      setEpisodeId(episode.id);
+      setEpisodeImage(episode.image);
+      setEpisodeTitle(episode.title);
+      setFeedId(episode.feedId);
+      setFeedImage(episode.feedImage);
+      setFeedTitle(episode.feedTitle);
+      setSrc(episode.enclosureUrl);
+    }
+
+    setIsPaused(nextIsPaused);
+
+    if (audioRef.current) {
+      if (nextIsPaused) {
+        audioRef.current.pause();
+      } else {
+        await audioRef.current?.play();
+      }
+    }
+  };
+
   useEffect(() => {
     if (isThisEpisodeInThePlayer) {
       setEpisodeCurrentTime(audioPlayerCurrentTimeDebounced);
@@ -257,36 +288,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
               cursor: 'pointer',
               width: 'auto',
             }}
-            onClick={async () => {
-              if (!episode) {
-                return;
-              }
-
-              const nextIsPaused = !isThisEpisodePaused;
-
-              if (!nextIsPaused && episode.enclosureUrl !== src) {
-                setChaptersUrl(episode.chaptersUrl);
-                setCurrentTime(episodeCurrentTime);
-                setDateCrawled(episode.dateCrawled);
-                setEpisodeId(episode.id);
-                setEpisodeImage(episode.image);
-                setEpisodeTitle(episode.title);
-                setFeedId(episode.feedId);
-                setFeedImage(episode.feedImage);
-                setFeedTitle(episode.feedTitle);
-                setSrc(episode.enclosureUrl);
-              }
-
-              setIsPaused(nextIsPaused);
-
-              if (audioRef.current) {
-                if (nextIsPaused) {
-                  audioRef.current.pause();
-                } else {
-                  await audioRef.current?.play();
-                }
-              }
-            }}
+            onClick={handlePlayPauseClick}
             type="button"
           >
             <IconButton
