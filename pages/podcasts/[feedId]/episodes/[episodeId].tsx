@@ -262,6 +262,10 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
             {episode.title} - {episode.feedTitle} - podcast.fish
           </title>
           <meta name="description" content={episode.description} />
+          <link
+            rel="manifest"
+            href={`${process.env.NEXT_PUBLIC_BASE_URL}/app.webmanifest`}
+          ></link>
         </Head>
       )}
       <Stack as="main" maxWidth="small">

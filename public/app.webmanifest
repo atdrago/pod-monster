@@ -1,0 +1,16 @@
+{
+  "name": "podcast.fish",
+  "short_name": "podcasts",
+  "description": "A front-end to the Podcast Index",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "55x55",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "minimal-ui",
+  "theme_color": "#272822",
+  "background_color": "#272822"
+}

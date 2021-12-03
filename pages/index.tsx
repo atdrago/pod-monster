@@ -105,6 +105,10 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
           name="description"
           content="Search for and subscribe to podcasts"
         />
+        <link
+          rel="manifest"
+          href={`${process.env.NEXT_PUBLIC_BASE_URL}/app.webmanifest`}
+        ></link>
       </Head>
       <Header />
       <Stack maxWidth="small">
