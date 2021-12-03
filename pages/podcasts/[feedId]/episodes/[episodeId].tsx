@@ -122,6 +122,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     audioRef,
     episodeId,
     isPaused,
+    setAudioPlayerCurrentTime,
     setChaptersUrl,
     setCurrentTime,
     setDateCrawled,
@@ -242,46 +243,51 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
             src={artworkProxyImage?.toString()}
           />
           <Stack
-            as="label"
+            as="button"
             kind="flexRow"
             space="small"
             align="center"
             justify="center"
-            style={{ width: 'auto' }}
+            style={{
+              cursor: 'pointer',
+              width: 'auto',
+            }}
+            onClick={async () => {
+              if (!episode) {
+                return;
+              }
+
+              const nextIsPaused = !isThisEpisodePaused;
+
+              if (!nextIsPaused && episode.enclosureUrl !== src) {
+                setChaptersUrl(episode.chaptersUrl);
+                setAudioPlayerCurrentTime(episodeCurrentTime);
+                setDateCrawled(episode.dateCrawled);
+                setEpisodeId(episode.id);
+                setEpisodeImage(episode.image);
+                setEpisodeTitle(episode.title);
+                setFeedId(episode.feedId);
+                setFeedImage(episode.feedImage);
+                setFeedTitle(episode.feedTitle);
+                setSrc(episode.enclosureUrl);
+              }
+
+              setIsPaused(nextIsPaused);
+
+              if (audioRef.current) {
+                if (nextIsPaused) {
+                  audioRef.current.pause();
+                } else {
+                  await audioRef.current?.play();
+                }
+              }
+            }}
+            type="button"
           >
             <IconButton
+              as="span"
               background="circle"
               label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
-              onClick={async () => {
-                if (!episode) {
-                  return;
-                }
-
-                const nextIsPaused = !isThisEpisodePaused;
-
-                if (!nextIsPaused && episode.enclosureUrl !== src) {
-                  setChaptersUrl(episode.chaptersUrl);
-                  setCurrentTime(episodeCurrentTime);
-                  setDateCrawled(episode.dateCrawled);
-                  setEpisodeId(episode.id);
-                  setEpisodeImage(episode.image);
-                  setEpisodeTitle(episode.title);
-                  setFeedId(episode.feedId);
-                  setFeedImage(episode.feedImage);
-                  setFeedTitle(episode.feedTitle);
-                  setSrc(episode.enclosureUrl);
-                }
-
-                setIsPaused(nextIsPaused);
-
-                if (audioRef.current) {
-                  if (nextIsPaused) {
-                    audioRef.current.pause();
-                  } else {
-                    await audioRef.current?.play();
-                  }
-                }
-              }}
               size="medium"
             >
               <PlayPauseIcon size="medium" isPaused={isThisEpisodePaused} />

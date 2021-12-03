@@ -1,3 +1,4 @@
+import { ElementType } from 'react';
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
@@ -6,11 +7,12 @@ import { IconButtonComponent } from 'types';
 import { backgroundVariant, iconButton, sizeVariant } from './iconButton.css';
 
 export const IconButton: IconButtonComponent = ({
+  as: asProp = 'button' as ElementType<any>,
   background = 'default',
   className,
   label,
   size = 'small',
-  ...buttonProps
+  ...props
 }) => {
   const baseClassName = useClassNames(
     iconButton,
@@ -19,13 +21,15 @@ export const IconButton: IconButtonComponent = ({
     className
   );
 
+  const buttonProps = asProp === 'button' ? { type: 'button' } : undefined;
+
   return (
     <Box
       aria-label={label}
-      as="button"
+      as={asProp}
       className={baseClassName}
-      type="button"
       {...buttonProps}
+      {...props}
     />
   );
 };

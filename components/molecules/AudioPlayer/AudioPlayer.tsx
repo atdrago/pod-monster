@@ -96,10 +96,12 @@ export const AudioPlayer: FunctionComponent = () => {
   };
 
   const handlePlayPauseClick = async () => {
-    setIsPaused(!isPaused);
+    const nextIsPaused = !isPaused;
+
+    setIsPaused(nextIsPaused);
 
     if (audioRef.current) {
-      if (!isPaused) {
+      if (nextIsPaused) {
         audioRef.current.pause();
       } else {
         await audioRef.current.play();
@@ -203,15 +205,31 @@ export const AudioPlayer: FunctionComponent = () => {
             )}
           </Typography>
         )}
+        {/**
+         * 1. Waiting
+         * 2. Suspend
+         * 3. CanPlay
+         * 4. Playing
+         */}
         <Audio
           audioRef={audioRef}
           controls={true}
           currentTime={audioPlayerCurrentTime}
           onCurrentTimeChange={setAudioPlayerCurrentTime}
+          onEnded={() => {
+            setIsPaused(true);
+          }}
           onLoadedData={handleLoadedData}
           onLoadedMetadata={handleLoadedMetaData}
-          onPause={() => setIsPaused(true)}
-          onPlay={() => setIsPaused(false)}
+          onPause={() => {
+            setIsPaused(true);
+          }}
+          onPlay={() => {
+            setIsPaused(false);
+          }}
+          onPlaying={() => {
+            setIsPaused(false);
+          }}
           onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
           preload="metadata"
           src={src}
