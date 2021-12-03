@@ -42,9 +42,11 @@ export const AudioPlayer: FunctionComponent = () => {
     isMuted,
     isPaused,
     isPlayerOpen,
+    playPause,
     resetAudioContext,
+    seekBackward,
+    seekForward,
     setAudioPlayerCurrentTime,
-    setCurrentTime,
     setIsMuted,
     setIsPaused,
     setIsPlayerOpen,
@@ -78,32 +80,6 @@ export const AudioPlayer: FunctionComponent = () => {
   const handleLoadedData: ReactEventHandler<HTMLAudioElement> = async () => {
     if (audioRef.current) {
       if (audioRef.current.paused && !isPaused) {
-        await audioRef.current.play();
-      }
-    }
-  };
-
-  const handleRewindClick = () => {
-    const resultTime = audioPlayerCurrentTime - 15;
-
-    setCurrentTime(resultTime);
-  };
-
-  const handleSkipClick = () => {
-    const resultTime = audioPlayerCurrentTime + 30;
-
-    setCurrentTime(resultTime);
-  };
-
-  const handlePlayPauseClick = async () => {
-    const nextIsPaused = !isPaused;
-
-    setIsPaused(nextIsPaused);
-
-    if (audioRef.current) {
-      if (nextIsPaused) {
-        audioRef.current.pause();
-      } else {
         await audioRef.current.play();
       }
     }
@@ -243,7 +219,7 @@ export const AudioPlayer: FunctionComponent = () => {
             <IconButton
               background="circle"
               label={'Rewind 15 seconds'}
-              onClick={handleRewindClick}
+              onClick={() => seekBackward({ seekOffset: 15 })}
               size={'small'}
             >
               <Icon size={'small'} orientation="reverse">
@@ -253,7 +229,7 @@ export const AudioPlayer: FunctionComponent = () => {
             <IconButton
               background="circle"
               label={isPaused ? 'Play podcast' : 'Pause podcast'}
-              onClick={handlePlayPauseClick}
+              onClick={playPause}
               size={'medium'}
             >
               <PlayPauseIcon size={'medium'} isPaused={isPaused} />
@@ -261,7 +237,7 @@ export const AudioPlayer: FunctionComponent = () => {
             <IconButton
               background="circle"
               label={'Skip 30 seconds'}
-              onClick={handleSkipClick}
+              onClick={() => seekForward({ seekOffset: 30 })}
               size={'small'}
             >
               <Icon size={'small'}>

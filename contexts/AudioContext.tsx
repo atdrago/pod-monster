@@ -5,6 +5,7 @@ import {
   PropsWithChildren,
   SetStateAction,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -36,7 +37,10 @@ interface IAudioContext {
   isMuted: boolean;
   isPaused: boolean;
   isPlayerOpen: boolean;
+  playPause: () => void;
   resetAudioContext: () => void;
+  seekBackward: (details?: Partial<MediaSessionActionDetails>) => void;
+  seekForward: (details?: Partial<MediaSessionActionDetails>) => void;
   setAudioPlayerCurrentTime: Dispatch<SetStateAction<number>>;
   setChaptersUrl: Dispatch<SetStateAction<string | null>>;
   setCurrentTime: Dispatch<SetStateAction<number>>;
@@ -76,7 +80,10 @@ export const audioContextDefaults: IAudioContext = {
   isMuted: false,
   isPaused: true,
   isPlayerOpen: false,
+  playPause: () => {},
   resetAudioContext: () => {},
+  seekBackward: () => {},
+  seekForward: () => {},
   setAudioPlayerCurrentTime: (_) => {},
   setChaptersUrl: (_) => {},
   setCurrentTime: (_) => {},
@@ -180,9 +187,10 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     isDoneHydratingFromLocalStorage;
 
   const resetAudioContext = () => {
-    setAudioPlayerCurrentTime(audioContextDefaults.audioPlayerCurrentTime);
+    audioRef.current?.pause();
+    // setAudioPlayerCurrentTime(audioContextDefaults.audioPlayerCurrentTime);
     setChaptersUrl(audioContextDefaults.chaptersUrl);
-    setCurrentTime(audioContextDefaults.currentTime);
+    // setCurrentTime(audioContextDefaults.currentTime);
     setDateCrawled(audioContextDefaults.dateCrawled);
     setEpisodeId(audioContextDefaults.episodeId);
     setEpisodeImage(audioContextDefaults.episodeImage);
@@ -196,6 +204,38 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setSrc(audioContextDefaults.src);
     setVolume(audioContextDefaults.volume);
   };
+
+  const seekBackward = useCallback(
+    ({ seekOffset }) => {
+      const resultTime = audioPlayerCurrentTime - seekOffset;
+
+      setCurrentTime(resultTime);
+    },
+    [audioPlayerCurrentTime]
+  );
+
+  const seekForward = useCallback(
+    ({ seekOffset }) => {
+      const resultTime = audioPlayerCurrentTime + seekOffset;
+
+      setCurrentTime(resultTime);
+    },
+    [audioPlayerCurrentTime]
+  );
+
+  const playPause = useCallback(async () => {
+    const nextIsPaused = !isPaused;
+
+    setIsPaused(nextIsPaused);
+
+    if (audioRef.current) {
+      if (nextIsPaused) {
+        audioRef.current.pause();
+      } else {
+        await audioRef.current.play();
+      }
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     if (isFirstRenderAfterHydration) {
@@ -296,6 +336,19 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         ],
         title: feedTitle ?? undefined,
       });
+
+      navigator.mediaSession.setActionHandler('play', playPause);
+      navigator.mediaSession.setActionHandler('pause', playPause);
+      navigator.mediaSession.setActionHandler('stop', null);
+      navigator.mediaSession.setActionHandler('seekbackward', seekBackward);
+      navigator.mediaSession.setActionHandler('seekforward', seekForward);
+      navigator.mediaSession.setActionHandler('seekto', ({ seekTime }) => {
+        if (typeof seekTime === 'number') {
+          setCurrentTime(seekTime);
+        }
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', null);
+      navigator.mediaSession.setActionHandler('nexttrack', null);
     }
   }, [
     currentChapter?.img,
@@ -304,8 +357,15 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     episodeTitle,
     feedImage,
     feedTitle,
+    playPause,
+    seekBackward,
+    seekForward,
   ]);
 
+  /**
+   * Update `audioPlayerCurrentTime` whenever `currentTime` changes (via calls
+   * to `setCurrentTime()`)
+   * */
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.currentTime = currentTime;
@@ -335,7 +395,10 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         isMuted,
         isPaused,
         isPlayerOpen,
+        playPause,
         resetAudioContext,
+        seekBackward,
+        seekForward,
         setAudioPlayerCurrentTime,
         setChaptersUrl,
         setCurrentTime,
