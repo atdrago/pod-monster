@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@vanilla-extract/css": "^1.6.8",
-    "@vanilla-extract/css-utils": "^0.1.1",
+    "@vanilla-extract/css-utils": "^0.1.2",
     "@vanilla-extract/next-plugin": "^1.0.1",
     "capsize": "^2.0.0",
     "next": "12.0.4",
