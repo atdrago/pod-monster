@@ -1,6 +1,6 @@
 import type { GetStaticPaths, NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactDomServer from 'react-dom/server';
 import { useQuery } from 'react-query';
 import rehypeRaw from 'rehype-raw';
@@ -116,13 +116,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
   const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
     episode ? episodeSettings[episode.id]?.currentTime ?? 0 : 0
   );
-
   const {
     audioPlayerCurrentTime,
+    audioPlayerCurrentTimeDebounced,
     audioRef,
     episodeId,
     isPaused,
-    setAudioPlayerCurrentTime,
     setChaptersUrl,
     setCurrentTime,
     setDateCrawled,
@@ -218,6 +217,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     }
   };
 
+  useEffect(() => {
+    if (isThisEpisodeInThePlayer) {
+      setEpisodeCurrentTime(audioPlayerCurrentTimeDebounced);
+    }
+  }, [audioPlayerCurrentTimeDebounced, isThisEpisodeInThePlayer]);
+
   return (
     <>
       {episode && (
@@ -261,7 +266,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
 
               if (!nextIsPaused && episode.enclosureUrl !== src) {
                 setChaptersUrl(episode.chaptersUrl);
-                setAudioPlayerCurrentTime(episodeCurrentTime);
+                setCurrentTime(episodeCurrentTime);
                 setDateCrawled(episode.dateCrawled);
                 setEpisodeId(episode.id);
                 setEpisodeImage(episode.image);
