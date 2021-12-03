@@ -13,7 +13,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@vanilla-extract/babel-plugin": "^1.1.2",
     "@vanilla-extract/css": "^1.6.4",
     "@vanilla-extract/css-utils": "^0.1.1",
     "@vanilla-extract/next-plugin": "^1.0.1",
