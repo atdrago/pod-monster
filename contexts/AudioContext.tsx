@@ -306,6 +306,14 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     feedTitle,
   ]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = currentTime;
+    }
+
+    setAudioPlayerCurrentTime(currentTime);
+  }, [audioRef, currentTime, setAudioPlayerCurrentTime]);
+
   return (
     <AudioContext.Provider
       value={{

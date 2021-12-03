@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactEventHandler, useEffect } from 'react';
+import type { FunctionComponent, ReactEventHandler } from 'react';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Audio } from 'components/atoms/Audio';
@@ -130,14 +130,6 @@ export const AudioPlayer: FunctionComponent = () => {
 
     setIsMuted(audioRef.current?.muted ?? false);
   };
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = currentTime;
-    }
-
-    setAudioPlayerCurrentTime(currentTime);
-  }, [audioRef, currentTime, setAudioPlayerCurrentTime]);
 
   if (!src) {
     return null;
