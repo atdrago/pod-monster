@@ -1,4 +1,10 @@
-import type { FunctionComponent, ReactEventHandler } from 'react';
+import {
+  FunctionComponent,
+  ReactEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Audio } from 'components/atoms/Audio';
@@ -11,21 +17,25 @@ import { Typography } from 'components/atoms/Typography';
 import { VolumeIcon } from 'components/atoms/VolumeIcon';
 import { Stack } from 'components/layouts/Stack';
 import { audioContextDefaults, useAudioContext } from 'contexts/AudioContext';
+import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import EnlargeIcon from 'icons/enlarge2.svg';
 import ShrinkIcon from 'icons/shrink2.svg';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
 import { underlinedLink } from 'styles';
+import { getEpisodePath } from 'utils/paths';
+
 import {
   iconButton,
+  intersectionObserverClassName,
   player,
   playerButtons,
+  playerElevatedVariant,
   playerMinimize,
   playerTitleClassName,
   volumeLayout,
-} from 'styles/episodeId.css';
-import { getEpisodePath } from 'utils/paths';
+} from './audioPlayer.css';
 
 export const AudioPlayer: FunctionComponent = () => {
   const {
@@ -54,6 +64,12 @@ export const AudioPlayer: FunctionComponent = () => {
     src,
     volume,
   } = useAudioContext() || audioContextDefaults;
+  const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
+  const [isPinned, setIsPinned] = useState(false);
+  const playerClassName = useClassNames(
+    player,
+    playerElevatedVariant[isPinned ? 'elevated' : 'inset']
+  );
 
   const playerArtwork = currentChapter?.img || episodeImage || feedImage;
   const playerArtworkProxyUrl = new URL(
@@ -107,6 +123,26 @@ export const AudioPlayer: FunctionComponent = () => {
     setIsMuted(audioRef.current?.muted ?? false);
   };
 
+  useEffect(() => {
+    const ref = intersectionObserverRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPinned(entry.intersectionRatio < 1);
+      },
+      { threshold: [1] }
+    );
+
+    if (ref) {
+      observer.observe(ref);
+    }
+
+    return () => {
+      if (ref) {
+        observer.unobserve(ref);
+      }
+    };
+  }, [src]);
+
   if (!src) {
     return null;
   }
@@ -121,7 +157,11 @@ export const AudioPlayer: FunctionComponent = () => {
         zIndex: 1,
       }}
     >
-      <Stack className={player} space="small">
+      <div
+        className={intersectionObserverClassName}
+        ref={intersectionObserverRef}
+      ></div>
+      <Stack className={playerClassName} space="small">
         {isPlayerOpen && episodeTitle ? (
           <Typography
             size="headingSmaller"

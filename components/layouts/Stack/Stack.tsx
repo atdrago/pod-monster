@@ -1,7 +1,8 @@
+import { forwardRef } from 'react';
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { StackComponent } from 'types';
+import { StackProps } from 'types';
 
 import {
   alignVariant,
@@ -12,17 +13,20 @@ import {
   stack,
 } from './stack.css';
 
-export const Stack: StackComponent = ({
-  // `align` is not defaulted to anything because the meaning of `align-items`
-  // changes based on the `display` property
-  align,
-  className,
-  justify,
-  kind = 'flex',
-  maxWidth = 'none',
-  space = 'medium',
-  ...divProps
-}) => {
+export const Stack = forwardRef<HTMLElement, StackProps>(function StackRef(
+  {
+    // `align` is not defaulted to anything because the meaning of `align-items`
+    // changes based on the `display` property
+    align,
+    className,
+    justify,
+    kind = 'flex',
+    maxWidth = 'none',
+    space = 'medium',
+    ...divProps
+  },
+  ref
+) {
   const rootClassName = useClassNames(
     stack,
     spaceVariant[space],
@@ -33,5 +37,5 @@ export const Stack: StackComponent = ({
     className
   );
 
-  return <Box as="div" className={rootClassName} {...divProps} />;
-};
+  return <Box as="div" className={rootClassName} ref={ref} {...divProps} />;
+});

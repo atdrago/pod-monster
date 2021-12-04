@@ -1,13 +1,22 @@
-import { style } from '@vanilla-extract/css';
+import { style, styleVariants } from '@vanilla-extract/css';
 
 import { vars } from 'styles';
 
 export const player = style({
   backdropFilter: 'blur(6px)',
   backgroundColor: vars.color.backgroundBlurred,
-  boxShadow: vars.color.shadowElevationHigh,
   margin: `${vars.spacing.s016} 0`,
   padding: `${vars.spacing.s016}`,
+  transition: '500ms ease box-shadow',
+});
+
+export const playerElevatedVariant = styleVariants({
+  elevated: {
+    boxShadow: vars.color.shadowElevationHigh,
+  },
+  inset: {
+    boxShadow: vars.color.shadowElevationMedium,
+  },
 });
 
 export const playerButtons = style({
@@ -45,4 +54,10 @@ export const iconButton = style({
   margin: '0',
   padding: `${vars.spacing.s004} ${vars.spacing.s008}`,
   width: VOLUME_ICON_BUTTON_WIDTH,
+});
+
+export const intersectionObserverClassName = style({
+  bottom: -1,
+  height: '0',
+  position: 'absolute',
 });

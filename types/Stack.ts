@@ -1,4 +1,5 @@
-import { PolymorphicComponent } from 'react-polymorphic-box';
+import type { ElementType } from 'react';
+import type { PolymorphicComponentProps } from 'react-polymorphic-box';
 
 import {
   alignVariant,
@@ -8,13 +9,14 @@ import {
   spaceVariant,
 } from 'components/layouts/Stack/stack.css';
 
-export type StackProps = {
-  align?: keyof typeof alignVariant;
-  className?: string;
-  justify?: keyof typeof justifyVariant;
-  kind?: keyof typeof kindVariant;
-  maxWidth?: keyof typeof maxWidthVariant;
-  space?: keyof typeof spaceVariant;
-};
-
-export type StackComponent = PolymorphicComponent<StackProps, 'div'>;
+export type StackProps = PolymorphicComponentProps<
+  ElementType,
+  {
+    align?: keyof typeof alignVariant;
+    className?: string;
+    justify?: keyof typeof justifyVariant;
+    kind?: keyof typeof kindVariant;
+    maxWidth?: keyof typeof maxWidthVariant;
+    space?: keyof typeof spaceVariant;
+  }
+>;
