@@ -1,11 +1,14 @@
 import Image from 'next/image';
+import { ReactEventHandler, useState } from 'react';
 import { Box } from 'react-polymorphic-box';
 
+import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
 import type { ArtworkComponent } from 'types';
 
 import {
   artwork,
+  artworkFallback,
   shadowVariant,
   sizeVariant,
   square,
@@ -16,14 +19,27 @@ export const Artwork: ArtworkComponent = ({
   className,
   edge = 'normal',
   height = 512,
+  label,
   shadow = 'none',
   size = 'full',
   src,
   width = 512,
   ...props
 }) => {
+  const [failedToLoad, setFailedToLoad] = useState(false);
   const baseClassName = useClassNames(className, square);
   const imageClassName = useClassNames(artwork, sizeVariant[size], className);
+  const labelClassName = useClassNames(
+    artworkFallback,
+    sizeVariant[size],
+    className
+  );
+
+  const shouldShowImage = src && !failedToLoad;
+
+  const handleError: ReactEventHandler<HTMLImageElement> = () => {
+    setFailedToLoad(true);
+  };
 
   return (
     <div
@@ -36,17 +52,24 @@ export const Artwork: ArtworkComponent = ({
     >
       <div className={baseClassName}>
         <div className={squareInner}>
-          {src ? (
+          {shouldShowImage ? (
             <Box
               as={Image}
               className={imageClassName}
               height={height}
+              onError={handleError}
               src={src}
               width={width}
               {...props}
             />
           ) : (
-            <div className={imageClassName} />
+            <Typography
+              as="span"
+              size="headingLarge"
+              className={labelClassName}
+            >
+              {label}
+            </Typography>
           )}
         </div>
       </div>

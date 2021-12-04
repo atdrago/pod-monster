@@ -22,7 +22,6 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
-import { vars } from 'styles';
 import type {
   EpisodePageGetStaticProps,
   IEpisodePageProps,
@@ -335,32 +334,14 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
                             }
                           : undefined)}
                       >
-                        {person.img ? (
-                          <Artwork
-                            alt={person.name}
-                            src={person.img}
-                            width={80}
-                            height={80}
-                          />
-                        ) : (
-                          <Typography
-                            as="span"
-                            size="headingLarge"
-                            style={{
-                              alignItems: 'center',
-                              background: vars.color.backgroundBlurred,
-                              display: 'flex',
-                              flex: '0 0 auto',
-                              height: '80px',
-                              justifyContent: 'center',
-                              padding: vars.spacing.s016,
-                              whiteSpace: 'nowrap',
-                              width: '80px',
-                            }}
-                          >
-                            {index + 1}.
-                          </Typography>
-                        )}
+                        <Artwork
+                          alt={person.name}
+                          label={`${index + 1}.`}
+                          src={person.img}
+                          width={80}
+                          height={80}
+                          shadow="medium"
+                        />
                         <Stack space="small" style={{ flex: '0 1 auto' }}>
                           <Typography as="h5" size="paragraph">
                             {person.name}

@@ -8,6 +8,19 @@ export const artwork = style({
   position: 'absolute',
 });
 
+export const artworkFallback = style([
+  artwork,
+  {
+    alignItems: 'center',
+    background: vars.color.backgroundBlurred,
+    display: 'flex',
+    flex: '0 0 auto',
+    justifyContent: 'center',
+    padding: vars.spacing.s016,
+    whiteSpace: 'nowrap',
+  },
+]);
+
 export const shadowVariant = styleVariants({
   high: {
     boxShadow: vars.color.shadowElevationHigh,
@@ -49,8 +62,10 @@ export const square = style({
 });
 
 export const squareInner = style({
+  alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
   marginTop: '-100%',
+  textAlign: 'center',
   width: '100%',
 });

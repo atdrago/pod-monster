@@ -152,13 +152,14 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                   align="center"
                 >
                   <Artwork
+                    alt={`${index + 1}. `}
                     width={80}
                     height={80}
                     src={proxyFeedImage.toString()}
                     shadow="medium"
+                    label={`${index + 1}.`}
                   />
                   <Typography as="h2" size="headingSmaller">
-                    {`${index + 1}. `}
                     {feed.title}
                   </Typography>
                 </Stack>
