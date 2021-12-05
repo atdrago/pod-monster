@@ -1,4 +1,4 @@
-Sitemap: https://podcast.fish/sitemap.xml
+Sitemap: https://pod.monster/sitemap.xml
 
 User-agent: *
 Allow: /*

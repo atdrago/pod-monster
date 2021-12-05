@@ -8,7 +8,7 @@ const withVanillaExtract = createVanillaExtractPlugin();
 
 const nextConfig = {
   images: {
-    domains: ['localhost', 'podcast.fish'],
+    domains: ['localhost', 'podcast.fish', 'pod.monster'],
     minimumCacheTTL: 31536000,
   },
   productionBrowserSourceMaps: true,
