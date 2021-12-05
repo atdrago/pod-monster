@@ -44,7 +44,9 @@ export const Header: FunctionComponent<IHeaderProps> = ({
           <Icon size="large">
             <LogoIcon className={homeIconClassName} />
           </Icon>
-          {feedTitle || feedId ? null : process.env.NEXT_PUBLIC_APP_NAME}
+          {isLoading || feedTitle || feedId
+            ? null
+            : process.env.NEXT_PUBLIC_APP_NAME}
         </Link>
       </Typography>
       {isLoading || (feedId && feedTitle) ? (

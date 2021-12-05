@@ -1,9 +1,9 @@
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ChangeEventHandler, FunctionComponent, useEffect } from 'react';
 import { QueryClient, dehydrate, useQuery } from 'react-query';
 
 import { Artwork } from 'components/atoms/Artwork';
+import { Head } from 'components/atoms/Head';
 import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
@@ -99,17 +99,10 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
   return (
     <>
-      <Head>
-        <title>Podcasts - {process.env.NEXT_PUBLIC_APP_NAME}</title>
-        <meta
-          name="description"
-          content="Search for and subscribe to podcasts"
-        />
-        <link
-          rel="manifest"
-          href={`${process.env.NEXT_PUBLIC_BASE_URL}/app.webmanifest`}
-        ></link>
-      </Head>
+      <Head
+        titles={['Podcasts']}
+        description="Search for and subscribe to podcasts"
+      />
       <Header />
       <Stack maxWidth="small">
         <InputField

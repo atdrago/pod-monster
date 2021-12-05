@@ -1,7 +1,7 @@
 import type { GetStaticProps } from 'next';
-import Head from 'next/head';
 import type { FunctionComponent } from 'react';
 
+import { Head } from 'components/atoms/Head';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { Header } from 'components/molecules/Header';
@@ -15,13 +15,10 @@ export const getStaticProps: GetStaticProps = () => {
 const AboutPage: FunctionComponent = () => {
   return (
     <>
-      <Head>
-        <title>About - {process.env.NEXT_PUBLIC_APP_NAME}</title>
-        <meta
-          name="description"
-          content={`Hello, and welcome to ${process.env.NEXT_PUBLIC_APP_NAME}!`}
-        />
-      </Head>
+      <Head
+        titles={['About']}
+        description={`Hello, and welcome to ${process.env.NEXT_PUBLIC_APP_NAME}!`}
+      />
       <Header />
       <Stack as="main">
         <Typography as="p" size="paragraph">

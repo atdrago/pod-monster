@@ -1,0 +1,25 @@
+{
+  "name": "pod.monster",
+  "short_name": "podmonster",
+  "description": "A front-end to the Podcast Index",
+  "icons": [
+    {
+      "sizes": "512x512",
+      "src": "/favicon.svg",
+      "type": "image/svg+xml"
+    },
+    {
+      "sizes": "192x192",
+      "src": "/android-chrome-192x192.png",
+      "type": "image/png"
+    },
+    {
+      "sizes": "512x512",
+      "src": "/android-chrome-512x512.png",
+      "type": "image/png"
+    }
+  ],
+  "display": "minimal-ui",
+  "theme_color": "#272822",
+  "background_color": "#272822"
+}

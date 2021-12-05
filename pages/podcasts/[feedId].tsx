@@ -1,8 +1,8 @@
 import type { GetStaticPaths, NextPage } from 'next';
-import Head from 'next/head';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
+import { Head } from 'components/atoms/Head';
 import { Label } from 'components/atoms/Label';
 import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
@@ -59,16 +59,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {feed.title} - {process.env.NEXT_PUBLIC_APP_NAME}
-        </title>
-        <meta name="description" content={feed.description} />
-        <link
-          rel="manifest"
-          href={`${process.env.NEXT_PUBLIC_BASE_URL}/app.webmanifest`}
-        ></link>
-      </Head>
+      <Head titles={[feed.title]} description={feed.description} />
       <Stack as="main" maxWidth="small">
         <Stack as="article">
           <Header feedId={feed.id} feedTitle={feed.title} />

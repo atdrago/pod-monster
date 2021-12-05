@@ -1,5 +1,4 @@
 import type { GetStaticPaths, NextPage } from 'next';
-import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import ReactDomServer from 'react-dom/server';
 import { useQuery } from 'react-query';
@@ -8,6 +7,7 @@ import rehypeSanitize from 'rehype-sanitize';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
+import { Head } from 'components/atoms/Head';
 import { IconButton } from 'components/atoms/IconButton';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
@@ -256,17 +256,10 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
   return (
     <>
       {episode && (
-        <Head>
-          <title>
-            {episode.title} - {episode.feedTitle} -
-            {` ${process.env.NEXT_PUBLIC_APP_NAME}`}
-          </title>
-          <meta name="description" content={episode.description} />
-          <link
-            rel="manifest"
-            href={`${process.env.NEXT_PUBLIC_BASE_URL}/app.webmanifest`}
-          ></link>
-        </Head>
+        <Head
+          titles={[episode.title, episode.feedTitle]}
+          description={episode.description}
+        />
       )}
       <Stack as="main" maxWidth="small">
         <Stack as="article">
