@@ -1,21 +1,23 @@
 import { style, styleVariants } from '@vanilla-extract/css';
+import { calc } from '@vanilla-extract/css-utils';
 
 import { vars } from 'styles';
 
 export const player = style({
   backdropFilter: 'blur(6px)',
   backgroundColor: vars.color.backgroundBlurred,
-  margin: `${vars.spacing.s016} 0`,
   padding: `${vars.spacing.s016}`,
-  transition: '500ms ease box-shadow',
+  transition: '500ms ease box-shadow, 500ms ease transform',
 });
 
 export const playerElevatedVariant = styleVariants({
   elevated: {
     boxShadow: vars.color.shadowElevationHigh,
+    transform: `translate(0, ${calc(vars.spacing.s016).negate().toString()})`,
   },
   inset: {
     boxShadow: vars.color.shadowElevationMedium,
+    transform: `translate(0, 0)`,
   },
 });
 

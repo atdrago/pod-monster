@@ -16,16 +16,16 @@ const AboutPage: FunctionComponent = () => {
   return (
     <>
       <Head>
-        <title>About - podcast.fish</title>
+        <title>About - {process.env.NEXT_PUBLIC_APP_NAME}</title>
         <meta
           name="description"
-          content="Hello, and welcome to podcast.fish!"
+          content={`Hello, and welcome to ${process.env.NEXT_PUBLIC_APP_NAME}!`}
         />
       </Head>
       <Header />
       <Stack as="main">
         <Typography as="p" size="paragraph">
-          Hello, and welcome to podcast.fish!
+          Hello, and welcome to {process.env.NEXT_PUBLIC_APP_NAME}!
         </Typography>
       </Stack>
     </>

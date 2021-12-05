@@ -4,7 +4,7 @@ import { vars } from 'styles';
 
 export const inputField = style({
   background: vars.color.background,
-  border: `1px solid ${vars.color.buttonBorder}`,
+  border: `2px solid ${vars.color.buttonBorder}`,
   borderRadius: 0,
   color: vars.color.foreground,
   fontSize: vars.typography.fontSize.s16,

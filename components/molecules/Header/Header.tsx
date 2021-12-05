@@ -3,19 +3,27 @@ import type { FunctionComponent } from 'react';
 import { Icon } from 'components/atoms/Icon';
 import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
-import HomeIcon from 'icons/home.svg';
+import LogoIcon from 'icons/logo.svg';
 import { headingLink } from 'styles';
-import { getPodcastPath } from 'utils/paths';
+import { getEpisodePath, getPodcastPath } from 'utils/paths';
 
-import { headerBaseClassName, homeLinkClassName } from './header.css';
+import {
+  headerBaseClassName,
+  homeIconClassName,
+  homeLinkClassName,
+} from './header.css';
 
 interface IHeaderProps {
+  episodeId?: number | string;
+  episodeTitle?: string;
   feedId?: number | string;
   feedTitle?: string;
   isLoading?: boolean;
 }
 
 export const Header: FunctionComponent<IHeaderProps> = ({
+  episodeId,
+  episodeTitle,
   feedId,
   feedTitle,
   isLoading = false,
@@ -28,10 +36,15 @@ export const Header: FunctionComponent<IHeaderProps> = ({
         style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
         shouldUseCapsize={false}
       >
-        <Link aria-label="podcast.fish" href="/" className={homeLinkClassName}>
-          <Icon size="small">
-            <HomeIcon />
+        <Link
+          anchorProps={{ 'aria-label': process.env.NEXT_PUBLIC_APP_NAME }}
+          href="/"
+          className={homeLinkClassName}
+        >
+          <Icon size="large">
+            <LogoIcon className={homeIconClassName} />
           </Icon>
+          {feedTitle || feedId ? null : process.env.NEXT_PUBLIC_APP_NAME}
         </Link>
       </Typography>
       {isLoading || (feedId && feedTitle) ? (
@@ -63,6 +76,32 @@ export const Header: FunctionComponent<IHeaderProps> = ({
             ) : (
               ''
             )}
+          </Typography>
+        </>
+      ) : null}
+      {!isLoading && feedId && feedTitle && episodeId && episodeTitle ? (
+        <>
+          <Typography
+            as="span"
+            size="headingSmall"
+            style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
+            shouldUseCapsize={false}
+          >
+            {' / '}
+          </Typography>
+          <Typography
+            as="h2"
+            size="headingSmall"
+            whitespace="ellipsis"
+            style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
+            shouldUseCapsize={false}
+          >
+            <Link
+              href={getEpisodePath({ episodeId, feedId })}
+              className={headingLink}
+            >
+              {episodeTitle}
+            </Link>
           </Typography>
         </>
       ) : null}

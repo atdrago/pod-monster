@@ -258,7 +258,8 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
       {episode && (
         <Head>
           <title>
-            {episode.title} - {episode.feedTitle} - podcast.fish
+            {episode.title} - {episode.feedTitle} -
+            {` ${process.env.NEXT_PUBLIC_APP_NAME}`}
           </title>
           <meta name="description" content={episode.description} />
           <link
@@ -271,6 +272,8 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
         <Stack as="article">
           <Header
             isLoading={!episode}
+            episodeId={episode?.id}
+            episodeTitle={episode?.title}
             feedTitle={episode?.feedTitle}
             feedId={episode?.feedId}
           />

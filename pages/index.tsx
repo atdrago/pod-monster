@@ -100,7 +100,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
   return (
     <>
       <Head>
-        <title>Podcasts - podcast.fish</title>
+        <title>Podcasts - {process.env.NEXT_PUBLIC_APP_NAME}</title>
         <meta
           name="description"
           content="Search for and subscribe to podcasts"

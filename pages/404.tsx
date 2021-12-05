@@ -9,7 +9,7 @@ const NotFound: FunctionComponent = () => {
   return (
     <>
       <Head>
-        <title>404 - Not found - podcast.fish</title>
+        <title>404 - Not found - {process.env.NEXT_PUBLIC_APP_NAME}</title>
         <meta name="description" content="404 - Not found" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

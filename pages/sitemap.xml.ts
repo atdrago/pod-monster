@@ -3,15 +3,10 @@ import type { GetServerSideProps } from 'next';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const baseUrl =
-    process.env.NODE_ENV === 'production'
-      ? 'https://podcast.fish'
-      : 'http://localhost:3000';
-
   const staticPages = ['about']
     .map((staticPagePath) => {
       return typeof staticPagePath === 'string'
-        ? new URL(staticPagePath, baseUrl).toString()
+        ? new URL(staticPagePath, process.env.NEXT_PUBLIC_BASE_URL).toString()
         : null;
     })
     .filter(notNullOrUndefined);

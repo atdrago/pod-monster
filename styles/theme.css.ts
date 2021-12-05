@@ -15,10 +15,14 @@ export const vars = createGlobalTheme(':root', {
     backgroundHighlight: 'rgba(218, 218, 218, 1)',
     blockquote: 'rgba(0, 0, 0, 0.7)',
     blockquoteBorder: 'rgba(0, 0, 0, 0.5)',
+    blue: '#56B6C2',
     buttonBorder: '#0e0e10',
     colorSchemeFilter: 'none',
     foreground: '#272822',
+    green: '#98C379',
     noteBorderColor: '#e5e5e5',
+    pink: '#C678DD',
+    red: '#E06C75',
     shadowElevationHigh: `
       0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
       1.5px 2.9px 3.7px -0.4px hsl(${SHADOW_COLOR_LIGHT} / 0.34),
@@ -40,6 +44,7 @@ export const vars = createGlobalTheme(':root', {
       2.1px 4.1px 5.2px -1.7px hsl(${SHADOW_COLOR_LIGHT} / 0.36),
       5px 10px 12.6px -2.5px hsl(${SHADOW_COLOR_LIGHT} / 0.36)
     `,
+    yellow: '#D19A66',
   },
   /**
    * See https://www.carbondesignsystem.com/guidelines/spacing/overview/
@@ -95,10 +100,14 @@ globalStyle(':root', {
         backgroundHighlight: 'rgba(29, 30, 24, 1)',
         blockquote: 'rgba(255, 255, 255, 0.7)',
         blockquoteBorder: 'rgba(255, 255, 255, 0.5)',
+        blue: '#56B6C2',
         buttonBorder: '#d0d0d0',
         colorSchemeFilter: 'invert(1)',
         foreground: '#d0d0d0',
+        green: '#98C379',
         noteBorderColor: '#3e3e40',
+        pink: '#C678DD',
+        red: '#E06C75',
         shadowElevationHigh: `
           0.3px 0.5px 0.7px hsl(${SHADOW_COLOR_DARK} / 0.34),
           1.5px 2.9px 3.7px -0.4px hsl(${SHADOW_COLOR_DARK} / 0.34),
@@ -120,6 +129,7 @@ globalStyle(':root', {
           2.1px 4.1px 5.2px -1.7px hsl(${SHADOW_COLOR_DARK} / 0.36),
           5px 10px 12.6px -2.5px hsl(${SHADOW_COLOR_DARK} / 0.36)
         `,
+        yellow: '#D19A66',
       }),
     },
   },

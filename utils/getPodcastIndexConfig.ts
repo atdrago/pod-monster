@@ -8,6 +8,7 @@ export const getPodcastIndexConfig = (
     apiKey: process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
     authTime,
     authToken,
-    userAgent: 'podcast.fish/0.1',
+    // TODO: Proper version reporting
+    userAgent: `${process.env.NEXT_PUBLIC_APP_NAME}/0.1`,
   };
 };
