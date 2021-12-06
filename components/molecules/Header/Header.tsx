@@ -29,6 +29,16 @@ export const Header: FunctionComponent<IHeaderProps> = ({
   feedTitle,
   isLoading = false,
 }) => {
+  const isEpisodeTitleVisible =
+    !isLoading && feedId && feedTitle && episodeId && episodeTitle;
+
+  const abbreviatedFeedTitle = isEpisodeTitleVisible
+    ? feedTitle
+        ?.replace(/(\w)\w+/g, '$1')
+        .replace(/\s*/g, '')
+        .toUpperCase()
+    : feedTitle;
+
   return (
     <Stack
       maxWidth="small"
@@ -70,8 +80,13 @@ export const Header: FunctionComponent<IHeaderProps> = ({
             as="h2"
             size="headingSmall"
             whitespace="ellipsis"
-            style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
+            style={{
+              flex: isEpisodeTitleVisible ? '0 0 auto' : '0 1 auto',
+              margin: 0,
+              width: 'auto',
+            }}
             shouldUseCapsize={false}
+            title={feedTitle}
           >
             {isLoading ? (
               'Loading...'
@@ -80,7 +95,7 @@ export const Header: FunctionComponent<IHeaderProps> = ({
                 href={getPodcastPath({ id: feedId })}
                 className={headingLink}
               >
-                {feedTitle}
+                {abbreviatedFeedTitle}
               </Link>
             ) : (
               ''
@@ -88,7 +103,7 @@ export const Header: FunctionComponent<IHeaderProps> = ({
           </Typography>
         </>
       ) : null}
-      {!isLoading && feedId && feedTitle && episodeId && episodeTitle ? (
+      {isEpisodeTitleVisible ? (
         <>
           <Typography
             as="span"
@@ -104,6 +119,7 @@ export const Header: FunctionComponent<IHeaderProps> = ({
             whitespace="ellipsis"
             style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
             shouldUseCapsize={false}
+            title={episodeTitle}
           >
             <Link
               href={getEpisodePath({ episodeId, feedId })}
