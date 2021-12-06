@@ -1,6 +1,7 @@
 import 'styles/app.css';
 
 import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import { FunctionComponent, useState } from 'react';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 
@@ -12,48 +13,42 @@ import { SettingsProvider } from 'contexts/SettingsContext';
 import { useGlobalVhCssVariable } from 'hooks/useGlobalVhCssVariable';
 import type { IEpisodePageProps, IPodcastPageProps } from 'types';
 
-const isEpisodePage = (
-  name?: string,
-  props?: unknown
-): props is IEpisodePageProps => {
-  if (!name || typeof props !== 'object' || props === null) {
+const isEpisodePage = (props?: unknown): props is IEpisodePageProps => {
+  if (typeof props !== 'object' || props === null) {
     return false;
   }
 
-  return name === 'EpisodePage';
+  return 'episode' in props;
 };
 
-const isPodcastPage = (
-  name?: string,
-  props?: unknown
-): props is IPodcastPageProps => {
-  if (!name || typeof props !== 'object' || props === null) {
+const isPodcastPage = (props?: unknown): props is IPodcastPageProps => {
+  if (typeof props !== 'object' || props === null) {
     return false;
   }
 
-  return name === 'PodcastPage' && 'episodes' in props && 'feed' in props;
+  return 'episodes' in props && 'feed' in props;
 };
 
 const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
   useGlobalVhCssVariable();
 
+  const { isFallback } = useRouter();
+
   const [queryClient] = useState(() => new QueryClient());
 
   let feedId;
   let feedTitle;
-  let isLoading = Component.name === 'EpisodePage';
   let episodeId;
   let episodeTitle;
 
-  if (isPodcastPage(Component.name, pageProps)) {
+  if (isPodcastPage(pageProps)) {
     const feed = pageProps.feed;
 
     feedId = feed.id;
     feedTitle = feed.title;
-  } else if (isEpisodePage(Component.name, pageProps)) {
+  } else if (isEpisodePage(pageProps)) {
     const episode = pageProps.episode;
 
-    isLoading = !episode;
     episodeId = episode?.id;
     episodeTitle = episode?.title;
     feedTitle = episode?.feedTitle;
@@ -69,7 +64,7 @@ const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
               <Header
                 feedId={feedId}
                 feedTitle={feedTitle}
-                isLoading={isLoading}
+                isLoading={isFallback}
                 episodeId={episodeId}
                 episodeTitle={episodeTitle}
               />
