@@ -7,6 +7,10 @@ const withSvgr = require('next-plugin-svgr');
 const withVanillaExtract = createVanillaExtractPlugin();
 
 const nextConfig = {
+  i18n: {
+    defaultLocale: 'en-US',
+    locales: ['en-US'],
+  },
   images: {
     domains: ['localhost', 'podcast.fish', 'pod.monster'],
     minimumCacheTTL: 31536000,
