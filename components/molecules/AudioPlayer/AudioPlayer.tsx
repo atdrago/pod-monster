@@ -149,6 +149,7 @@ export const AudioPlayer: FunctionComponent = () => {
 
   return (
     <Stack
+      as="aside"
       maxWidth="small"
       style={{
         bottom: 0,
@@ -307,6 +308,7 @@ export const AudioPlayer: FunctionComponent = () => {
               <VolumeIcon isMuted={isMuted} volume={volume} />
             </button>
             <Range
+              aria-label="Volume"
               onChange={handleVolumeRangeChange}
               max="1"
               min="0"

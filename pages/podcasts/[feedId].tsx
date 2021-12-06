@@ -8,7 +8,6 @@ import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { Header } from 'components/molecules/Header';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import { headingLink, nonUnderlinedLink } from 'styles';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
@@ -61,54 +60,52 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
     <>
       <Head titles={[feed.title]} description={feed.description} />
       <Stack as="main" maxWidth="small">
-        <Stack as="article">
-          <Header feedId={feed.id} feedTitle={feed.title} />
-          <Stack space="small">
-            <Stack kind="flexRow" space="small" align="center">
-              <Artwork
-                height={128}
-                shadow="medium"
-                src={proxyFeedImage.toString()}
-                width={128}
-              />
-              <Stack space="small">
-                <Typography as="h3" size="paragraph">
-                  {feed.author}
-                </Typography>
-                {feed.link && (
-                  <Typography as="p" size="paragraph">
-                    <Link
-                      anchorProps={{
-                        rel: 'noreferrer noopener',
-                        target: '_blank',
-                      }}
-                      className={headingLink}
-                      href={feed.link}
-                    >
-                      {feed.link}
-                    </Link>
-                  </Typography>
-                )}
-                {feed.explicit ? (
-                  <div>
-                    <Label>Explicit</Label>
-                  </div>
-                ) : null}
-              </Stack>
-            </Stack>
-            {feed.categories && (
-              <Stack kind="flexRow" space="xsmall" style={{ flexWrap: 'wrap' }}>
-                {Object.entries(feed.categories).map(([key, value]) => {
-                  return <Label key={key}>{value}</Label>;
-                })}
-              </Stack>
-            )}
-            <SubscribeButton
-              feedId={feed.id}
-              image={feed.image}
-              title={feed.title}
+        <Stack as="article" space="small">
+          <Stack kind="flexRow" space="small" align="center">
+            <Artwork
+              alt={`Podcast artwork for "${feed.title}"`}
+              height={128}
+              shadow="medium"
+              src={proxyFeedImage.toString()}
+              width={128}
             />
+            <Stack space="small">
+              <Typography as="h3" size="paragraph">
+                {feed.author}
+              </Typography>
+              {feed.link && (
+                <Typography as="p" size="paragraph">
+                  <Link
+                    anchorProps={{
+                      rel: 'noreferrer noopener',
+                      target: '_blank',
+                    }}
+                    className={headingLink}
+                    href={feed.link}
+                  >
+                    {feed.link}
+                  </Link>
+                </Typography>
+              )}
+              {feed.explicit ? (
+                <div>
+                  <Label>Explicit</Label>
+                </div>
+              ) : null}
+            </Stack>
           </Stack>
+          {feed.categories && (
+            <Stack kind="flexRow" space="xsmall" style={{ flexWrap: 'wrap' }}>
+              {Object.entries(feed.categories).map(([key, value]) => {
+                return <Label key={key}>{value}</Label>;
+              })}
+            </Stack>
+          )}
+          <SubscribeButton
+            feedId={feed.id}
+            image={feed.image}
+            title={feed.title}
+          />
         </Stack>
         <Details
           summary={

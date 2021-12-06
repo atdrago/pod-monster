@@ -5,11 +5,8 @@ import { headingLink, vars } from 'styles';
 
 export const headerBaseClassName = style({
   alignItems: 'center',
-  display: 'flex',
-  gap: vars.spacing.s016,
-  justifyContent: 'flex-start',
+  justifyContent: 'center',
   margin: '-5px auto -6px',
-  maxWidth: '100%',
 });
 
 export const homeLinkClassName = style([

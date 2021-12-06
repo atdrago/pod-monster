@@ -21,15 +21,10 @@ export const IconButton: IconButtonComponent = ({
     className
   );
 
-  const buttonProps = asProp === 'button' ? { type: 'button' } : undefined;
+  const buttonProps =
+    asProp === 'button' ? { 'aria-label': label, type: 'button' } : undefined;
 
   return (
-    <Box
-      aria-label={label}
-      as={asProp}
-      className={baseClassName}
-      {...buttonProps}
-      {...props}
-    />
+    <Box as={asProp} className={baseClassName} {...buttonProps} {...props} />
   );
 };

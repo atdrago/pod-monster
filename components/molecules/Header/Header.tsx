@@ -3,6 +3,7 @@ import type { FunctionComponent } from 'react';
 import { Icon } from 'components/atoms/Icon';
 import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
+import { Stack } from 'components/layouts/Stack';
 import LogoIcon from 'icons/logo.svg';
 import { headingLink } from 'styles';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
@@ -29,7 +30,13 @@ export const Header: FunctionComponent<IHeaderProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className={headerBaseClassName}>
+    <Stack
+      maxWidth="small"
+      space="small"
+      as="header"
+      kind="flexRow"
+      className={headerBaseClassName}
+    >
       <Typography
         as="h1"
         size="headingSmall"
@@ -92,7 +99,7 @@ export const Header: FunctionComponent<IHeaderProps> = ({
             {' / '}
           </Typography>
           <Typography
-            as="h2"
+            as="h3"
             size="headingSmall"
             whitespace="ellipsis"
             style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
@@ -107,6 +114,6 @@ export const Header: FunctionComponent<IHeaderProps> = ({
           </Typography>
         </>
       ) : null}
-    </div>
+    </Stack>
   );
 };

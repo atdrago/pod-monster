@@ -14,7 +14,6 @@ import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { Header } from 'components/molecules/Header';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { TimedList } from 'components/molecules/TimedList';
 import { audioContextDefaults, useAudioContext } from 'contexts/AudioContext';
@@ -262,152 +261,135 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
         />
       )}
       <Stack as="main" maxWidth="small">
-        <Stack as="article">
-          <Header
-            isLoading={!episode}
-            episodeId={episode?.id}
-            episodeTitle={episode?.title}
-            feedTitle={episode?.feedTitle}
-            feedId={episode?.feedId}
-          />
-          <Artwork
-            alt="Podcast episode or chapter artwork"
-            edge="overflow"
-            priority={true}
-            shadow="medium"
-            src={artworkProxyImage?.toString()}
-          />
-          <Stack
-            as="button"
-            kind="flexRow"
-            space="small"
-            align="center"
-            justify="center"
-            style={{
-              cursor: 'pointer',
-              width: 'auto',
-            }}
-            onClick={handlePlayPauseClick}
-            type="button"
-          >
-            <IconButton
-              as="span"
-              background="circle"
-              label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
-              size="medium"
-            >
-              <PlayPauseIcon size="medium" isPaused={isThisEpisodePaused} />
-            </IconButton>
-            <Typography size="headingSmaller" as="h3" whitespace={2}>
-              {episode?.title}
-            </Typography>
-          </Stack>
+        <Artwork
+          alt="Podcast episode or chapter artwork"
+          edge="overflow"
+          priority={true}
+          shadow="medium"
+          src={artworkProxyImage?.toString()}
+        />
+        <Stack
+          aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
+          as="button"
+          kind="flexRow"
+          space="small"
+          align="center"
+          justify="center"
+          style={{
+            cursor: 'pointer',
+            width: 'auto',
+          }}
+          onClick={handlePlayPauseClick}
+          type="button"
+        >
+          <IconButton as="span" background="circle" size="medium">
+            <PlayPauseIcon size="medium" isPaused={isThisEpisodePaused} />
+          </IconButton>
+          <Typography size="headingSmaller" as="h3" whitespace={2}>
+            {episode?.title}
+          </Typography>
+        </Stack>
 
-          <Stack space="large">
-            {episode && episode.persons && episode.persons.length ? (
-              <Details
-                summary={
-                  <Typography as="h4" size="headingSmaller">
-                    People
-                  </Typography>
-                }
-              >
-                <Stack space="small">
-                  {episode.persons.map((person, index) => {
-                    return (
-                      <LinkStack
-                        align="center"
-                        space="small"
-                        kind="flexRow"
-                        key={index}
-                        {...(person.href
-                          ? {
-                              anchorProps: {
-                                rel: 'noreferrer noopener',
-                                target: '_blank',
-                              },
-                              href: person.href,
-                            }
-                          : undefined)}
-                      >
-                        <Artwork
-                          alt={person.name}
-                          label={`${index + 1}.`}
-                          src={person.img}
-                          width={80}
-                          height={80}
-                          shadow="medium"
-                        />
-                        <Stack space="small" style={{ flex: '0 1 auto' }}>
-                          <Typography as="h5" size="paragraph">
-                            {person.name}
-                          </Typography>
-                          {person.role && (
-                            <Typography as="p" size="paragraph">
-                              {person.role}
-                            </Typography>
-                          )}
-                          {person.href && (
-                            <Typography as="p" size="legal">
-                              {person.href}
-                            </Typography>
-                          )}
-                        </Stack>
-                      </LinkStack>
-                    );
-                  })}
-                </Stack>
-              </Details>
-            ) : null}
-            {transcript && (
-              <TimedList
-                index={currentTranscriptIndex}
-                list={transcript}
-                title="Transcript"
-                onItemClick={handleTimedListItemClick}
-              />
-            )}
-            {chapters && (
-              <TimedList
-                index={currentChapterIndex}
-                list={chapters.map(
-                  ({ startTime: chapterStartTime, title }) => ({
-                    startTimeSeconds: chapterStartTime ?? undefined,
-                    text: title ?? 'No title',
-                  })
-                )}
-                title="Chapters"
-                onItemClick={handleTimedListItemClick}
-              />
-            )}
+        <Stack space="large">
+          {episode && episode.persons && episode.persons.length ? (
             <Details
               summary={
                 <Typography as="h4" size="headingSmaller">
-                  Description
+                  People
                 </Typography>
               }
             >
-              <span
-                dangerouslySetInnerHTML={{ __html: episode?.description ?? '' }}
-              />
+              <Stack space="small">
+                {episode.persons.map((person, index) => {
+                  return (
+                    <LinkStack
+                      align="center"
+                      space="small"
+                      kind="flexRow"
+                      key={index}
+                      {...(person.href
+                        ? {
+                            anchorProps: {
+                              rel: 'noreferrer noopener',
+                              target: '_blank',
+                            },
+                            href: person.href,
+                          }
+                        : undefined)}
+                    >
+                      <Artwork
+                        alt={person.name}
+                        label={`${index + 1}.`}
+                        src={person.img}
+                        width={80}
+                        height={80}
+                        shadow="medium"
+                      />
+                      <Stack space="small" style={{ flex: '0 1 auto' }}>
+                        <Typography as="h5" size="paragraph">
+                          {person.name}
+                        </Typography>
+                        {person.role && (
+                          <Typography as="p" size="paragraph">
+                            {person.role}
+                          </Typography>
+                        )}
+                        {person.href && (
+                          <Typography as="p" size="legal">
+                            {person.href}
+                          </Typography>
+                        )}
+                      </Stack>
+                    </LinkStack>
+                  );
+                })}
+              </Stack>
             </Details>
-          </Stack>
-          <Typography as="p" size="paragraph">
-            Published:{' '}
-            {episode
-              ? noteDateTimeFormat.format(
-                  new Date(episode.datePublished * 1000)
-                )
-              : null}
-          </Typography>
-          {episode && (
-            <SubscribeButton
-              feedId={episode.feedId}
-              image={episode.feedImage}
-              title={episode.feedTitle}
+          ) : null}
+          {transcript && (
+            <TimedList
+              index={currentTranscriptIndex}
+              list={transcript}
+              title="Transcript"
+              onItemClick={handleTimedListItemClick}
             />
           )}
+          {chapters && (
+            <TimedList
+              index={currentChapterIndex}
+              list={chapters.map(({ startTime: chapterStartTime, title }) => ({
+                startTimeSeconds: chapterStartTime ?? undefined,
+                text: title ?? 'No title',
+              }))}
+              title="Chapters"
+              onItemClick={handleTimedListItemClick}
+            />
+          )}
+          <Details
+            summary={
+              <Typography as="h4" size="headingSmaller">
+                Description
+              </Typography>
+            }
+          >
+            <span
+              dangerouslySetInnerHTML={{ __html: episode?.description ?? '' }}
+            />
+          </Details>
         </Stack>
+        <Typography as="p" size="paragraph">
+          Published:{' '}
+          {episode
+            ? noteDateTimeFormat.format(new Date(episode.datePublished * 1000))
+            : null}
+        </Typography>
+        {episode && (
+          <SubscribeButton
+            feedId={episode.feedId}
+            image={episode.feedImage}
+            title={episode.feedTitle}
+          />
+        )}
       </Stack>
     </>
   );

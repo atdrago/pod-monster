@@ -8,7 +8,7 @@ import {
 export type IconButtonComponent = PolymorphicComponent<
   {
     background?: keyof typeof backgroundVariant;
-    label: string;
+    label?: string;
     size?: keyof typeof sizeVariant;
   },
   'button'

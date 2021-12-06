@@ -8,6 +8,7 @@ import {
 
 export type ArtworkComponent = PolymorphicComponent<
   {
+    alt: string;
     edge?: 'normal' | 'overflow';
     label?: string;
     priority?: ImageProps['priority'];

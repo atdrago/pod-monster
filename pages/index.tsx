@@ -7,7 +7,6 @@ import { Head } from 'components/atoms/Head';
 import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { Header } from 'components/molecules/Header';
 import { InputField } from 'components/molecules/InputField';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
@@ -103,102 +102,104 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
         titles={['Podcasts']}
         description="Search for and subscribe to podcasts"
       />
-      <Header />
-      <Stack maxWidth="small">
-        <InputField
-          feedback={isSearchLoading ? 'Loading...' : null}
-          label={
-            <Typography
-              as="h2"
-              size="headingSmall"
-              style={{ display: 'inline-block' }}
-            >
-              Search
-            </Typography>
-          }
-          type="search"
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-        {searchResponse && (
-          <Stack space="small">
-            <Typography as="p" size="paragraph">
-              {searchResponse.description}{' '}
-              {searchResponse.count > 0 && `(${searchResponse.count})`}
-            </Typography>
-            {searchResponse.feeds.map((feed, index) => {
-              const proxyFeedImage = new URL(
-                '/api/images/proxy',
-                process.env.NEXT_PUBLIC_BASE_URL
-              );
+      <Stack as="main">
+        <Stack maxWidth="small">
+          <InputField
+            feedback={isSearchLoading ? 'Loading...' : null}
+            label={
+              <Typography
+                as="h2"
+                size="headingSmall"
+                style={{ display: 'inline-block' }}
+              >
+                Search
+              </Typography>
+            }
+            type="search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          {searchResponse && (
+            <Stack space="small">
+              <Typography as="p" size="paragraph">
+                {searchResponse.description}{' '}
+                {searchResponse.count > 0 && `(${searchResponse.count})`}
+              </Typography>
+              {searchResponse.feeds.map((feed, index) => {
+                const proxyFeedImage = new URL(
+                  '/api/images/proxy',
+                  process.env.NEXT_PUBLIC_BASE_URL
+                );
 
-              proxyFeedImage.searchParams.set('url', feed.image ?? '');
+                proxyFeedImage.searchParams.set('url', feed.image ?? '');
 
-              return (
-                <Stack
-                  as={Link}
-                  className={nonUnderlinedLink}
-                  key={feed.id}
-                  kind="flexRow"
-                  space="small"
-                  href={getPodcastPath({ id: `${feed.id}` })}
-                  align="center"
-                >
-                  <Artwork
-                    alt={`${index + 1}. `}
-                    width={80}
-                    height={80}
-                    src={proxyFeedImage.toString()}
-                    shadow="medium"
-                    label={`${index + 1}.`}
-                  />
-                  <Typography as="h2" size="headingSmaller">
-                    {feed.title}
-                  </Typography>
-                </Stack>
-              );
-            })}
-          </Stack>
-        )}
-        {feedSettingsEntries.length > 0 && (
-          <Stack space="small">
-            <Typography as="h2" size="headingSmall">
-              Subscriptions
-            </Typography>
-            {feedSettingsEntries.map(([feedId, { image, title }]) => {
-              const proxyFeedImage = new URL(
-                '/api/images/proxy',
-                process.env.NEXT_PUBLIC_BASE_URL
-              );
-
-              proxyFeedImage.searchParams.set('url', image ?? '');
-
-              return (
-                <Stack
-                  align="center"
-                  as={Link}
-                  className={nonUnderlinedLink}
-                  href={getPodcastPath({ id: `${feedId}` })}
-                  key={feedId}
-                  kind="flexRow"
-                  space="small"
-                >
-                  <Artwork
-                    width={80}
-                    height={80}
-                    src={proxyFeedImage.toString()}
-                    shadow="medium"
-                  />
-                  <Stack space="small">
+                return (
+                  <Stack
+                    as={Link}
+                    className={nonUnderlinedLink}
+                    key={feed.id}
+                    kind="flexRow"
+                    space="small"
+                    href={getPodcastPath({ id: `${feed.id}` })}
+                    align="center"
+                  >
+                    <Artwork
+                      alt={`${index + 1}. `}
+                      width={80}
+                      height={80}
+                      src={proxyFeedImage.toString()}
+                      shadow="medium"
+                      label={`${index + 1}.`}
+                    />
                     <Typography as="h2" size="headingSmaller">
-                      {title}
+                      {feed.title}
                     </Typography>
                   </Stack>
-                </Stack>
-              );
-            })}
-          </Stack>
-        )}
+                );
+              })}
+            </Stack>
+          )}
+          {feedSettingsEntries.length > 0 && (
+            <Stack space="small">
+              <Typography as="h2" size="headingSmall">
+                Subscriptions
+              </Typography>
+              {feedSettingsEntries.map(([feedId, { image, title }]) => {
+                const proxyFeedImage = new URL(
+                  '/api/images/proxy',
+                  process.env.NEXT_PUBLIC_BASE_URL
+                );
+
+                proxyFeedImage.searchParams.set('url', image ?? '');
+
+                return (
+                  <Stack
+                    align="center"
+                    as={Link}
+                    className={nonUnderlinedLink}
+                    href={getPodcastPath({ id: `${feedId}` })}
+                    key={feedId}
+                    kind="flexRow"
+                    space="small"
+                  >
+                    <Artwork
+                      alt={`Podcast artwork for "${title}"`}
+                      width={80}
+                      height={80}
+                      src={proxyFeedImage.toString()}
+                      shadow="medium"
+                    />
+                    <Stack space="small">
+                      <Typography as="h2" size="headingSmaller">
+                        {title}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                );
+              })}
+            </Stack>
+          )}
+        </Stack>
       </Stack>
     </>
   );
