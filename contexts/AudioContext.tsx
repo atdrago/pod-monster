@@ -336,7 +336,18 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         ],
         title: feedTitle ?? undefined,
       });
+    }
+  }, [
+    currentChapter?.img,
+    currentChapter?.title,
+    episodeImage,
+    episodeTitle,
+    feedImage,
+    feedTitle,
+  ]);
 
+  useEffect(() => {
+    if ('mediaSession' in window.navigator) {
       navigator.mediaSession.setActionHandler('play', playPause);
       navigator.mediaSession.setActionHandler('pause', playPause);
       navigator.mediaSession.setActionHandler('stop', null);
@@ -350,17 +361,22 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       navigator.mediaSession.setActionHandler('previoustrack', null);
       navigator.mediaSession.setActionHandler('nexttrack', null);
     }
-  }, [
-    currentChapter?.img,
-    currentChapter?.title,
-    episodeImage,
-    episodeTitle,
-    feedImage,
-    feedTitle,
-    playPause,
-    seekBackward,
-    seekForward,
-  ]);
+
+    return () => {
+      if ('mediaSession' in window.navigator) {
+        // Note: This un-setting may be unnecessary but it seems like the right
+        // thing to do when the player unmounts
+        navigator.mediaSession.setActionHandler('play', null);
+        navigator.mediaSession.setActionHandler('pause', null);
+        navigator.mediaSession.setActionHandler('stop', null);
+        navigator.mediaSession.setActionHandler('seekbackward', null);
+        navigator.mediaSession.setActionHandler('seekforward', null);
+        navigator.mediaSession.setActionHandler('seekto', null);
+        navigator.mediaSession.setActionHandler('previoustrack', null);
+        navigator.mediaSession.setActionHandler('nexttrack', null);
+      }
+    };
+  }, [playPause, seekBackward, seekForward]);
 
   /**
    * Update `audioPlayerCurrentTime` whenever `currentTime` changes (via calls
