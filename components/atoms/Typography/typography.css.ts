@@ -36,12 +36,15 @@ function removeBeforeAndAfter<TInput = unknown>(css: TInput): TInput {
   });
 }
 
+const EIGHTEEN_AND_UNDER_LEADING = 1.5;
+const OVER_EIGHTEEN_LEADING = 1.2;
+
 const sizeVariantStyles: Record<string | number, StyleRule> = {
   headingLarge: {
     ...capsize({
       fontMetrics: getFontMetricsFromUserAgent(),
       fontSize: 28,
-      lineGap: 12,
+      leading: 28 * OVER_EIGHTEEN_LEADING,
     }),
     fontSize: vars.typography.fontSize.s28,
   },
@@ -49,7 +52,7 @@ const sizeVariantStyles: Record<string | number, StyleRule> = {
     ...capsize({
       fontMetrics: getFontMetricsFromUserAgent(),
       fontSize: 24,
-      lineGap: 12,
+      leading: 24 * OVER_EIGHTEEN_LEADING,
     }),
     fontSize: vars.typography.fontSize.s24,
   },
@@ -57,7 +60,7 @@ const sizeVariantStyles: Record<string | number, StyleRule> = {
     ...capsize({
       fontMetrics: getFontMetricsFromUserAgent(),
       fontSize: 20,
-      lineGap: 12,
+      leading: 20 * OVER_EIGHTEEN_LEADING,
     }),
     fontSize: vars.typography.fontSize.s20,
   },
@@ -65,7 +68,7 @@ const sizeVariantStyles: Record<string | number, StyleRule> = {
     ...capsize({
       fontMetrics: getFontMetricsFromUserAgent(),
       fontSize: 18,
-      lineGap: 12,
+      leading: 18 * EIGHTEEN_AND_UNDER_LEADING,
     }),
     fontSize: vars.typography.fontSize.s18,
   },
@@ -73,7 +76,7 @@ const sizeVariantStyles: Record<string | number, StyleRule> = {
     ...capsize({
       fontMetrics: getFontMetricsFromUserAgent(),
       fontSize: 12,
-      lineGap: 12,
+      leading: 12 * EIGHTEEN_AND_UNDER_LEADING,
     }),
     fontSize: vars.typography.fontSize.s12,
   },
@@ -87,7 +90,7 @@ const sizeVariantStyles: Record<string | number, StyleRule> = {
     ...capsize({
       fontMetrics: getFontMetricsFromUserAgent(),
       fontSize: 16,
-      lineGap: 16,
+      leading: 16 * EIGHTEEN_AND_UNDER_LEADING,
     }),
     fontSize: vars.typography.fontSize.s16,
     selectors: {
