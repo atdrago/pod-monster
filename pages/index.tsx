@@ -94,7 +94,11 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
   const isSearchLoading = isLoading || searchTermDebounced !== searchTerm;
 
-  const feedSettingsEntries = Object.entries(feedSettings);
+  const feedSettingsEntries = Object.entries(feedSettings).filter(
+    ([_, { isSubscribed }]) => {
+      return !!isSubscribed;
+    }
+  );
 
   let searchFeedback = searchResponse
     ? `${searchResponse.description} ${
