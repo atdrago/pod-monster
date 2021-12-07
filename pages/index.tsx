@@ -96,6 +96,16 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
   const feedSettingsEntries = Object.entries(feedSettings);
 
+  let searchFeedback = searchResponse
+    ? `${searchResponse.description} ${
+        searchResponse.count > 0 ? `(${searchResponse.count})` : ''
+      }`
+    : '';
+
+  if (isSearchLoading) {
+    searchFeedback = 'Loading...';
+  }
+
   return (
     <>
       <Head
@@ -105,7 +115,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
       <Stack as="main">
         <Stack maxWidth="small">
           <InputField
-            feedback={isSearchLoading ? 'Loading...' : null}
+            feedback={searchFeedback}
             label={
               <Typography
                 as="h2"
@@ -121,10 +131,6 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
           />
           {searchResponse && (
             <Stack space="small">
-              <Typography as="p" size="paragraph">
-                {searchResponse.description}{' '}
-                {searchResponse.count > 0 && `(${searchResponse.count})`}
-              </Typography>
               {searchResponse.feeds.map((feed, index) => {
                 const proxyFeedImage = new URL(
                   '/api/images/proxy',
