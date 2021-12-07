@@ -32,86 +32,36 @@ export const homeLinkClassName = style([
   },
 ]);
 
-const logoColors = [
-  vars.color.foreground,
-  vars.color.red,
-  vars.color.pink,
-  vars.color.foreground,
-  vars.color.yellow,
-  vars.color.green,
-  vars.color.blue,
-];
-
 const MAX_OFFSET = 2;
 const MIN_OFFSET = -1 * MAX_OFFSET;
 
 const logoTranslations = [
-  // Slide in from the top
   [0, MIN_OFFSET],
   [0, MAX_OFFSET],
-  [0, 0],
-
-  // H
-  [MIN_OFFSET, MIN_OFFSET],
-  [MIN_OFFSET, MAX_OFFSET],
-  [MIN_OFFSET, 0],
-  [MAX_OFFSET, 0],
-  [MAX_OFFSET, MIN_OFFSET],
-  [MAX_OFFSET, MAX_OFFSET],
-
-  // E
-  [MIN_OFFSET, MAX_OFFSET],
-  [MIN_OFFSET, 0],
-  [0, 0],
-  [MIN_OFFSET, 0],
-  [MIN_OFFSET, MIN_OFFSET],
-  [MAX_OFFSET, MIN_OFFSET],
-
-  // L
-  [MIN_OFFSET, MIN_OFFSET],
-  [MIN_OFFSET, MAX_OFFSET],
-  [MAX_OFFSET, MAX_OFFSET],
-
-  // L
-  [MIN_OFFSET, MIN_OFFSET],
-  [MIN_OFFSET, MAX_OFFSET],
-  [MAX_OFFSET, MAX_OFFSET],
-
-  // O
-  [MIN_OFFSET, MIN_OFFSET],
-  [MIN_OFFSET, MAX_OFFSET],
-  [MAX_OFFSET, MAX_OFFSET],
-  [MAX_OFFSET, MIN_OFFSET],
-  [MIN_OFFSET, MIN_OFFSET],
 ];
 
 const translationCount = logoTranslations.length;
-const colorCount = logoColors.length;
 
 const logoAnimation = keyframes(
   logoTranslations.reduce((acc, [x, y], index) => {
     const percent = Math.floor((index / translationCount) * 100);
-    const color = logoColors[index % colorCount];
     const transform = `translate(${x}px, ${y}px)`;
 
     if (percent === 0) {
       // Wrap the last frame around to match the first
       acc = {
         ...acc,
-        '100%': { color, transform },
+        '100%': { transform },
       };
     }
 
     return {
       ...acc,
-      [`${percent}%`]: { color, transform },
+      [`${percent}%`]: { transform },
     };
   }, {})
 );
 
 export const homeIconClassName = style({
-  animation: `${
-    // 10 seconds per "frame"
-    translationCount * 10
-  }s infinite ${logoAnimation} alternate ease-in-out`,
+  animation: `6s infinite ${logoAnimation} alternate ease-in-out`,
 });
