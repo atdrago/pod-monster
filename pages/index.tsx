@@ -113,6 +113,15 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
         description="Search for and subscribe to podcasts"
       />
       <Stack as="main">
+        {/* <Typography as="p" size="headingMedium">
+          Welcome to Pod Monster, an application powered by the Podcast Index.
+        </Typography>
+        <Typography as="p" size="paragraph">
+          You&apos;re seeing this message because it looks like it&apos;s your
+          first time here. If it isn&apos;t your first time here, you may have
+          Private Browsing enabled, or your settings may have been erased by the
+          browser.
+        </Typography> */}
         <Stack maxWidth="small">
           <InputField
             feedback={searchFeedback}
@@ -157,9 +166,30 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                       shadow="medium"
                       label={`${index + 1}.`}
                     />
-                    <Typography as="h2" size="headingSmaller">
-                      {feed.title}
-                    </Typography>
+                    <Stack
+                      space="small"
+                      style={{
+                        overflowY: 'hidden',
+                        padding: '4px 0',
+                      }}
+                    >
+                      <Typography
+                        as="h2"
+                        size="headingSmaller"
+                        whitespace="ellipsis"
+                      >
+                        {feed.title}
+                      </Typography>
+                      {feed.author ? (
+                        <Typography
+                          as="p"
+                          size="paragraph"
+                          whitespace="ellipsis"
+                        >
+                          {feed.author}
+                        </Typography>
+                      ) : null}
+                    </Stack>
                   </Stack>
                 );
               })}
