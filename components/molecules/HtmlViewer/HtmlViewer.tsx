@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { Blockquote } from 'components/atoms/Blockquote';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
-import { listItem, listLayout } from 'styles';
+import { listItem, listLayout, underlinedLink } from 'styles';
 import type { IMarkdownViewerProps } from 'types';
 
 import { htmlViewerContainer } from './htmlViewer.css';
@@ -22,6 +22,23 @@ export const HtmlViewer = memo(
       <div className={baseClassName}>
         <ReactMarkdown
           components={{
+            a({
+              children: aChildren,
+              className: _className,
+              node: _node,
+              ...props
+            }) {
+              return (
+                <a
+                  className={underlinedLink}
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  {...props}
+                >
+                  {aChildren}
+                </a>
+              );
+            },
             blockquote({ className: _className, node: _node, ...props }) {
               return <Blockquote {...props} />;
             },
