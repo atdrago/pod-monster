@@ -26,7 +26,11 @@ type FeedSettings = Record<
   string,
   {
     image: string;
+    /**
+     * @deprecated - use `subscribedAt` instead
+     */
     isSubscribed?: boolean;
+    subscribedAt: string | null;
     title: string;
   }
 >;
@@ -49,6 +53,13 @@ type AudioPlayerSettings = {
   isPlayerOpen: boolean;
   src: string | null;
   volume: number;
+};
+
+type LocalStorageSettings = {
+  _version: number;
+  audioPlayerSettings: AudioPlayerSettings;
+  episodeSettings: EpisodeSettings;
+  feedSettings: FeedSettings;
 };
 
 interface ISettingsContext {
@@ -74,7 +85,7 @@ export const SettingsContext = createContext<ISettingsContext>({
   /* eslint-enable @typescript-eslint/no-empty-function */
 });
 
-const SETTINGS_VERSION = '1';
+const SETTINGS_VERSION = 2;
 
 export const SettingsProvider: FunctionComponent<
   PropsWithChildren<unknown>
@@ -91,11 +102,11 @@ export const SettingsProvider: FunctionComponent<
   useEffect(() => {
     const settingsFromLocalStorage = tryLocalStorageGetItem('pod2.settings');
 
-    let settings = null;
+    let settings: LocalStorageSettings | null = null;
 
     if (settingsFromLocalStorage) {
       try {
-        settings = JSON.parse(settingsFromLocalStorage);
+        settings = JSON.parse(settingsFromLocalStorage) as LocalStorageSettings;
       } catch (err) {
         // TODO: Capture exception?
       }
@@ -106,8 +117,49 @@ export const SettingsProvider: FunctionComponent<
         setAudioPlayerSettings(settings.audioPlayerSettings);
         setEpisodeSettings(settings.episodeSettings);
         setFeedSettings(settings.feedSettings);
-      } else {
-        tryLocalStorageRemoveItem('pod2.settings');
+      } else if (SETTINGS_VERSION > settings._version) {
+        /**
+         * Settings versions migrations happen here. Always use the conditional
+         * ```
+         * if (settings._version < N && SETTINGS_VERSION >= N) {
+         * ```
+         * and make sure N is ordered from lowest to highest. This will make it
+         * so that future migrations always can rely on the previous version's
+         * configuration.
+         */
+
+        // let tmpAudioPlayerSettings: AudioPlayerSettings | null = null;
+        // let tmpEpisodeSettings: EpisodeSettings | null = null;
+        let tmpFeedSettings: FeedSettings | null = null;
+
+        // In 2, at `feedSettings[i]`, `isSubscribed` became `subscribedAt`
+        if (settings._version < 2 && SETTINGS_VERSION >= 2) {
+          tmpFeedSettings = Object.fromEntries(
+            Object.entries(settings.feedSettings).map(
+              ([key, { isSubscribed, ...tmpFeedSetting }]) => {
+                return [
+                  key,
+                  {
+                    ...tmpFeedSetting,
+                    subscribedAt: isSubscribed ? new Date().toJSON() : null,
+                  },
+                ];
+              }
+            )
+          );
+        }
+
+        if (
+          tmpFeedSettings /** || tmpAudioPlayerSettings || tmpEpisodeSettings */
+        ) {
+          // If any migrations were found, use them.
+          setAudioPlayerSettings(settings.audioPlayerSettings);
+          setEpisodeSettings(settings.episodeSettings);
+          setFeedSettings(tmpFeedSettings || settings.feedSettings);
+        } else {
+          // If no migrations were found, we have an incompatible version, so bail.
+          tryLocalStorageRemoveItem('pod2.settings');
+        }
       }
     }
 

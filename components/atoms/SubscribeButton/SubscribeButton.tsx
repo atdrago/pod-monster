@@ -22,7 +22,9 @@ export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
       [id]: {
         ...prevFeedSettings[id],
         image,
-        isSubscribed: !feedSettings[id]?.isSubscribed,
+        subscribedAt: prevFeedSettings[id]?.subscribedAt
+          ? null
+          : new Date().toJSON(),
         title,
       },
     }));
@@ -30,7 +32,7 @@ export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
 
   return (
     <Button onClick={handleSubscribeClick} size="medium" variant="primary">
-      {feedSettings[id]?.isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+      {feedSettings[id]?.subscribedAt ? 'Unsubscribe' : 'Subscribe'}
     </Button>
   );
 };

@@ -8,6 +8,7 @@ import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { InputField } from 'components/molecules/InputField';
+import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
@@ -95,8 +96,8 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
   const isSearchLoading = isLoading || searchTermDebounced !== searchTerm;
 
   const feedSettingsEntries = Object.entries(feedSettings).filter(
-    ([_, { isSubscribed }]) => {
-      return !!isSubscribed;
+    ([_, { subscribedAt }]) => {
+      return !!subscribedAt;
     }
   );
 
@@ -205,36 +206,13 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                 Subscriptions
               </Typography>
               {feedSettingsEntries.map(([feedId, { image, title }]) => {
-                const proxyFeedImage = new URL(
-                  '/api/images/proxy',
-                  process.env.NEXT_PUBLIC_BASE_URL
-                );
-
-                proxyFeedImage.searchParams.set('url', image ?? '');
-
                 return (
-                  <Stack
-                    align="center"
-                    as={Link}
-                    className={nonUnderlinedLink}
-                    href={getPodcastPath({ id: `${feedId}` })}
+                  <SubscriptionItem
                     key={feedId}
-                    kind="flexRow"
-                    space="small"
-                  >
-                    <Artwork
-                      alt={`Podcast artwork for "${title}"`}
-                      width={80}
-                      height={80}
-                      src={proxyFeedImage.toString()}
-                      shadow="medium"
-                    />
-                    <Stack space="small">
-                      <Typography as="h2" size="headingSmaller">
-                        {title}
-                      </Typography>
-                    </Stack>
-                  </Stack>
+                    feedId={feedId}
+                    image={image}
+                    title={title}
+                  />
                 );
               })}
             </Stack>

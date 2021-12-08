@@ -49,6 +49,12 @@ export const alignVariant = styleVariants({
   center: {
     alignItems: 'center',
   },
+  end: {
+    alignItems: 'flex-end',
+  },
+  start: {
+    alignItems: 'flex-start',
+  },
 });
 
 export const justifyVariant = styleVariants({
