@@ -30,12 +30,3 @@ export async function http<TResponse>(
 
   return data as TResponse;
 }
-
-export async function get<TResponse>(
-  url: string,
-  body: BodyInit
-): Promise<TResponse> {
-  const response = await http<TResponse>(url, { body: JSON.stringify(body) });
-
-  return response;
-}
