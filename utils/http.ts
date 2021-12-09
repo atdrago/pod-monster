@@ -15,7 +15,7 @@ export class NetworkError extends Error {
  */
 export async function http<TResponse>(
   url: string,
-  config: RequestInit
+  config?: RequestInit
 ): Promise<TResponse> {
   const response = await fetch(url, config);
 
