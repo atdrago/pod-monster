@@ -146,6 +146,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     async () =>
       await fetchPodcastEpisodeTranscript(episode?.transcripts ?? null),
     {
+      enabled: !!(
+        episode &&
+        typeof episode.dateCrawled === 'number' &&
+        episode.transcripts &&
+        episode.transcripts.length > 0
+      ),
       refetchOnMount: false,
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
@@ -156,11 +162,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     ['chapters', episode?.chaptersUrl, episode?.dateCrawled],
     async () => await fetchPodcastEpisodeChapters(episode?.chaptersUrl),
     {
-      enabled:
+      enabled: !!(
         episode &&
         typeof episode.dateCrawled === 'number' &&
         typeof episode.chaptersUrl === 'string' &&
-        episode.chaptersUrl.length > 0,
+        episode.chaptersUrl.length > 0
+      ),
       refetchOnMount: false,
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
