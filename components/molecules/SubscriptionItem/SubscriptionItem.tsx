@@ -30,8 +30,8 @@ export const SubscriptionItem = ({
     nonUnderlinedLink
   );
   const { episodeSettings, feedSettings } = useSettingsContext();
-  // 30 days
-  const since = 30 * 24 * 60 * 60;
+  // -30 days
+  const since = -30 * 24 * 60 * 60;
   const episodesUrl = new URL(
     '/api/podcasts/episodes',
     process.env.NEXT_PUBLIC_BASE_URL

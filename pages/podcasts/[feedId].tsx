@@ -26,8 +26,8 @@ export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
   const [authTime, authToken] = await fetchPodcastIndexAuth();
   const config = getPodcastIndexConfig(authTime, authToken);
 
-  // -2 years
-  const since = -2 * 365 * 24 * 60 * 60;
+  // -180 days (i.e., 6 months)
+  const since = -180 * 24 * 60 * 60;
   const podcastsResponse = await podcastsByFeedId(feedId, config);
   const episodesResponse = await episodesByFeedId(feedId, { since }, config);
 
