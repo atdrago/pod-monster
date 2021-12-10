@@ -60,6 +60,8 @@ export const AudioPlayer: FunctionComponent = () => {
     setVolume,
     size,
     src,
+    srcType,
+    videoRef,
     volume,
   } = useAudioContext() || audioContextDefaults;
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
@@ -89,12 +91,24 @@ export const AudioPlayer: FunctionComponent = () => {
         await audioRef.current.play();
       }
     }
+
+    if (videoRef.current) {
+      if (videoRef.current.paused && !isPaused) {
+        await videoRef.current.play();
+      }
+    }
   };
 
   const handleLoadedData: ReactEventHandler<HTMLAudioElement> = async () => {
     if (audioRef.current) {
       if (audioRef.current.paused && !isPaused) {
         await audioRef.current.play();
+      }
+    }
+
+    if (videoRef.current) {
+      if (videoRef.current.paused && !isPaused) {
+        await videoRef.current.play();
       }
     }
   };
@@ -104,6 +118,10 @@ export const AudioPlayer: FunctionComponent = () => {
   ) => {
     if (audioRef.current) {
       audioRef.current.volume = event.currentTarget.valueAsNumber;
+    }
+
+    if (videoRef.current) {
+      videoRef.current.volume = event.currentTarget.valueAsNumber;
     }
 
     setVolume(event.currentTarget.valueAsNumber);
@@ -118,7 +136,15 @@ export const AudioPlayer: FunctionComponent = () => {
       }
     }
 
-    setIsMuted(audioRef.current?.muted ?? false);
+    if (videoRef.current) {
+      if (videoRef.current.muted) {
+        videoRef.current.muted = false;
+      } else {
+        videoRef.current.muted = true;
+      }
+    }
+
+    setIsMuted(audioRef.current?.muted ?? videoRef.current?.muted ?? false);
   };
 
   useEffect(() => {
@@ -147,6 +173,8 @@ export const AudioPlayer: FunctionComponent = () => {
     initial: { height: 0, marginBottom: -16, opacity: 0 },
     style: { overflow: 'hidden' },
   };
+
+  const isVideo = srcType && srcType.includes('video');
 
   return (
     <AnimatePresence>
@@ -215,7 +243,7 @@ export const AudioPlayer: FunctionComponent = () => {
                       )}
                     </Typography>
                   )}
-                  {playerArtwork ? (
+                  {!isVideo && playerArtwork ? (
                     <Artwork
                       alt=""
                       edge="overflow"
@@ -233,32 +261,28 @@ export const AudioPlayer: FunctionComponent = () => {
              */}
             <Audio
               audioRef={audioRef}
+              videoRef={videoRef}
               controls={true}
               currentTime={audioPlayerCurrentTime}
               onCurrentTimeChange={setAudioPlayerCurrentTime}
-              onEnded={() => {
-                setIsPaused(true);
-              }}
+              onEnded={() => setIsPaused(true)}
               onLoadedData={handleLoadedData}
               onLoadedMetadata={handleLoadedMetaData}
-              onPause={() => {
-                setIsPaused(true);
-              }}
-              onPlay={() => {
-                setIsPaused(false);
-              }}
-              onPlaying={() => {
-                setIsPaused(false);
-              }}
+              onPause={() => setIsPaused(true)}
+              onPlay={() => setIsPaused(false)}
+              onPlaying={() => setIsPaused(false)}
               onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
+              poster={playerArtworkProxyUrl?.toString()}
               preload="metadata"
               src={src}
+              srcType={srcType ?? undefined}
               startTime={currentTime}
               title={feedTitle ?? ''}
               isTitleVisible={!!feedTitle}
+              isVideoVisible={size === 2}
             />
             <AnimatePresence>
-              {!isMobileDevice && size === 2 && (
+              {!isMobileDevice && !isVideo && size === 2 && (
                 <m.div className={volumeLayout} {...animationProperties}>
                   <button
                     aria-label="Mute"
@@ -331,7 +355,11 @@ export const AudioPlayer: FunctionComponent = () => {
                 step={1}
                 max={2}
                 min={1}
-                onChange={setSize}
+                onChange={(value) => {
+                  if (value === 1 || value === 2) {
+                    setSize(value);
+                  }
+                }}
               />
             </div>
           </Stack>

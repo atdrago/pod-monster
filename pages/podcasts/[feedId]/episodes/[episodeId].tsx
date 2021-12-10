@@ -130,10 +130,14 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     setFeedImage,
     setFeedTitle,
     setIsPaused,
+    setSize,
     setSrc,
+    setSrcType,
     src,
+    videoRef,
   } = useAudioContext() || audioContextDefaults;
 
+  const isVideo = episode?.enclosureType.includes('video');
   const isThisEpisodeInThePlayer = episodeId === episode?.id;
   const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;
 
@@ -186,7 +190,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
       : null;
 
   const episodeArtwork =
-    currentChapter?.img || episode?.image || episode?.feedImage;
+    currentChapter?.img ||
+    // This isn't a great assumption, but this sort of aligns with what TWiT
+    // does. If it's a video, the `image` is the same dimensions as the video,
+    // so it should presumably be used as the poster frame.
+    (isVideo ? episode?.feedImage : episode?.image || episode?.feedImage);
 
   let artworkProxyImage = null;
 
@@ -240,6 +248,8 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
       setFeedImage(episode.feedImage);
       setFeedTitle(episode.feedTitle);
       setSrc(episode.enclosureUrl);
+      setSrcType(episode.enclosureType);
+      setSize(isVideo ? 2 : 1);
     }
 
     setIsPaused(nextIsPaused);
@@ -249,6 +259,14 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
         audioRef.current.pause();
       } else {
         await audioRef.current?.play();
+      }
+    }
+
+    if (videoRef.current) {
+      if (nextIsPaused) {
+        videoRef.current.pause();
+      } else {
+        await videoRef.current?.play();
       }
     }
   };

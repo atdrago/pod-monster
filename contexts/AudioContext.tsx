@@ -60,11 +60,14 @@ interface IAudioContext {
    * @deprecated use setSize instead (true = 2, false = 1)
    */
   setIsPlayerOpen?: Dispatch<SetStateAction<boolean>>;
-  setSize: Dispatch<SetStateAction<number>>;
+  setSize: Dispatch<SetStateAction<1 | 2>>;
   setSrc: Dispatch<SetStateAction<string | null>>;
+  setSrcType: Dispatch<SetStateAction<string | null>>;
   setVolume: Dispatch<SetStateAction<number>>;
-  size: number;
+  size: 1 | 2;
   src: string | null;
+  srcType: string | null;
+  videoRef: MutableRefObject<HTMLVideoElement | null>;
   volume: number;
 }
 
@@ -105,9 +108,12 @@ export const audioContextDefaults: IAudioContext = {
   setIsPaused: (_) => {},
   setSize: (_) => {},
   setSrc: (_) => {},
+  setSrcType: (_) => {},
   setVolume: (_) => {},
   size: 1,
   src: null,
+  srcType: null,
+  videoRef: { current: null },
   volume: 1,
   /* eslint-enable @typescript-eslint/no-empty-function */
 };
@@ -125,7 +131,6 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   } = useSettingsContext();
   const audioPlayerSettingsRef = useRef(audioPlayerSettings);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [chaptersUrl, setChaptersUrl] = useState<string | null>(
     audioContextDefaults.chaptersUrl
   );
@@ -159,8 +164,14 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     audioContextDefaults.isPaused
   );
   const [src, setSrc] = useState<string | null>(audioContextDefaults.src);
-  const [size, setSize] = useState<number>(audioContextDefaults.size);
+  const [srcType, setSrcType] = useState<string | null>(
+    audioContextDefaults.srcType
+  );
+  const [size, setSize] = useState<1 | 2>(audioContextDefaults.size);
   const [volume, setVolume] = useState<number>(audioContextDefaults.volume);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const { data: chapters } = useQuery(
     ['chapters', chaptersUrl, dateCrawled],
@@ -194,9 +205,13 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
   const resetAudioContext = () => {
     audioRef.current?.pause();
-    // setAudioPlayerCurrentTime(audioContextDefaults.audioPlayerCurrentTime);
+    videoRef.current?.pause();
+
+    if (document.pictureInPictureElement) {
+      document.exitPictureInPicture();
+    }
+
     setChaptersUrl(audioContextDefaults.chaptersUrl);
-    // setCurrentTime(audioContextDefaults.currentTime);
     setDateCrawled(audioContextDefaults.dateCrawled);
     setEpisodeId(audioContextDefaults.episodeId);
     setEpisodeImage(audioContextDefaults.episodeImage);
@@ -208,6 +223,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setIsPaused(audioContextDefaults.isPaused);
     setSize(audioContextDefaults.size);
     setSrc(audioContextDefaults.src);
+    setSrcType(audioContextDefaults.srcType);
     setVolume(audioContextDefaults.volume);
   };
 
@@ -241,6 +257,14 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         await audioRef.current.play();
       }
     }
+
+    if (videoRef.current) {
+      if (nextIsPaused) {
+        videoRef.current.pause();
+      } else {
+        await videoRef.current.play();
+      }
+    }
   }, [isPaused]);
 
   useEffect(() => {
@@ -258,6 +282,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       setIsMuted(audioPlayerSettings.isMuted);
       setSize(audioPlayerSettings.size);
       setSrc(audioPlayerSettings.src);
+      setSrcType(audioPlayerSettings.srcType);
       setVolume(audioPlayerSettings.volume);
     }
 
@@ -307,6 +332,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         isMuted,
         size,
         src,
+        srcType,
         volume,
       });
     }
@@ -326,9 +352,13 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     size,
     setAudioPlayerSettings,
     src,
+    srcType,
     volume,
   ]);
 
+  /**
+   * Set MediaSession metadata whenever any piece of it changes.
+   */
   useEffect(() => {
     if ('mediaSession' in window.navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
@@ -352,6 +382,9 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     feedTitle,
   ]);
 
+  /**
+   * Set MediaSession action handlers.
+   */
   useEffect(() => {
     if ('mediaSession' in window.navigator) {
       navigator.mediaSession.setActionHandler('play', playPause);
@@ -393,8 +426,12 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       audioRef.current.currentTime = currentTime;
     }
 
+    if (videoRef.current) {
+      videoRef.current.currentTime = currentTime;
+    }
+
     setAudioPlayerCurrentTime(currentTime);
-  }, [audioRef, currentTime, setAudioPlayerCurrentTime]);
+  }, [audioRef, videoRef, currentTime, setAudioPlayerCurrentTime]);
 
   return (
     <AudioContext.Provider
@@ -434,9 +471,12 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setIsPaused,
         setSize,
         setSrc,
+        setSrcType,
         setVolume,
         size,
         src,
+        srcType,
+        videoRef,
         volume,
       }}
     >

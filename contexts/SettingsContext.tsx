@@ -54,8 +54,9 @@ type AudioPlayerSettings = {
    * @deprecated - use `size` instead (true = 2, false = 1)
    */
   isPlayerOpen?: boolean;
-  size: number;
+  size: 1 | 2;
   src: string | null;
+  srcType: string | null;
   volume: number;
 };
 
