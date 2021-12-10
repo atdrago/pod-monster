@@ -1,3 +1,4 @@
+import { AnimatePresence, m } from 'framer-motion';
 import {
   FunctionComponent,
   ReactEventHandler,
@@ -16,11 +17,10 @@ import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
 import { VolumeIcon } from 'components/atoms/VolumeIcon';
 import { Stack } from 'components/layouts/Stack';
+import { SizeField } from 'components/molecules/SizeField';
 import { audioContextDefaults, useAudioContext } from 'contexts/AudioContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
-import EnlargeIcon from 'icons/enlarge2.svg';
-import ShrinkIcon from 'icons/shrink2.svg';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
 import { underlinedLink } from 'styles';
@@ -32,8 +32,6 @@ import {
   player,
   playerButtons,
   playerElevatedVariant,
-  playerMinimize,
-  playerTitleClassName,
   volumeLayout,
 } from './audioPlayer.css';
 
@@ -51,7 +49,6 @@ export const AudioPlayer: FunctionComponent = () => {
     feedTitle,
     isMuted,
     isPaused,
-    isPlayerOpen,
     playPause,
     resetAudioContext,
     seekBackward,
@@ -59,8 +56,9 @@ export const AudioPlayer: FunctionComponent = () => {
     setAudioPlayerCurrentTime,
     setIsMuted,
     setIsPaused,
-    setIsPlayerOpen,
+    setSize,
     setVolume,
+    size,
     src,
     volume,
   } = useAudioContext() || audioContextDefaults;
@@ -143,182 +141,202 @@ export const AudioPlayer: FunctionComponent = () => {
     };
   }, [src]);
 
-  if (!src) {
-    return null;
-  }
+  const animationProperties = {
+    animate: { height: 'auto', marginBottom: 0, opacity: 1 },
+    exit: { height: 0, marginBottom: -16, opacity: 0 },
+    initial: { height: 0, marginBottom: -16, opacity: 0 },
+    style: { overflow: 'hidden' },
+  };
 
   return (
-    <Stack
-      as="aside"
-      maxWidth="small"
-      style={{
-        bottom: 0,
-        position: 'sticky',
-        top: 0,
-        zIndex: 1,
-      }}
-    >
-      <div
-        className={intersectionObserverClassName}
-        ref={intersectionObserverRef}
-      ></div>
-      <Stack className={playerClassName} space="small">
-        {isPlayerOpen && episodeTitle ? (
-          <Typography
-            size="headingSmaller"
-            as="h4"
-            textAlign="center"
-            whitespace="ellipsis"
-            className={playerTitleClassName}
-          >
-            {episodeId && feedId ? (
-              <Link
-                className={underlinedLink}
-                href={getEpisodePath({ episodeId, feedId })}
-              >
-                {episodeTitle}
-              </Link>
-            ) : (
-              episodeTitle
-            )}
-          </Typography>
-        ) : null}
-        {isPlayerOpen && playerArtwork ? (
-          <Artwork
-            alt=""
-            edge="overflow"
-            src={playerArtworkProxyUrl.toString()}
-          />
-        ) : null}
-        {isPlayerOpen && currentChapter && currentChapter.title && (
-          <Typography
-            size="paragraph"
-            as="h5"
-            textAlign="center"
-            whitespace="ellipsis"
-            className={playerTitleClassName}
-          >
-            {currentChapter?.url ? (
-              <Link
-                anchorProps={{
-                  rel: 'noreferrer noopener',
-                  target: '_blank',
-                }}
-                className={underlinedLink}
-                href={currentChapter?.url}
-              >
-                {currentChapter.title}
-              </Link>
-            ) : (
-              currentChapter.title
-            )}
-          </Typography>
-        )}
-        {/**
-         * 1. Waiting
-         * 2. Suspend
-         * 3. CanPlay
-         * 4. Playing
-         */}
-        <Audio
-          audioRef={audioRef}
-          controls={true}
-          currentTime={audioPlayerCurrentTime}
-          onCurrentTimeChange={setAudioPlayerCurrentTime}
-          onEnded={() => {
-            setIsPaused(true);
+    <AnimatePresence>
+      {src && (
+        <Stack
+          as={m.aside}
+          maxWidth="small"
+          animate={{ opacity: 1, y: '0' }}
+          initial={{ opacity: 0, y: '100%' }}
+          exit={{ opacity: 0, y: '100%' }}
+          style={{
+            bottom: 16,
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
           }}
-          onLoadedData={handleLoadedData}
-          onLoadedMetadata={handleLoadedMetaData}
-          onPause={() => {
-            setIsPaused(true);
-          }}
-          onPlay={() => {
-            setIsPaused(false);
-          }}
-          onPlaying={() => {
-            setIsPaused(false);
-          }}
-          onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
-          preload="metadata"
-          src={src}
-          startTime={currentTime}
-          title={feedTitle ?? ''}
-          isTitleVisible={!!feedTitle}
-        />
-        <div className={playerButtons}>
-          <IconButton
-            label={'Stop'}
-            onClick={() => resetAudioContext()}
-            size="small"
-          >
-            <Icon size="medium">
-              <StopIcon />
-            </Icon>
-          </IconButton>
-          <Stack align="center" justify="center" kind="flexRow" space="small">
-            <IconButton
-              background="circle"
-              label={'Rewind 15 seconds'}
-              onClick={() => seekBackward({ seekOffset: 15 })}
-              size={'small'}
-            >
-              <Icon size={'small'} orientation="reverse">
-                <SpinnerIcon />
-              </Icon>
-            </IconButton>
-            <IconButton
-              background="circle"
-              label={isPaused ? 'Play podcast' : 'Pause podcast'}
-              onClick={playPause}
-              size={'medium'}
-            >
-              <PlayPauseIcon size={'medium'} isPaused={isPaused} />
-            </IconButton>
-            <IconButton
-              background="circle"
-              label={'Skip 30 seconds'}
-              onClick={() => seekForward({ seekOffset: 30 })}
-              size={'small'}
-            >
-              <Icon size={'small'}>
-                <SpinnerIcon />
-              </Icon>
-            </IconButton>
-          </Stack>
-          <IconButton
-            label={isPlayerOpen ? 'Collapse player' : 'Open player'}
-            onClick={() => setIsPlayerOpen(!isPlayerOpen)}
-            size="small"
-            className={playerMinimize}
-          >
-            <Icon size="small">
-              {isPlayerOpen ? <ShrinkIcon /> : <EnlargeIcon />}
-            </Icon>
-          </IconButton>
-        </div>
-        {!isMobileDevice && isPlayerOpen && (
-          <div className={volumeLayout}>
-            <button
-              aria-label="Mute"
-              className={iconButton}
-              type="button"
-              onClick={handleMuteClick}
-            >
-              <VolumeIcon isMuted={isMuted} volume={volume} />
-            </button>
-            <Range
-              aria-label="Volume"
-              onChange={handleVolumeRangeChange}
-              max="1"
-              min="0"
-              step="0.01"
-              value={volume}
-              variant="volume"
+        >
+          <div
+            className={intersectionObserverClassName}
+            ref={intersectionObserverRef}
+          ></div>
+          <Stack as={m.div} className={playerClassName} space="small">
+            <AnimatePresence>
+              {size === 2 && (
+                <Stack as={m.div} space="small" {...animationProperties}>
+                  {episodeTitle ? (
+                    <Typography
+                      size="headingSmaller"
+                      as="h4"
+                      textAlign="center"
+                      whitespace="ellipsis"
+                    >
+                      {episodeId && feedId ? (
+                        <Link
+                          className={underlinedLink}
+                          href={getEpisodePath({ episodeId, feedId })}
+                        >
+                          {episodeTitle}
+                        </Link>
+                      ) : (
+                        episodeTitle
+                      )}
+                    </Typography>
+                  ) : null}
+
+                  {currentChapter && currentChapter.title && (
+                    <Typography
+                      size="paragraph"
+                      as="h5"
+                      textAlign="center"
+                      whitespace="ellipsis"
+                    >
+                      {currentChapter?.url ? (
+                        <Link
+                          anchorProps={{
+                            rel: 'noreferrer noopener',
+                            target: '_blank',
+                          }}
+                          className={underlinedLink}
+                          href={currentChapter?.url}
+                        >
+                          {currentChapter.title}
+                        </Link>
+                      ) : (
+                        currentChapter.title
+                      )}
+                    </Typography>
+                  )}
+                  {playerArtwork ? (
+                    <Artwork
+                      alt=""
+                      edge="overflow"
+                      src={playerArtworkProxyUrl.toString()}
+                    />
+                  ) : null}
+                </Stack>
+              )}
+            </AnimatePresence>
+            {/**
+             * 1. Waiting
+             * 2. Suspend
+             * 3. CanPlay
+             * 4. Playing
+             */}
+            <Audio
+              audioRef={audioRef}
+              controls={true}
+              currentTime={audioPlayerCurrentTime}
+              onCurrentTimeChange={setAudioPlayerCurrentTime}
+              onEnded={() => {
+                setIsPaused(true);
+              }}
+              onLoadedData={handleLoadedData}
+              onLoadedMetadata={handleLoadedMetaData}
+              onPause={() => {
+                setIsPaused(true);
+              }}
+              onPlay={() => {
+                setIsPaused(false);
+              }}
+              onPlaying={() => {
+                setIsPaused(false);
+              }}
+              onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
+              preload="metadata"
+              src={src}
+              startTime={currentTime}
+              title={feedTitle ?? ''}
+              isTitleVisible={!!feedTitle}
             />
-          </div>
-        )}
-      </Stack>
-    </Stack>
+            <AnimatePresence>
+              {!isMobileDevice && size === 2 && (
+                <m.div className={volumeLayout} {...animationProperties}>
+                  <button
+                    aria-label="Mute"
+                    className={iconButton}
+                    type="button"
+                    onClick={handleMuteClick}
+                  >
+                    <VolumeIcon isMuted={isMuted} volume={volume} />
+                  </button>
+                  <Range
+                    aria-label="Volume"
+                    onChange={handleVolumeRangeChange}
+                    max="1"
+                    min="0"
+                    step="0.01"
+                    value={volume}
+                    variant="volume"
+                  />
+                </m.div>
+              )}
+            </AnimatePresence>
+            <div className={playerButtons}>
+              <IconButton
+                label={'Stop'}
+                onClick={() => resetAudioContext()}
+                size="small"
+              >
+                <Icon size="medium">
+                  <StopIcon />
+                </Icon>
+              </IconButton>
+              <Stack
+                align="center"
+                justify="center"
+                kind="flexRow"
+                space="small"
+              >
+                <IconButton
+                  background="circle"
+                  label={'Rewind 15 seconds'}
+                  onClick={() => seekBackward({ seekOffset: 15 })}
+                  size={'small'}
+                >
+                  <Icon size={'small'} orientation="reverse">
+                    <SpinnerIcon />
+                  </Icon>
+                </IconButton>
+                <IconButton
+                  background="circle"
+                  label={isPaused ? 'Play podcast' : 'Pause podcast'}
+                  onClick={playPause}
+                  size={'medium'}
+                >
+                  <PlayPauseIcon size={'medium'} isPaused={isPaused} />
+                </IconButton>
+                <IconButton
+                  background="circle"
+                  label={'Skip 30 seconds'}
+                  onClick={() => seekForward({ seekOffset: 30 })}
+                  size={'small'}
+                >
+                  <Icon size={'small'}>
+                    <SpinnerIcon />
+                  </Icon>
+                </IconButton>
+              </Stack>
+              <SizeField
+                label="Player size"
+                value={size}
+                step={1}
+                max={2}
+                min={1}
+                onChange={setSize}
+              />
+            </div>
+          </Stack>
+        </Stack>
+      )}
+    </AnimatePresence>
   );
 };

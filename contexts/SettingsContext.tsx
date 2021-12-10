@@ -50,7 +50,11 @@ type AudioPlayerSettings = {
    */
   isDefaults?: boolean;
   isMuted: boolean;
-  isPlayerOpen: boolean;
+  /**
+   * @deprecated - use `size` instead (true = 2, false = 1)
+   */
+  isPlayerOpen?: boolean;
+  size: number;
   src: string | null;
   volume: number;
 };
@@ -85,7 +89,7 @@ export const SettingsContext = createContext<ISettingsContext>({
   /* eslint-enable @typescript-eslint/no-empty-function */
 });
 
-const SETTINGS_VERSION = 2;
+const SETTINGS_VERSION = 3;
 
 export const SettingsProvider: FunctionComponent<
   PropsWithChildren<unknown>
@@ -128,7 +132,7 @@ export const SettingsProvider: FunctionComponent<
          * configuration.
          */
 
-        // let tmpAudioPlayerSettings: AudioPlayerSettings | null = null;
+        let tmpAudioPlayerSettings: AudioPlayerSettings | null = null;
         // let tmpEpisodeSettings: EpisodeSettings | null = null;
         let tmpFeedSettings: FeedSettings | null = null;
 
@@ -149,11 +153,25 @@ export const SettingsProvider: FunctionComponent<
           );
         }
 
+        // In 3, `isPlayerOpen` changed to `size`. `true` was the equivalent of
+        // 2 and `false` was the equivalent
+        if (settings._version < 3 && SETTINGS_VERSION >= 3) {
+          const { isPlayerOpen, ...nextTmpAudioPlayerSettings } =
+            settings.audioPlayerSettings;
+
+          tmpAudioPlayerSettings = nextTmpAudioPlayerSettings;
+
+          tmpAudioPlayerSettings.size = isPlayerOpen ? 2 : 1;
+        }
+
         if (
-          tmpFeedSettings /** || tmpAudioPlayerSettings || tmpEpisodeSettings */
+          tmpFeedSettings ||
+          tmpAudioPlayerSettings /** || tmpEpisodeSettings */
         ) {
           // If any migrations were found, use them.
-          setAudioPlayerSettings(settings.audioPlayerSettings);
+          setAudioPlayerSettings(
+            tmpAudioPlayerSettings || settings.audioPlayerSettings
+          );
           setEpisodeSettings(settings.episodeSettings);
           setFeedSettings(tmpFeedSettings || settings.feedSettings);
         } else {

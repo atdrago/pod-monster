@@ -1,11 +1,12 @@
 import { style, styleVariants } from '@vanilla-extract/css';
-import { calc } from '@vanilla-extract/css-utils';
 
 import { vars } from 'styles';
 
 export const player = style({
   backdropFilter: 'blur(6px)',
   backgroundColor: vars.color.backgroundBlurred,
+  border: '0.5px solid rgba(255, 255, 255, 0.3)',
+  overflow: 'hidden',
   padding: `${vars.spacing.s016}`,
   transition: '500ms ease box-shadow, 500ms ease transform',
 });
@@ -13,11 +14,9 @@ export const player = style({
 export const playerElevatedVariant = styleVariants({
   elevated: {
     boxShadow: vars.color.shadowElevationHigh,
-    transform: `translate(0, ${calc(vars.spacing.s016).negate().toString()})`,
   },
   inset: {
     boxShadow: vars.color.shadowElevationMedium,
-    transform: `translate(0, 0)`,
   },
 });
 
@@ -25,14 +24,6 @@ export const playerButtons = style({
   alignItems: 'center',
   display: 'grid',
   gridTemplateColumns: '30px 1fr 30px',
-});
-
-export const playerTitleClassName = style({
-  gridColumnStart: '2',
-});
-
-export const playerMinimize = style({
-  gridColumnStart: '3',
 });
 
 const VOLUME_ICON_BUTTON_WIDTH = '30px';
@@ -59,7 +50,7 @@ export const iconButton = style({
 });
 
 export const intersectionObserverClassName = style({
-  bottom: -1,
+  bottom: -17,
   height: '0',
   position: 'absolute',
 });

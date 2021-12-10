@@ -36,7 +36,10 @@ interface IAudioContext {
   feedTitle: string | null;
   isMuted: boolean;
   isPaused: boolean;
-  isPlayerOpen: boolean;
+  /**
+   * @deprecated use size instead (true = 2, false = 1)
+   */
+  isPlayerOpen?: boolean;
   playPause: () => void;
   resetAudioContext: () => void;
   seekBackward: (details?: Partial<MediaSessionActionDetails>) => void;
@@ -53,9 +56,14 @@ interface IAudioContext {
   setFeedTitle: Dispatch<SetStateAction<string | null>>;
   setIsMuted: Dispatch<SetStateAction<boolean>>;
   setIsPaused: Dispatch<SetStateAction<boolean>>;
-  setIsPlayerOpen: Dispatch<SetStateAction<boolean>>;
+  /**
+   * @deprecated use setSize instead (true = 2, false = 1)
+   */
+  setIsPlayerOpen?: Dispatch<SetStateAction<boolean>>;
+  setSize: Dispatch<SetStateAction<number>>;
   setSrc: Dispatch<SetStateAction<string | null>>;
   setVolume: Dispatch<SetStateAction<number>>;
+  size: number;
   src: string | null;
   volume: number;
 }
@@ -79,7 +87,6 @@ export const audioContextDefaults: IAudioContext = {
   feedTitle: null,
   isMuted: false,
   isPaused: true,
-  isPlayerOpen: false,
   playPause: () => {},
   resetAudioContext: () => {},
   seekBackward: () => {},
@@ -96,9 +103,10 @@ export const audioContextDefaults: IAudioContext = {
   setFeedTitle: (_) => {},
   setIsMuted: (_) => {},
   setIsPaused: (_) => {},
-  setIsPlayerOpen: (_) => {},
+  setSize: (_) => {},
   setSrc: (_) => {},
   setVolume: (_) => {},
+  size: 1,
   src: null,
   volume: 1,
   /* eslint-enable @typescript-eslint/no-empty-function */
@@ -150,10 +158,8 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [isPaused, setIsPaused] = useState<boolean>(
     audioContextDefaults.isPaused
   );
-  const [isPlayerOpen, setIsPlayerOpen] = useState<boolean>(
-    audioContextDefaults.isPlayerOpen
-  );
   const [src, setSrc] = useState<string | null>(audioContextDefaults.src);
+  const [size, setSize] = useState<number>(audioContextDefaults.size);
   const [volume, setVolume] = useState<number>(audioContextDefaults.volume);
 
   const { data: chapters } = useQuery(
@@ -200,7 +206,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setFeedTitle(audioContextDefaults.feedTitle);
     setIsMuted(audioContextDefaults.isMuted);
     setIsPaused(audioContextDefaults.isPaused);
-    setIsPlayerOpen(audioContextDefaults.isPlayerOpen);
+    setSize(audioContextDefaults.size);
     setSrc(audioContextDefaults.src);
     setVolume(audioContextDefaults.volume);
   };
@@ -250,7 +256,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       setFeedImage(audioPlayerSettings.feedImage);
       setFeedTitle(audioPlayerSettings.feedTitle);
       setIsMuted(audioPlayerSettings.isMuted);
-      setIsPlayerOpen(audioPlayerSettings.isPlayerOpen);
+      setSize(audioPlayerSettings.size);
       setSrc(audioPlayerSettings.src);
       setVolume(audioPlayerSettings.volume);
     }
@@ -299,7 +305,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedImage,
         feedTitle,
         isMuted,
-        isPlayerOpen,
+        size,
         src,
         volume,
       });
@@ -317,7 +323,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     isDoneHydratingFromLocalStorage,
     isFirstRenderAfterHydration,
     isMuted,
-    isPlayerOpen,
+    size,
     setAudioPlayerSettings,
     src,
     volume,
@@ -410,7 +416,6 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedTitle,
         isMuted,
         isPaused,
-        isPlayerOpen,
         playPause,
         resetAudioContext,
         seekBackward,
@@ -427,9 +432,10 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setFeedTitle,
         setIsMuted,
         setIsPaused,
-        setIsPlayerOpen,
+        setSize,
         setSrc,
         setVolume,
+        size,
         src,
         volume,
       }}

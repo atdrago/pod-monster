@@ -1,5 +1,6 @@
 import 'styles/app.css';
 
+import { LazyMotion, domAnimation } from 'framer-motion';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { FunctionComponent, useState } from 'react';
@@ -59,19 +60,21 @@ const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
     <SettingsProvider>
       <QueryClientProvider client={queryClient}>
         <Hydrate state={pageProps.dehydratedState}>
-          <AudioProvider>
-            <CenteredPageLayout>
-              <Header
-                feedId={feedId}
-                feedTitle={feedTitle}
-                isLoading={isFallback}
-                episodeId={episodeId}
-                episodeTitle={episodeTitle}
-              />
-              <Component {...pageProps} />
-              <AudioPlayer />
-            </CenteredPageLayout>
-          </AudioProvider>
+          <LazyMotion features={domAnimation}>
+            <AudioProvider>
+              <CenteredPageLayout>
+                <Header
+                  feedId={feedId}
+                  feedTitle={feedTitle}
+                  isLoading={isFallback}
+                  episodeId={episodeId}
+                  episodeTitle={episodeTitle}
+                />
+                <Component {...pageProps} />
+                <AudioPlayer />
+              </CenteredPageLayout>
+            </AudioProvider>
+          </LazyMotion>
         </Hydrate>
       </QueryClientProvider>
     </SettingsProvider>
