@@ -4,10 +4,14 @@ import ReactMarkdown from 'react-markdown';
 import { Blockquote } from 'components/atoms/Blockquote';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
-import { listItem, listLayout, underlinedLink } from 'styles';
+import { listItem, underlinedLink } from 'styles';
 import type { IMarkdownViewerProps } from 'types';
 
-import { htmlViewerContainer } from './htmlViewer.css';
+import {
+  htmlViewerContainer,
+  imgClassName,
+  listLayout,
+} from './htmlViewer.css';
 
 export const HtmlViewer = memo(
   function MarkdownViewerMemo({
@@ -19,7 +23,12 @@ export const HtmlViewer = memo(
     const baseClassName = useClassNames(htmlViewerContainer, className);
 
     return (
-      <div className={baseClassName}>
+      <Typography
+        as="div"
+        size="paragraph"
+        className={baseClassName}
+        shouldUseCapsize={false}
+      >
         <ReactMarkdown
           components={{
             a({
@@ -103,7 +112,15 @@ export const HtmlViewer = memo(
               src,
               width,
             }) {
-              return <img alt={alt} height={height} src={src} width={width} />;
+              return (
+                <img
+                  alt={alt}
+                  className={imgClassName}
+                  height={height}
+                  src={src}
+                  width={width}
+                />
+              );
             },
             li({
               className: _className,
@@ -164,7 +181,7 @@ export const HtmlViewer = memo(
         >
           {typeof children === 'string' ? children : ''}
         </ReactMarkdown>
-      </div>
+      </Typography>
     );
   },
   function areEqual(prevProps, nextProps) {
