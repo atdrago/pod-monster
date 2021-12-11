@@ -1,4 +1,4 @@
-import type { FunctionComponent } from 'react';
+import type { FunctionComponent, ReactEventHandler } from 'react';
 
 import { Button } from 'components/atoms/Button';
 import { useSettingsContext } from 'contexts/SettingsContext';
@@ -16,7 +16,13 @@ export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
 }) => {
   const { feedSettings, setFeedSettings } = useSettingsContext();
 
-  const handleSubscribeClick = () => {
+  const handleSubscribeClick: ReactEventHandler<HTMLButtonElement> = (
+    event
+  ) => {
+    // Quick fix to prevent navigation to the episode when this button is used
+    // in search result items.
+    event.preventDefault();
+
     setFeedSettings((prevFeedSettings) => ({
       ...prevFeedSettings,
       [id]: {

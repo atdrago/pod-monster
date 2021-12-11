@@ -5,6 +5,7 @@ import { QueryClient, dehydrate, useQuery } from 'react-query';
 import { Artwork } from 'components/atoms/Artwork';
 import { Head } from 'components/atoms/Head';
 import { Link } from 'components/atoms/Link';
+import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { InputField } from 'components/molecules/InputField';
@@ -195,6 +196,11 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                         </Typography>
                       ) : null}
                     </Stack>
+                    <SubscribeButton
+                      feedId={feed.id}
+                      image={feed.image}
+                      title={feed.title}
+                    />
                   </Stack>
                 );
               })}
