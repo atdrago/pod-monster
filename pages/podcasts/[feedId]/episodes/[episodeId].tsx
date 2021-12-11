@@ -2,8 +2,11 @@ import type { GetStaticPaths, NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import ReactDomServer from 'react-dom/server';
 import { useQuery } from 'react-query';
+import rehypeParse from 'rehype-parse';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
+import rehypeStripHtml from 'rehype-strip-html';
+import { unified } from 'unified';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
@@ -22,6 +25,7 @@ import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import type {
+  EpisodePageEpisode,
   EpisodePageGetStaticProps,
   IEpisodePageProps,
   ITimedListItem,
@@ -43,7 +47,9 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
   const [authTime, authToken] = await fetchPodcastIndexAuth();
   const config = getPodcastIndexConfig(authTime, authToken);
 
-  const { episode } = await episodeById(episodeId, config);
+  const { episode } = (await episodeById(episodeId, config)) as {
+    episode: EpisodePageEpisode;
+  };
 
   // Setup person proxy image paths and sorting on the server
   if (episode.persons && episode.persons.length > 0) {
@@ -83,6 +89,15 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
   }
 
   if (episode.description) {
+    const descriptionRawFile = await unified()
+      .use(rehypeParse)
+      .use(rehypeStripHtml)
+      .process(episode.description);
+
+    if (descriptionRawFile) {
+      episode.descriptionRaw = String(descriptionRawFile).replace(/\s+/g, ' ');
+    }
+
     episode.description = ReactDomServer.renderToStaticMarkup(
       <HtmlViewer
         shouldUseCapsize={false}
@@ -282,7 +297,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
       {episode && (
         <Head
           titles={[episode.title, episode.feedTitle]}
-          description={episode.description}
+          description={episode.descriptionRaw || episode.description}
         />
       )}
       <Stack as="main" maxWidth="small">
