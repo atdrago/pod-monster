@@ -147,6 +147,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
         >
           <video
             autopictureinpicture=""
+            key={src}
             controls={true}
             onError={() => {
               // TODO: Handle error when file does not load
