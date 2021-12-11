@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
+  lint_and_prettier:
     runs-on: ubuntu-latest
 
     steps:
