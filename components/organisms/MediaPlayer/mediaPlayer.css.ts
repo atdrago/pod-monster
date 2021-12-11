@@ -3,8 +3,14 @@ import { style, styleVariants } from '@vanilla-extract/css';
 import { vars } from 'styles';
 
 export const player = style({
+  '@supports': {
+    '(backdrop-filter: blur(6px))': {
+      backdropFilter: 'blur(6px)',
+      backgroundColor: vars.color.backgroundBlurred,
+    },
+  },
   backdropFilter: 'blur(6px)',
-  backgroundColor: vars.color.backgroundBlurred,
+  backgroundColor: vars.color.backgroundBlurredOpaque,
   border: '0.5px solid rgba(255, 255, 255, 0.3)',
   overflow: 'hidden',
   padding: `${vars.spacing.s016}`,

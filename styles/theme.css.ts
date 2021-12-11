@@ -12,6 +12,7 @@ export const vars = createGlobalTheme(':root', {
     // #d0d0d0
     background: 'rgb(208, 208, 208)',
     backgroundBlurred: 'rgba(198, 198, 198, 0.7)',
+    backgroundBlurredOpaque: 'rgb(198, 198, 198)',
     backgroundHighlight: 'rgba(218, 218, 218, 1)',
     blockquote: 'rgba(0, 0, 0, 0.7)',
     blockquoteBorder: 'rgba(0, 0, 0, 0.5)',
@@ -97,6 +98,7 @@ globalStyle(':root', {
         // #272822
         background: 'rgb(39, 40, 34)',
         backgroundBlurred: 'rgba(29, 30, 24, 0.7)',
+        backgroundBlurredOpaque: 'rgb(29, 30, 24)',
         backgroundHighlight: 'rgba(29, 30, 24, 1)',
         blockquote: 'rgba(255, 255, 255, 0.7)',
         blockquoteBorder: 'rgba(255, 255, 255, 0.5)',
