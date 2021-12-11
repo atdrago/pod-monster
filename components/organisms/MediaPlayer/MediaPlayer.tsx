@@ -8,7 +8,6 @@ import {
 } from 'react';
 
 import { Artwork } from 'components/atoms/Artwork';
-import { Audio } from 'components/atoms/Audio';
 import { Icon } from 'components/atoms/Icon';
 import { IconButton } from 'components/atoms/IconButton';
 import { Link } from 'components/atoms/Link';
@@ -17,8 +16,9 @@ import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
 import { VolumeIcon } from 'components/atoms/VolumeIcon';
 import { Stack } from 'components/layouts/Stack';
+import { Media } from 'components/molecules/Media';
 import { SizeField } from 'components/molecules/SizeField';
-import { audioContextDefaults, useAudioContext } from 'contexts/AudioContext';
+import { mediaContextDefaults, useMediaContext } from 'contexts/MediaContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
@@ -33,11 +33,10 @@ import {
   playerButtons,
   playerElevatedVariant,
   volumeLayout,
-} from './audioPlayer.css';
+} from './mediaPlayer.css';
 
-export const AudioPlayer: FunctionComponent = () => {
+export const MediaPlayer: FunctionComponent = () => {
   const {
-    audioPlayerCurrentTime,
     audioRef,
     currentChapter,
     currentTime,
@@ -49,13 +48,14 @@ export const AudioPlayer: FunctionComponent = () => {
     feedTitle,
     isMuted,
     isPaused,
+    mediaPlayerCurrentTime,
     playPause,
-    resetAudioContext,
+    resetMediaContext,
     seekBackward,
     seekForward,
-    setAudioPlayerCurrentTime,
     setIsMuted,
     setIsPaused,
+    setMediaPlayerCurrentTime,
     setSize,
     setVolume,
     size,
@@ -63,7 +63,7 @@ export const AudioPlayer: FunctionComponent = () => {
     srcType,
     videoRef,
     volume,
-  } = useAudioContext() || audioContextDefaults;
+  } = useMediaContext() || mediaContextDefaults;
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
   const [isPinned, setIsPinned] = useState(false);
   const playerClassName = useClassNames(
@@ -84,7 +84,7 @@ export const AudioPlayer: FunctionComponent = () => {
   const isMobileDevice = useIsMobileDevice();
 
   const handleLoadedMetaData: ReactEventHandler<
-    HTMLAudioElement
+    HTMLMediaElement
   > = async () => {
     if (audioRef.current) {
       if (audioRef.current.paused && !isPaused) {
@@ -99,7 +99,7 @@ export const AudioPlayer: FunctionComponent = () => {
     }
   };
 
-  const handleLoadedData: ReactEventHandler<HTMLAudioElement> = async () => {
+  const handleLoadedData: ReactEventHandler<HTMLMediaElement> = async () => {
     if (audioRef.current) {
       if (audioRef.current.paused && !isPaused) {
         await audioRef.current.play();
@@ -259,12 +259,12 @@ export const AudioPlayer: FunctionComponent = () => {
              * 3. CanPlay
              * 4. Playing
              */}
-            <Audio
+            <Media
               audioRef={audioRef}
-              videoRef={videoRef}
-              controls={true}
-              currentTime={audioPlayerCurrentTime}
-              onCurrentTimeChange={setAudioPlayerCurrentTime}
+              currentTime={mediaPlayerCurrentTime}
+              isTitleVisible={!!feedTitle}
+              isVideoVisible={size === 2}
+              onCurrentTimeChange={setMediaPlayerCurrentTime}
               onEnded={() => setIsPaused(true)}
               onLoadedData={handleLoadedData}
               onLoadedMetadata={handleLoadedMetaData}
@@ -273,13 +273,11 @@ export const AudioPlayer: FunctionComponent = () => {
               onPlaying={() => setIsPaused(false)}
               onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
               poster={playerArtworkProxyUrl?.toString()}
-              preload="metadata"
               src={src}
               srcType={srcType ?? undefined}
               startTime={currentTime}
               title={feedTitle ?? ''}
-              isTitleVisible={!!feedTitle}
-              isVideoVisible={size === 2}
+              videoRef={videoRef}
             />
             <AnimatePresence>
               {!isMobileDevice && !isVideo && size === 2 && (
@@ -307,7 +305,7 @@ export const AudioPlayer: FunctionComponent = () => {
             <div className={playerButtons}>
               <IconButton
                 label={'Stop'}
-                onClick={() => resetAudioContext()}
+                onClick={resetMediaContext}
                 size="small"
               >
                 <Icon size="medium">

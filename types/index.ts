@@ -1,5 +1,4 @@
 export * from './Artwork';
-export * from './Audio';
 export * from './Button';
 export * from './Chapter';
 export * from './Checkbox';
@@ -10,6 +9,8 @@ export * from './IconButton';
 export * from './InputField';
 export * from './Link';
 export * from './MarkdownViewer';
+export * from './Media';
+export * from './MediaContext';
 export * from './PlayPauseIcon';
 export * from './PodcastEpisodePlayer';
 export * from './PodcastPage';

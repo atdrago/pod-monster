@@ -7,9 +7,9 @@ import { FunctionComponent, useState } from 'react';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 
 import { CenteredPageLayout } from 'components/layouts/CenteredPageLayout';
-import { AudioPlayer } from 'components/molecules/AudioPlayer';
 import { Header } from 'components/molecules/Header';
-import { AudioProvider } from 'contexts/AudioContext';
+import { MediaPlayer } from 'components/organisms/MediaPlayer';
+import { MediaProvider } from 'contexts/MediaContext';
 import { SettingsProvider } from 'contexts/SettingsContext';
 import { useGlobalVhCssVariable } from 'hooks/useGlobalVhCssVariable';
 import type { IEpisodePageProps, IPodcastPageProps } from 'types';
@@ -61,7 +61,7 @@ const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
       <QueryClientProvider client={queryClient}>
         <Hydrate state={pageProps.dehydratedState}>
           <LazyMotion features={domAnimation}>
-            <AudioProvider>
+            <MediaProvider>
               <CenteredPageLayout>
                 <Header
                   feedId={feedId}
@@ -71,9 +71,9 @@ const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
                   episodeTitle={episodeTitle}
                 />
                 <Component {...pageProps} />
-                <AudioPlayer />
+                <MediaPlayer />
               </CenteredPageLayout>
-            </AudioProvider>
+            </MediaProvider>
           </LazyMotion>
         </Hydrate>
       </QueryClientProvider>

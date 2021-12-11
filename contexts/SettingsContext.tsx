@@ -35,7 +35,7 @@ type FeedSettings = Record<
   }
 >;
 
-type AudioPlayerSettings = {
+type MediaPlayerSettings = {
   chaptersUrl: string | null;
   currentTime: number;
   dateCrawled: number | null;
@@ -62,21 +62,21 @@ type AudioPlayerSettings = {
 
 type LocalStorageSettings = {
   _version: number;
-  audioPlayerSettings: AudioPlayerSettings;
+  audioPlayerSettings: MediaPlayerSettings;
   episodeSettings: EpisodeSettings;
   feedSettings: FeedSettings;
 };
 
 interface ISettingsContext {
-  audioPlayerSettings?: AudioPlayerSettings;
   episodeSettings: EpisodeSettings;
   feedSettings: FeedSettings;
   isDoneHydratingFromLocalStorage: boolean;
-  setAudioPlayerSettings: Dispatch<
-    SetStateAction<AudioPlayerSettings | undefined>
-  >;
+  mediaPlayerSettings?: MediaPlayerSettings;
   setEpisodeSettings: Dispatch<SetStateAction<EpisodeSettings>>;
   setFeedSettings: Dispatch<SetStateAction<FeedSettings>>;
+  setMediaPlayerSettings: Dispatch<
+    SetStateAction<MediaPlayerSettings | undefined>
+  >;
 }
 
 export const SettingsContext = createContext<ISettingsContext>({
@@ -84,9 +84,9 @@ export const SettingsContext = createContext<ISettingsContext>({
   episodeSettings: {},
   feedSettings: {},
   isDoneHydratingFromLocalStorage: false,
-  setAudioPlayerSettings: (_) => {},
   setEpisodeSettings: (_) => {},
   setFeedSettings: (_) => {},
+  setMediaPlayerSettings: (_) => {},
   /* eslint-enable @typescript-eslint/no-empty-function */
 });
 
@@ -95,8 +95,8 @@ const SETTINGS_VERSION = 3;
 export const SettingsProvider: FunctionComponent<
   PropsWithChildren<unknown>
 > = ({ children }) => {
-  const [audioPlayerSettings, setAudioPlayerSettings] = useState<
-    AudioPlayerSettings | undefined
+  const [mediaPlayerSettings, setMediaPlayerSettings] = useState<
+    MediaPlayerSettings | undefined
   >();
   const [episodeSettings, setEpisodeSettings] = useState<EpisodeSettings>({});
   const [feedSettings, setFeedSettings] = useState<FeedSettings>({});
@@ -119,7 +119,7 @@ export const SettingsProvider: FunctionComponent<
 
     if (settings) {
       if (settings._version === SETTINGS_VERSION) {
-        setAudioPlayerSettings(settings.audioPlayerSettings);
+        setMediaPlayerSettings(settings.audioPlayerSettings);
         setEpisodeSettings(settings.episodeSettings);
         setFeedSettings(settings.feedSettings);
       } else if (SETTINGS_VERSION > settings._version) {
@@ -133,7 +133,7 @@ export const SettingsProvider: FunctionComponent<
          * configuration.
          */
 
-        let tmpAudioPlayerSettings: AudioPlayerSettings | null = null;
+        let tmpMediaPlayerSettings: MediaPlayerSettings | null = null;
         // let tmpEpisodeSettings: EpisodeSettings | null = null;
         let tmpFeedSettings: FeedSettings | null = null;
 
@@ -157,21 +157,21 @@ export const SettingsProvider: FunctionComponent<
         // In 3, `isPlayerOpen` changed to `size`. `true` was the equivalent of
         // 2 and `false` was the equivalent
         if (settings._version < 3 && SETTINGS_VERSION >= 3) {
-          const { isPlayerOpen, ...nextTmpAudioPlayerSettings } =
+          const { isPlayerOpen, ...nextTmpMediaPlayerSettings } =
             settings.audioPlayerSettings;
 
-          tmpAudioPlayerSettings = nextTmpAudioPlayerSettings;
+          tmpMediaPlayerSettings = nextTmpMediaPlayerSettings;
 
-          tmpAudioPlayerSettings.size = isPlayerOpen ? 2 : 1;
+          tmpMediaPlayerSettings.size = isPlayerOpen ? 2 : 1;
         }
 
         if (
           tmpFeedSettings ||
-          tmpAudioPlayerSettings /** || tmpEpisodeSettings */
+          tmpMediaPlayerSettings /** || tmpEpisodeSettings */
         ) {
           // If any migrations were found, use them.
-          setAudioPlayerSettings(
-            tmpAudioPlayerSettings || settings.audioPlayerSettings
+          setMediaPlayerSettings(
+            tmpMediaPlayerSettings || settings.audioPlayerSettings
           );
           setEpisodeSettings(settings.episodeSettings);
           setFeedSettings(tmpFeedSettings || settings.feedSettings);
@@ -192,7 +192,7 @@ export const SettingsProvider: FunctionComponent<
         'pod2.settings',
         JSON.stringify({
           _version: SETTINGS_VERSION,
-          audioPlayerSettings,
+          audioPlayerSettings: mediaPlayerSettings,
           episodeSettings,
           feedSettings,
         })
@@ -200,18 +200,18 @@ export const SettingsProvider: FunctionComponent<
     } catch (err) {
       // TODO: Capture exception?
     }
-  }, [audioPlayerSettings, episodeSettings, feedSettings]);
+  }, [mediaPlayerSettings, episodeSettings, feedSettings]);
 
   return (
     <SettingsContext.Provider
       value={{
-        audioPlayerSettings,
         episodeSettings,
         feedSettings,
         isDoneHydratingFromLocalStorage,
-        setAudioPlayerSettings,
+        mediaPlayerSettings,
         setEpisodeSettings,
         setFeedSettings,
+        setMediaPlayerSettings,
       }}
     >
       {children}

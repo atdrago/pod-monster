@@ -10,19 +10,19 @@ import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
 import { useUniqueId } from 'hooks/useUniqueId';
-import { AudioProps } from 'types';
+import { MediaProps } from 'types';
 import { secondsToFormattedTime } from 'utils/date';
 
 import {
   audio,
-  audioBase,
   labelLayout,
+  mediaBase,
   timeLabel,
   timeLabelCenter,
   timeLabelRight,
-} from './audio.css';
+} from './media.css';
 
-export const Audio: FunctionComponent<AudioProps> = function AudioRef({
+export const Media: FunctionComponent<MediaProps> = function MediaRef({
   audioRef,
   className,
   currentTime = 0,
@@ -31,12 +31,16 @@ export const Audio: FunctionComponent<AudioProps> = function AudioRef({
   onCurrentTimeChange = () => ({}),
   onLoadedData = () => ({}),
   onLoadedMetadata = () => ({}),
+  onPause = () => ({}),
+  onPlay = () => ({}),
+  onPlaying = () => ({}),
+  onVolumeChange = () => ({}),
   poster,
+  src,
   srcType,
   startTime = 0,
   title,
   videoRef,
-  ...audioProps
 }) {
   const audioClassName = useClassNames(audio, className);
   const [duration, setDuration] = useState(0);
@@ -84,7 +88,7 @@ export const Audio: FunctionComponent<AudioProps> = function AudioRef({
     onLoadedData(event);
   };
 
-  const handleAudioRangeChange: ReactEventHandler<HTMLInputElement> = (
+  const handleMediaRangeChange: ReactEventHandler<HTMLInputElement> = (
     event
   ) => {
     if (audioRef.current) {
@@ -99,7 +103,7 @@ export const Audio: FunctionComponent<AudioProps> = function AudioRef({
   };
 
   /**
-   * Update the duration string if the audio element's `duration` property
+   * Update the duration string if the media element's `duration` property
    * changes
    */
   useEffect(() => {
@@ -116,7 +120,7 @@ export const Audio: FunctionComponent<AudioProps> = function AudioRef({
   ]);
 
   /**
-   * As a back-up to on the onLoad* events, set the audio element's
+   * As a back-up to on the onLoad* events, set the media element's
    * `currentTime` property to `startTime`
    */
   useEffect(() => {
@@ -144,32 +148,47 @@ export const Audio: FunctionComponent<AudioProps> = function AudioRef({
           <video
             autopictureinpicture=""
             controls={true}
+            onError={() => {
+              // TODO: Handle error when file does not load
+            }}
             onLoadedData={handleLoadedData}
             onLoadedMetadata={handleLoadedMetaData}
+            onPause={onPause}
+            onPlay={onPlay}
+            onPlaying={onPlaying}
             onSeeking={handleTimeUpdate}
             onTimeUpdate={handleTimeUpdate}
+            onVolumeChange={onVolumeChange}
             playsInline={true}
             poster={poster}
             preload="metadata"
             ref={videoRef}
             width={'100%'}
           >
-            <source src={audioProps.src} type={srcType} />
+            <source src={src} type={srcType} />
           </video>
         </m.div>
       ) : (
         <audio
           className={audioClassName}
           controls={true}
+          onError={() => {
+            // TODO: Handle error when file does not load
+          }}
           onLoadedData={handleLoadedData}
           onLoadedMetadata={handleLoadedMetaData}
+          onPause={onPause}
+          onPlay={onPlay}
+          onPlaying={onPlaying}
           onSeeking={handleTimeUpdate}
           onTimeUpdate={handleTimeUpdate}
+          onVolumeChange={onVolumeChange}
+          preload="metadata"
           ref={audioRef}
-          {...audioProps}
+          src={src}
         />
       )}
-      <div className={audioBase}>
+      <div className={mediaBase}>
         <label htmlFor={id} className={labelLayout}>
           <Typography
             as="span"
@@ -205,7 +224,7 @@ export const Audio: FunctionComponent<AudioProps> = function AudioRef({
         </label>
         <Range
           id={id}
-          onChange={handleAudioRangeChange}
+          onChange={handleMediaRangeChange}
           variant="audio"
           min={0}
           max={duration}

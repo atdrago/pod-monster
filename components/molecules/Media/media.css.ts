@@ -4,7 +4,7 @@ import { vars } from 'styles';
 
 export const audio = style({ display: 'none', width: '100%' });
 
-export const audioBase = style({ position: 'relative' });
+export const mediaBase = style({ position: 'relative' });
 
 export const labelLayout = style({
   alignItems: 'center',

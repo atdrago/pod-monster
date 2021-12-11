@@ -16,7 +16,7 @@ import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { TimedList } from 'components/molecules/TimedList';
-import { audioContextDefaults, useAudioContext } from 'contexts/AudioContext';
+import { mediaContextDefaults, useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
@@ -115,11 +115,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     episode ? episodeSettings[episode.id]?.currentTime ?? 0 : 0
   );
   const {
-    audioPlayerCurrentTime,
-    audioPlayerCurrentTimeDebounced,
     audioRef,
     episodeId,
     isPaused,
+    mediaPlayerCurrentTime,
+    mediaPlayerCurrentTimeDebounced,
     setChaptersUrl,
     setCurrentTime,
     setDateCrawled,
@@ -135,14 +135,14 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
     setSrcType,
     src,
     videoRef,
-  } = useAudioContext() || audioContextDefaults;
+  } = useMediaContext() || mediaContextDefaults;
 
   const isVideo = episode?.enclosureType.includes('video');
   const isThisEpisodeInThePlayer = episodeId === episode?.id;
   const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;
 
   const interprettedCurrentTime = isThisEpisodeInThePlayer
-    ? audioPlayerCurrentTime
+    ? mediaPlayerCurrentTime
     : episodeCurrentTime;
 
   const { data: transcript } = useQuery(
@@ -273,9 +273,9 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
 
   useEffect(() => {
     if (isThisEpisodeInThePlayer) {
-      setEpisodeCurrentTime(audioPlayerCurrentTimeDebounced);
+      setEpisodeCurrentTime(mediaPlayerCurrentTimeDebounced);
     }
-  }, [audioPlayerCurrentTimeDebounced, isThisEpisodeInThePlayer]);
+  }, [mediaPlayerCurrentTimeDebounced, isThisEpisodeInThePlayer]);
 
   return (
     <>

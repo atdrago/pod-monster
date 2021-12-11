@@ -1,9 +1,6 @@
 import {
-  Dispatch,
   FunctionComponent,
-  MutableRefObject,
   PropsWithChildren,
-  SetStateAction,
   createContext,
   useCallback,
   useContext,
@@ -16,65 +13,10 @@ import { useQuery } from 'react-query';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
-import type { IChapter } from 'types';
+import type { IMediaContext } from 'types';
 
-interface IAudioContext {
-  audioPlayerCurrentTime: number;
-  audioPlayerCurrentTimeDebounced: number;
-  audioRef: MutableRefObject<HTMLAudioElement | null>;
-  chapters: Array<IChapter> | null | undefined;
-  chaptersUrl: string | null;
-  currentChapter: IChapter | null;
-  currentChapterIndex: number;
-  currentTime: number;
-  dateCrawled: number | null;
-  episodeId: number | null;
-  episodeImage: string | null;
-  episodeTitle: string | null;
-  feedId: number | null;
-  feedImage: string | null;
-  feedTitle: string | null;
-  isMuted: boolean;
-  isPaused: boolean;
-  /**
-   * @deprecated use size instead (true = 2, false = 1)
-   */
-  isPlayerOpen?: boolean;
-  playPause: () => void;
-  resetAudioContext: () => void;
-  seekBackward: (details?: Partial<MediaSessionActionDetails>) => void;
-  seekForward: (details?: Partial<MediaSessionActionDetails>) => void;
-  setAudioPlayerCurrentTime: Dispatch<SetStateAction<number>>;
-  setChaptersUrl: Dispatch<SetStateAction<string | null>>;
-  setCurrentTime: Dispatch<SetStateAction<number>>;
-  setDateCrawled: Dispatch<SetStateAction<number | null>>;
-  setEpisodeId: Dispatch<SetStateAction<number | null>>;
-  setEpisodeImage: Dispatch<SetStateAction<string | null>>;
-  setEpisodeTitle: Dispatch<SetStateAction<string | null>>;
-  setFeedId: Dispatch<SetStateAction<number | null>>;
-  setFeedImage: Dispatch<SetStateAction<string | null>>;
-  setFeedTitle: Dispatch<SetStateAction<string | null>>;
-  setIsMuted: Dispatch<SetStateAction<boolean>>;
-  setIsPaused: Dispatch<SetStateAction<boolean>>;
-  /**
-   * @deprecated use setSize instead (true = 2, false = 1)
-   */
-  setIsPlayerOpen?: Dispatch<SetStateAction<boolean>>;
-  setSize: Dispatch<SetStateAction<1 | 2>>;
-  setSrc: Dispatch<SetStateAction<string | null>>;
-  setSrcType: Dispatch<SetStateAction<string | null>>;
-  setVolume: Dispatch<SetStateAction<number>>;
-  size: 1 | 2;
-  src: string | null;
-  srcType: string | null;
-  videoRef: MutableRefObject<HTMLVideoElement | null>;
-  volume: number;
-}
-
-export const audioContextDefaults: IAudioContext = {
+export const mediaContextDefaults: IMediaContext = {
   /* eslint-disable @typescript-eslint/no-empty-function */
-  audioPlayerCurrentTime: 0,
-  audioPlayerCurrentTimeDebounced: 0,
   audioRef: { current: null },
   chapters: null,
   chaptersUrl: null,
@@ -90,11 +32,12 @@ export const audioContextDefaults: IAudioContext = {
   feedTitle: null,
   isMuted: false,
   isPaused: true,
+  mediaPlayerCurrentTime: 0,
+  mediaPlayerCurrentTimeDebounced: 0,
   playPause: () => {},
-  resetAudioContext: () => {},
+  resetMediaContext: () => {},
   seekBackward: () => {},
   seekForward: () => {},
-  setAudioPlayerCurrentTime: (_) => {},
   setChaptersUrl: (_) => {},
   setCurrentTime: (_) => {},
   setDateCrawled: (_) => {},
@@ -106,6 +49,7 @@ export const audioContextDefaults: IAudioContext = {
   setFeedTitle: (_) => {},
   setIsMuted: (_) => {},
   setIsPaused: (_) => {},
+  setMediaPlayerCurrentTime: (_) => {},
   setSize: (_) => {},
   setSrc: (_) => {},
   setSrcType: (_) => {},
@@ -118,57 +62,57 @@ export const audioContextDefaults: IAudioContext = {
   /* eslint-enable @typescript-eslint/no-empty-function */
 };
 
-export const AudioContext = createContext<IAudioContext | undefined>(undefined);
+export const MediaContext = createContext<IMediaContext | undefined>(undefined);
 
-export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
+export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   children,
 }) => {
   const {
-    audioPlayerSettings,
     isDoneHydratingFromLocalStorage,
-    setAudioPlayerSettings,
+    mediaPlayerSettings,
     setEpisodeSettings,
+    setMediaPlayerSettings,
   } = useSettingsContext();
-  const audioPlayerSettingsRef = useRef(audioPlayerSettings);
+  const mediaPlayerSettingsRef = useRef(mediaPlayerSettings);
 
   const [chaptersUrl, setChaptersUrl] = useState<string | null>(
-    audioContextDefaults.chaptersUrl
+    mediaContextDefaults.chaptersUrl
   );
   const [
-    audioPlayerCurrentTime,
-    audioPlayerCurrentTimeDebounced,
-    setAudioPlayerCurrentTime,
-  ] = useStateWithDebounce(audioContextDefaults.currentTime, 500, {
+    mediaPlayerCurrentTime,
+    mediaPlayerCurrentTimeDebounced,
+    setMediaPlayerCurrentTime,
+  ] = useStateWithDebounce(mediaContextDefaults.currentTime, 500, {
     maxWait: 5000,
   });
   const [currentTime, setCurrentTime] = useState(
-    audioContextDefaults.currentTime
+    mediaContextDefaults.currentTime
   );
   const [dateCrawled, setDateCrawled] = useState<number | null>(
-    audioContextDefaults.dateCrawled
+    mediaContextDefaults.dateCrawled
   );
   const [episodeId, setEpisodeId] = useState<number | null>(
-    audioContextDefaults.episodeId
+    mediaContextDefaults.episodeId
   );
   const [episodeImage, setEpisodeImage] = useState(
-    audioContextDefaults.episodeImage
+    mediaContextDefaults.episodeImage
   );
   const [episodeTitle, setEpisodeTitle] = useState(
-    audioContextDefaults.episodeTitle
+    mediaContextDefaults.episodeTitle
   );
-  const [feedId, setFeedId] = useState(audioContextDefaults.feedId);
-  const [feedImage, setFeedImage] = useState(audioContextDefaults.feedImage);
-  const [feedTitle, setFeedTitle] = useState(audioContextDefaults.feedTitle);
-  const [isMuted, setIsMuted] = useState<boolean>(audioContextDefaults.isMuted);
+  const [feedId, setFeedId] = useState(mediaContextDefaults.feedId);
+  const [feedImage, setFeedImage] = useState(mediaContextDefaults.feedImage);
+  const [feedTitle, setFeedTitle] = useState(mediaContextDefaults.feedTitle);
+  const [isMuted, setIsMuted] = useState<boolean>(mediaContextDefaults.isMuted);
   const [isPaused, setIsPaused] = useState<boolean>(
-    audioContextDefaults.isPaused
+    mediaContextDefaults.isPaused
   );
-  const [src, setSrc] = useState<string | null>(audioContextDefaults.src);
+  const [src, setSrc] = useState<string | null>(mediaContextDefaults.src);
   const [srcType, setSrcType] = useState<string | null>(
-    audioContextDefaults.srcType
+    mediaContextDefaults.srcType
   );
-  const [size, setSize] = useState<1 | 2>(audioContextDefaults.size);
-  const [volume, setVolume] = useState<number>(audioContextDefaults.volume);
+  const [size, setSize] = useState<1 | 2>(mediaContextDefaults.size);
+  const [volume, setVolume] = useState<number>(mediaContextDefaults.volume);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -190,7 +134,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const hasChapters = chapters && chapters.length > 0;
   const currentChapterIndex = hasChapters
     ? chapters.findIndex(({ startTime: chapterStartTime }) => {
-        return audioPlayerCurrentTime < (chapterStartTime ?? 0);
+        return mediaPlayerCurrentTime < (chapterStartTime ?? 0);
       }) - 1
     : -1;
   const currentChapter =
@@ -199,11 +143,11 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       : null;
 
   const isFirstRenderAfterHydration =
-    audioPlayerSettings &&
-    !audioPlayerSettingsRef.current &&
+    mediaPlayerSettings &&
+    !mediaPlayerSettingsRef.current &&
     isDoneHydratingFromLocalStorage;
 
-  const resetAudioContext = () => {
+  const resetMediaContext = () => {
     audioRef.current?.pause();
     videoRef.current?.pause();
 
@@ -211,38 +155,38 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       document.exitPictureInPicture();
     }
 
-    setChaptersUrl(audioContextDefaults.chaptersUrl);
-    setDateCrawled(audioContextDefaults.dateCrawled);
-    setEpisodeId(audioContextDefaults.episodeId);
-    setEpisodeImage(audioContextDefaults.episodeImage);
-    setEpisodeTitle(audioContextDefaults.episodeTitle);
-    setFeedId(audioContextDefaults.feedId);
-    setFeedImage(audioContextDefaults.feedImage);
-    setFeedTitle(audioContextDefaults.feedTitle);
-    setIsMuted(audioContextDefaults.isMuted);
-    setIsPaused(audioContextDefaults.isPaused);
-    setSize(audioContextDefaults.size);
-    setSrc(audioContextDefaults.src);
-    setSrcType(audioContextDefaults.srcType);
-    setVolume(audioContextDefaults.volume);
+    setChaptersUrl(mediaContextDefaults.chaptersUrl);
+    setDateCrawled(mediaContextDefaults.dateCrawled);
+    setEpisodeId(mediaContextDefaults.episodeId);
+    setEpisodeImage(mediaContextDefaults.episodeImage);
+    setEpisodeTitle(mediaContextDefaults.episodeTitle);
+    setFeedId(mediaContextDefaults.feedId);
+    setFeedImage(mediaContextDefaults.feedImage);
+    setFeedTitle(mediaContextDefaults.feedTitle);
+    setIsMuted(mediaContextDefaults.isMuted);
+    setIsPaused(mediaContextDefaults.isPaused);
+    setSize(mediaContextDefaults.size);
+    setSrc(mediaContextDefaults.src);
+    setSrcType(mediaContextDefaults.srcType);
+    setVolume(mediaContextDefaults.volume);
   };
 
   const seekBackward = useCallback(
     ({ seekOffset }) => {
-      const resultTime = audioPlayerCurrentTime - seekOffset;
+      const resultTime = mediaPlayerCurrentTime - seekOffset;
 
       setCurrentTime(resultTime);
     },
-    [audioPlayerCurrentTime]
+    [mediaPlayerCurrentTime]
   );
 
   const seekForward = useCallback(
     ({ seekOffset }) => {
-      const resultTime = audioPlayerCurrentTime + seekOffset;
+      const resultTime = mediaPlayerCurrentTime + seekOffset;
 
       setCurrentTime(resultTime);
     },
-    [audioPlayerCurrentTime]
+    [mediaPlayerCurrentTime]
   );
 
   const playPause = useCallback(async () => {
@@ -269,28 +213,28 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
   useEffect(() => {
     if (isFirstRenderAfterHydration) {
-      setAudioPlayerCurrentTime(audioPlayerSettings.currentTime);
-      setChaptersUrl(audioPlayerSettings.chaptersUrl);
-      setCurrentTime(audioPlayerSettings.currentTime);
-      setDateCrawled(audioPlayerSettings.dateCrawled);
-      setEpisodeId(audioPlayerSettings.episodeId);
-      setEpisodeImage(audioPlayerSettings.episodeImage);
-      setEpisodeTitle(audioPlayerSettings.episodeTitle);
-      setFeedId(audioPlayerSettings.feedId);
-      setFeedImage(audioPlayerSettings.feedImage);
-      setFeedTitle(audioPlayerSettings.feedTitle);
-      setIsMuted(audioPlayerSettings.isMuted);
-      setSize(audioPlayerSettings.size);
-      setSrc(audioPlayerSettings.src);
-      setSrcType(audioPlayerSettings.srcType);
-      setVolume(audioPlayerSettings.volume);
+      setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
+      setChaptersUrl(mediaPlayerSettings.chaptersUrl);
+      setCurrentTime(mediaPlayerSettings.currentTime);
+      setDateCrawled(mediaPlayerSettings.dateCrawled);
+      setEpisodeId(mediaPlayerSettings.episodeId);
+      setEpisodeImage(mediaPlayerSettings.episodeImage);
+      setEpisodeTitle(mediaPlayerSettings.episodeTitle);
+      setFeedId(mediaPlayerSettings.feedId);
+      setFeedImage(mediaPlayerSettings.feedImage);
+      setFeedTitle(mediaPlayerSettings.feedTitle);
+      setIsMuted(mediaPlayerSettings.isMuted);
+      setSize(mediaPlayerSettings.size);
+      setSrc(mediaPlayerSettings.src);
+      setSrcType(mediaPlayerSettings.srcType);
+      setVolume(mediaPlayerSettings.volume);
     }
 
-    audioPlayerSettingsRef.current = audioPlayerSettings;
+    mediaPlayerSettingsRef.current = mediaPlayerSettings;
   }, [
-    audioPlayerSettings,
+    mediaPlayerSettings,
     isDoneHydratingFromLocalStorage,
-    setAudioPlayerCurrentTime,
+    setMediaPlayerCurrentTime,
     setCurrentTime,
     isFirstRenderAfterHydration,
   ]);
@@ -306,12 +250,12 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       setEpisodeSettings((prevEpisodeSettings) => ({
         ...prevEpisodeSettings,
         [episodeId]: {
-          currentTime: audioPlayerCurrentTimeDebounced,
+          currentTime: mediaPlayerCurrentTimeDebounced,
         },
       }));
     }
   }, [
-    audioPlayerCurrentTimeDebounced,
+    mediaPlayerCurrentTimeDebounced,
     isDoneHydratingFromLocalStorage,
     episodeId,
     setEpisodeSettings,
@@ -319,9 +263,9 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
   useEffect(() => {
     if (isDoneHydratingFromLocalStorage) {
-      setAudioPlayerSettings({
+      setMediaPlayerSettings({
         chaptersUrl,
-        currentTime: audioPlayerCurrentTimeDebounced,
+        currentTime: mediaPlayerCurrentTimeDebounced,
         dateCrawled,
         episodeId,
         episodeImage,
@@ -337,7 +281,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       });
     }
   }, [
-    audioPlayerCurrentTimeDebounced,
+    mediaPlayerCurrentTimeDebounced,
     chaptersUrl,
     dateCrawled,
     episodeId,
@@ -350,7 +294,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     isFirstRenderAfterHydration,
     isMuted,
     size,
-    setAudioPlayerSettings,
+    setMediaPlayerSettings,
     src,
     srcType,
     volume,
@@ -418,7 +362,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   }, [playPause, seekBackward, seekForward]);
 
   /**
-   * Update `audioPlayerCurrentTime` whenever `currentTime` changes (via calls
+   * Update `mediaPlayerCurrentTime` whenever `currentTime` changes (via calls
    * to `setCurrentTime()`)
    * */
   useEffect(() => {
@@ -430,14 +374,12 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       videoRef.current.currentTime = currentTime;
     }
 
-    setAudioPlayerCurrentTime(currentTime);
-  }, [audioRef, videoRef, currentTime, setAudioPlayerCurrentTime]);
+    setMediaPlayerCurrentTime(currentTime);
+  }, [audioRef, videoRef, currentTime, setMediaPlayerCurrentTime]);
 
   return (
-    <AudioContext.Provider
+    <MediaContext.Provider
       value={{
-        audioPlayerCurrentTime,
-        audioPlayerCurrentTimeDebounced,
         audioRef,
         chapters,
         chaptersUrl,
@@ -453,11 +395,12 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedTitle,
         isMuted,
         isPaused,
+        mediaPlayerCurrentTime,
+        mediaPlayerCurrentTimeDebounced,
         playPause,
-        resetAudioContext,
+        resetMediaContext,
         seekBackward,
         seekForward,
-        setAudioPlayerCurrentTime,
         setChaptersUrl,
         setCurrentTime,
         setDateCrawled,
@@ -469,6 +412,7 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setFeedTitle,
         setIsMuted,
         setIsPaused,
+        setMediaPlayerCurrentTime,
         setSize,
         setSrc,
         setSrcType,
@@ -481,9 +425,9 @@ export const AudioProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       }}
     >
       {children}
-    </AudioContext.Provider>
+    </MediaContext.Provider>
   );
 };
 
-export const useAudioContext = (): IAudioContext | undefined =>
-  useContext(AudioContext);
+export const useMediaContext = (): IMediaContext | undefined =>
+  useContext(MediaContext);
