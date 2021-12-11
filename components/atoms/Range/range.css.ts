@@ -10,7 +10,9 @@ const VOLUME_THUMB_HEIGHT = vars.spacing.s016;
 export const range = style({
   WebkitAppearance: 'none',
   background: 'none',
-  margin: '0',
+  height: AUDIO_TRACK_HEIGHT,
+  margin: 0,
+  padding: 0,
   width: '100%',
 });
 
@@ -21,6 +23,8 @@ const audioThumbStyles = {
   boxShadow: 'none',
   cursor: 'pointer',
   height: '100%',
+  margin: 0,
+  padding: 0,
   width: vars.spacing.s024,
 };
 
@@ -29,7 +33,8 @@ const audioTrackFillStyles = {
   border: `2px solid ${vars.color.foreground}`,
   borderRadius: '0',
   boxShadow: 'none',
-};
+  boxSizing: 'border-box',
+} as const;
 
 const audioTrackStyles = (height: string) => ({
   ...audioTrackFillStyles,
