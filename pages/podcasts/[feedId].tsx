@@ -2,14 +2,18 @@ import type { GetStaticPaths, NextPage } from 'next';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
+import { Dot } from 'components/atoms/Dot';
 import { Head } from 'components/atoms/Head';
 import { Label } from 'components/atoms/Label';
 import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
+import { useSettingsContext } from 'contexts/SettingsContext';
+import { useClassNames } from 'hooks/useClassNames';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import { headingLink, nonUnderlinedLink } from 'styles';
+import { episodeItemClassName } from 'styles/feed.css';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
@@ -49,6 +53,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
+  const { episodeSettings, feedSettings } = useSettingsContext();
+
+  const baseClassName = useClassNames(episodeItemClassName, nonUnderlinedLink);
+
+  const subscribedAt = feedSettings[feed.id]?.subscribedAt;
   const proxyFeedImage = new URL(
     '/api/images/proxy',
     process.env.NEXT_PUBLIC_BASE_URL
@@ -141,53 +150,61 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
           <Typography as="h4" size="headingSmaller">
             Episodes
           </Typography>
-          {episodes.map((episode) => {
+          {episodes.map(({ datePublished, feedImage, id, image, title }) => {
             const proxyImage = new URL(
               '/api/images/proxy',
               process.env.NEXT_PUBLIC_BASE_URL
             );
 
-            proxyImage.searchParams.set(
-              'url',
-              episode.image || episode.feedImage
-            );
+            proxyImage.searchParams.set('url', image || feedImage);
+
+            const isUnlistened =
+              !episodeSettings[id] &&
+              new Date(datePublished * 1000) >
+                new Date(subscribedAt ?? Infinity);
 
             return (
               <Stack
                 align="center"
                 as={Link}
-                className={nonUnderlinedLink}
+                className={baseClassName}
                 href={getEpisodePath({
-                  episodeId: episode.id,
+                  episodeId: id,
                   feedId: feed.id,
                 })}
-                key={episode.id}
+                key={id}
                 kind="flexRow"
-                space="small"
+                space="xxsmall"
               >
-                <Artwork
-                  alt=""
-                  height={80}
-                  shadow="medium"
-                  src={proxyImage.toString()}
-                  width={80}
+                <Dot
+                  color={isUnlistened ? 'blue' : 'transparent'}
+                  label="New episodes"
                 />
-                <Stack
-                  space="small"
-                  style={{ overflowY: 'hidden', padding: '4px 0' }}
-                >
-                  <Typography
-                    as="h3"
-                    size="headingSmaller"
-                    whitespace="ellipsis"
+                <Stack align="center" space="small" kind="flexRow">
+                  <Artwork
+                    alt=""
+                    height={80}
+                    shadow="medium"
+                    src={proxyImage.toString()}
+                    width={80}
+                  />
+                  <Stack
+                    space="small"
+                    style={{ overflowY: 'hidden', padding: '4px 0' }}
                   >
-                    {episode.title}
-                  </Typography>
-                  <Typography as="p" size="paragraph" whitespace="ellipsis">
-                    {noteDateTimeFormat.format(
-                      new Date(episode.datePublished * 1000)
-                    )}
-                  </Typography>
+                    <Typography
+                      as="h3"
+                      size="headingSmaller"
+                      whitespace="ellipsis"
+                    >
+                      {title}
+                    </Typography>
+                    <Typography as="p" size="paragraph" whitespace="ellipsis">
+                      {noteDateTimeFormat.format(
+                        new Date(datePublished * 1000)
+                      )}
+                    </Typography>
+                  </Stack>
                 </Stack>
               </Stack>
             );
