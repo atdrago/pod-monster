@@ -3,6 +3,7 @@ import { FunctionComponent, ReactEventHandler } from 'react';
 import { useMutation } from 'react-query';
 
 import { Head } from 'components/atoms/Head';
+import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { FileField } from 'components/molecules/FileField';
@@ -105,7 +106,10 @@ const SettingsPage: FunctionComponent = () => {
                 </>
               ) : (
                 <Typography as="p" size="paragraph">
-                  All feeds were imported successfully.
+                  All feeds were imported successfully.{' '}
+                  <Link className={underlinedLink} href="/">
+                    View all subscriptions.
+                  </Link>
                 </Typography>
               )
             ) : null}
