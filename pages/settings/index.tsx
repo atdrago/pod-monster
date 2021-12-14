@@ -110,25 +110,27 @@ const SettingsPage: FunctionComponent = () => {
               )
             ) : null}
           </Stack>
-          <Stack as="section" space="small">
-            <Typography as="h3" size="headingSmall">
-              Export
-            </Typography>
-            <Typography as="p" size="paragraph">
-              <Stack
-                className={underlinedLink}
-                as="a"
-                kind="flexRow"
-                space="xsmall"
-                align="center"
-                href={opmlFileUrl}
-                download="podmonster.opml"
-              >
-                <DownloadIcon aria-hidden="true" />
-                Download subscriptions as OPML
-              </Stack>
-            </Typography>
-          </Stack>
+          {opmlFileUrl ? (
+            <Stack as="section" space="small">
+              <Typography as="h3" size="headingSmall">
+                Export
+              </Typography>
+              <Typography as="p" size="paragraph">
+                <Stack
+                  className={underlinedLink}
+                  as="a"
+                  kind="flexRow"
+                  space="xsmall"
+                  align="center"
+                  href={opmlFileUrl}
+                  download="podmonster.opml"
+                >
+                  <DownloadIcon aria-hidden="true" />
+                  Download subscriptions as OPML
+                </Stack>
+              </Typography>
+            </Stack>
+          ) : null}
         </Stack>
       </Stack>
     </>

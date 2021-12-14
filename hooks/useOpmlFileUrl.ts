@@ -4,12 +4,19 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 
 export const useOpmlFileUrl = () => {
   const { feedSettings } = useSettingsContext();
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const feedEntries = Object.entries(feedSettings).filter(
       ([_, { subscribedAt }]) => subscribedAt !== null
     );
+
+    if (feedEntries.length === 0) {
+      setUrl(null);
+
+      return;
+    }
+
     const opml = `<?xml version="1.0" encoding="UTF-8"?>
 <opml version="1.0">
   <head>
