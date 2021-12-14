@@ -3,7 +3,7 @@ import type { GetServerSideProps } from 'next';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const staticPages = ['about']
+  const staticPages = ['about', 'settings']
     .map((staticPagePath) => {
       return typeof staticPagePath === 'string'
         ? new URL(staticPagePath, process.env.NEXT_PUBLIC_BASE_URL).toString()
