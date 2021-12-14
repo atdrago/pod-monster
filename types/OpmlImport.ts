@@ -1,6 +1,6 @@
 import type { FeedSettings } from 'types';
 
 export type OpmlImportResponse = {
-  errors: Array<{ reason: unknown; title: string }>;
+  errors: Array<{ title: string }>;
   feedSettings: FeedSettings;
 };

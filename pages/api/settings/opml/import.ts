@@ -25,47 +25,54 @@ const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
   const config = getPodcastIndexConfig(`${authTime}`, authToken);
   const json = await opmlToJSON(req.body);
 
+  if (!json.children) {
+    return res.status(400).json({ error: 'Invalid OPML file.' });
+  }
+
   const feedResponses = await Promise.allSettled(
-    json.children.map(
-      async ({ xmlurl }) => await podcastsByFeedUrl(xmlurl, config)
-    )
+    json.children.map(async (child) => {
+      if (child && child.xmlurl) {
+        return await podcastsByFeedUrl(child.xmlurl, config);
+      }
+
+      return null;
+    })
   );
 
   const feedSettings: FeedSettings = {};
 
-  const feedSettingsErrors: Array<{ reason: string; title: string }> = [];
+  const feedSettingsErrors: Array<{ title: string }> = [];
 
   feedResponses.forEach((feedResponse, index) => {
-    const opmlFeed = json.children[index];
+    const opmlFeed = json.children?.[index];
 
-    switch (feedResponse.status) {
-      case 'rejected': {
+    if (feedResponse.status === 'rejected') {
+      feedSettingsErrors.push({
+        title: opmlFeed?.title ?? 'Unknown',
+      });
+
+      return;
+    }
+
+    if (feedResponse.status === 'fulfilled') {
+      const feed = feedResponse.value?.feed;
+
+      if (!feed) {
         feedSettingsErrors.push({
-          reason: feedResponse.reason,
-          title: opmlFeed.title,
+          title: opmlFeed?.title ?? 'Unknown',
         });
 
         return;
       }
 
-      case 'fulfilled': {
-        const { feed } = feedResponse.value;
-
-        feedSettings[feed.id] = {
-          htmlUrl: feed.link,
-          image: feed.image,
-          subscribedAt: new Date().toJSON(),
-          title: feed.title,
-          type: feed.type === 0 ? 'rss' : 'atom',
-          xmlUrl: feed.url,
-        };
-
-        break;
-      }
-
-      default:
-        // Do nothing
-        break;
+      feedSettings[feed.id] = {
+        htmlUrl: feed.link,
+        image: feed.image,
+        subscribedAt: new Date().toJSON(),
+        title: feed.title,
+        type: feed.type === 0 ? 'rss' : 'atom',
+        xmlUrl: feed.url,
+      };
     }
   });
 

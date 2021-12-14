@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 declare module 'opml-to-json' {
   interface ExternalOpmlOutline {
-    htmlurl: string;
-    text: string;
-    title: string;
-    type: 'rss' | 'atom';
-    xmlurl: string;
+    htmlurl?: string;
+    text?: string;
+    title?: string;
+    type?: 'rss' | 'atom';
+    xmlurl?: string;
   }
 
   interface ExternalOpmlFile {
-    children: Array<ExternalOpmlOutline>;
+    children?: Array<ExternalOpmlOutline>;
     title: string;
   }
 
