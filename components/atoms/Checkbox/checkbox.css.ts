@@ -3,9 +3,6 @@ import { style } from '@vanilla-extract/css';
 import { vars } from 'styles';
 
 export const label = style({
-  alignItems: 'center',
-  border: '0',
-  color: vars.color.foreground,
   cursor: 'pointer',
 });
 

@@ -17,19 +17,14 @@ export const Checkbox: CheckboxComponent = ({
   const baseClassName = useClassNames(label, className);
 
   return (
-    <Typography
-      as="label"
-      size="paragraph"
-      className={baseClassName}
-      {...labelProps}
-    >
+    <label className={baseClassName} {...labelProps}>
       <input
         checked={checked}
         className={input}
         onChange={onChange}
         type="checkbox"
       />
-      <Stack align="center" kind="flexRow" space="small">
+      <Stack kind="flexRow" space="small">
         {checked ? (
           <span className={checkboxChecked}>
             <Icon color="background" size="xsmall">
@@ -39,8 +34,10 @@ export const Checkbox: CheckboxComponent = ({
         ) : (
           <span className={checkbox}></span>
         )}
-        {children}
+        <Typography as="span" size="paragraph">
+          {children}
+        </Typography>
       </Stack>
-    </Typography>
+    </label>
   );
 };
