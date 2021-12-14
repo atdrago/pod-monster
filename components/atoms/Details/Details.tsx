@@ -2,7 +2,6 @@ import { FunctionComponent, useState } from 'react';
 
 import { Icon } from 'components/atoms/Icon';
 import { Stack } from 'components/layouts/Stack';
-import { useClassNames } from 'hooks/useClassNames';
 import PlayIcon from 'icons/play3.svg';
 import { DetailsProps } from 'types';
 
@@ -19,13 +18,12 @@ export const Details: FunctionComponent<DetailsProps> = ({
   ...detailsProps
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const baseSummaryClassName = useClassNames(summaryClassName);
 
   return (
     <details {...detailsProps}>
       <Stack
         as="summary"
-        className={baseSummaryClassName}
+        className={summaryClassName}
         kind="flexRow"
         onClick={() => setIsOpen(!isOpen)}
         space="small"
