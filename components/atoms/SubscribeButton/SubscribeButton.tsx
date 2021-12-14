@@ -25,17 +25,25 @@ export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
   const handleSubscribeClick: ReactEventHandler<HTMLButtonElement> = async (
     event
   ) => {
-    if (navigator.storage && 'persist' in navigator.storage) {
-      const persistent = await navigator.storage.persisted();
-
-      if (!persistent) {
-        await navigator.storage.persist();
-      }
-    }
-
     // Quick fix to prevent navigation to the episode when this button is used
     // in search result items.
     event.preventDefault();
+
+    try {
+      if (navigator.storage && 'persist' in navigator.storage) {
+        const persistent = await navigator.storage.persisted();
+
+        console.log({ persistent });
+
+        if (!persistent) {
+          await navigator.storage.persist();
+        }
+      } else {
+        console.log('not available');
+      }
+    } catch (err) {
+      console.log('errr', err);
+    }
 
     setFeedSettings((prevFeedSettings) => ({
       ...prevFeedSettings,
