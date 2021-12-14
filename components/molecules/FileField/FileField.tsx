@@ -13,6 +13,7 @@ import {
 } from './fileField.css';
 
 interface IFileFieldProps {
+  accept?: string;
   isLoading?: boolean;
   label: string;
   loadingLabel?: string;
@@ -20,6 +21,7 @@ interface IFileFieldProps {
 }
 
 export const FileField = ({
+  accept,
   isLoading = false,
   label,
   loadingLabel = 'Loading...',
@@ -27,7 +29,12 @@ export const FileField = ({
 }: IFileFieldProps) => {
   return (
     <Button as="label" className={buttonClassName} role="button">
-      <input className={inputClassName} type="file" onChange={onChange} />
+      <input
+        accept={accept}
+        className={inputClassName}
+        type="file"
+        onChange={onChange}
+      />
       <Stack kind="flexRow" space="xsmall" align="center">
         {isLoading ? (
           <SpinnerIcon aria-hidden="true" className={spinnerClassName} />

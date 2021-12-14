@@ -75,6 +75,7 @@ const SettingsPage: FunctionComponent = () => {
             </Typography>
             <div>
               <FileField
+                accept=".opml, .xml, application/xml, text/xml, text/x-opml"
                 isLoading={isLoading}
                 onChange={handleFileChange}
                 label="Import OPML"
