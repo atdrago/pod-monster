@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import type { FunctionComponent } from 'react';
 
 import { Icon } from 'components/atoms/Icon';
@@ -7,6 +8,7 @@ import { Stack } from 'components/layouts/Stack';
 import LogoIcon from 'icons/logo.svg';
 import { headingLink } from 'styles';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
+import { toTitleCase } from 'utils/toTitleCase';
 
 import {
   headerBaseClassName,
@@ -29,8 +31,22 @@ export const Header: FunctionComponent<IHeaderProps> = ({
   feedTitle,
   isLoading = false,
 }) => {
+  const { pathname } = useRouter();
+
+  const isStaticPage = ['/about', '/settings'].includes(pathname);
+
+  const isAppNameHidden = isStaticPage || isLoading || feedTitle || feedId;
+
+  const isFeedTitleVisible =
+    !isStaticPage && (isLoading || (feedId && feedTitle));
+
   const isEpisodeTitleVisible =
-    !isLoading && feedId && feedTitle && episodeId && episodeTitle;
+    !isStaticPage &&
+    !isLoading &&
+    feedId &&
+    feedTitle &&
+    episodeId &&
+    episodeTitle;
 
   const abbreviatedFeedTitle = isEpisodeTitleVisible
     ? feedTitle
@@ -61,12 +77,38 @@ export const Header: FunctionComponent<IHeaderProps> = ({
           <Icon size="large">
             <LogoIcon className={homeIconClassName} />
           </Icon>
-          {isLoading || feedTitle || feedId
-            ? null
-            : process.env.NEXT_PUBLIC_APP_NAME}
+          {isAppNameHidden ? null : process.env.NEXT_PUBLIC_APP_NAME}
         </Link>
       </Typography>
-      {isLoading || (feedId && feedTitle) ? (
+      {isStaticPage ? (
+        <>
+          <Typography
+            as="span"
+            size="headingSmall"
+            style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
+            shouldUseCapsize={false}
+          >
+            {' / '}
+          </Typography>
+          <Typography
+            as="h2"
+            size="headingSmall"
+            whitespace="ellipsis"
+            style={{
+              flex: isEpisodeTitleVisible ? '0 0 auto' : '0 1 auto',
+              margin: 0,
+              width: 'auto',
+            }}
+            shouldUseCapsize={false}
+            title={feedTitle}
+          >
+            <Link href={pathname} className={headingLink}>
+              {toTitleCase(pathname.slice(1))}
+            </Link>
+          </Typography>
+        </>
+      ) : null}
+      {isFeedTitleVisible ? (
         <>
           <Typography
             as="span"

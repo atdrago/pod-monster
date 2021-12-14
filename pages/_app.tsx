@@ -7,6 +7,7 @@ import { FunctionComponent, useState } from 'react';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 
 import { CenteredPageLayout } from 'components/layouts/CenteredPageLayout';
+import { Footer } from 'components/molecules/Footer';
 import { Header } from 'components/molecules/Header';
 import { MediaPlayer } from 'components/organisms/MediaPlayer';
 import { MediaProvider } from 'contexts/MediaContext';
@@ -72,6 +73,7 @@ const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
                 />
                 <Component {...pageProps} />
                 <MediaPlayer />
+                <Footer />
               </CenteredPageLayout>
             </MediaProvider>
           </LazyMotion>

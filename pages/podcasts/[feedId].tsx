@@ -112,8 +112,11 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
           )}
           <SubscribeButton
             feedId={feed.id}
+            feedType={feed.type === 0 ? 'rss' : 'atom'}
+            htmlUrl={feed.link}
             image={feed.image}
             title={feed.title}
+            xmlUrl={feed.url}
           />
         </Stack>
         <Details

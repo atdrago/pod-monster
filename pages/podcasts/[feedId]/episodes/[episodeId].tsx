@@ -32,7 +32,7 @@ import type {
 } from 'types';
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { episodeById } from 'utils/podcastIndex';
+import { episodeById, podcastsByFeedId } from 'utils/podcastIndex';
 import { toTitleCase } from 'utils/toTitleCase';
 
 export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
@@ -50,6 +50,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
   const { episode } = (await episodeById(episodeId, config)) as {
     episode: EpisodePageEpisode;
   };
+  const { feed } = await podcastsByFeedId(feedId, config);
 
   // Setup person proxy image paths and sorting on the server
   if (episode.persons && episode.persons.length > 0) {
@@ -111,6 +112,9 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
   return {
     props: {
       episode,
+      feedLink: feed.link,
+      feedType: feed.type === 0 ? 'rss' : 'atom',
+      feedUrl: feed.url,
     },
     // 12 hours, in seconds
     revalidate: 3600 * 12,
@@ -124,7 +128,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
+const EpisodePage: NextPage<IEpisodePageProps> = ({
+  episode,
+  feedLink,
+  feedType,
+  feedUrl,
+}) => {
   const { episodeSettings } = useSettingsContext();
   const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
     episode ? episodeSettings[episode.id]?.currentTime ?? 0 : 0
@@ -426,8 +435,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({ episode }) => {
         {episode && (
           <SubscribeButton
             feedId={episode.feedId}
+            feedType={feedType}
+            htmlUrl={feedLink}
             image={episode.feedImage}
             title={episode.feedTitle}
+            xmlUrl={feedUrl}
           />
         )}
       </Stack>

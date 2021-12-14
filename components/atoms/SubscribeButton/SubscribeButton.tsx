@@ -5,14 +5,20 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 
 interface ISubscribeButtonProps {
   feedId: number;
+  feedType: 'rss' | 'atom';
+  htmlUrl: string;
   image: string;
   title: string;
+  xmlUrl: string;
 }
 
 export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
   feedId: id,
+  feedType,
+  htmlUrl,
   image,
   title,
+  xmlUrl,
 }) => {
   const { feedSettings, setFeedSettings } = useSettingsContext();
 
@@ -27,11 +33,14 @@ export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
       ...prevFeedSettings,
       [id]: {
         ...prevFeedSettings[id],
+        htmlUrl,
         image,
         subscribedAt: prevFeedSettings[id]?.subscribedAt
           ? null
           : new Date().toJSON(),
         title,
+        type: feedType,
+        xmlUrl,
       },
     }));
   };

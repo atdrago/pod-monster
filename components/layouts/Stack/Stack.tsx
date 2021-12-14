@@ -21,6 +21,7 @@ export const Stack: FunctionComponent<StackProps> = forwardRef<
     // `align` is not defaulted to anything because the meaning of `align-items`
     // changes based on the `display` property
     align,
+    as = 'div',
     className,
     justify,
     kind = 'flex',
@@ -40,5 +41,5 @@ export const Stack: FunctionComponent<StackProps> = forwardRef<
     className
   );
 
-  return <Box as="div" className={rootClassName} ref={ref} {...divProps} />;
+  return <Box as={as} className={rootClassName} ref={ref} {...divProps} />;
 });

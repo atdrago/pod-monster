@@ -57,13 +57,3 @@ export const edgeVariant = styleVariants({
     margin: `${calc(vars.spacing.s008).negate().toString()} 0 `,
   },
 });
-
-export const buttonGroup = style({
-  alignItems: 'center',
-  display: 'flex',
-  gap: vars.spacing.s016,
-  justifyContent: 'flex-end',
-  margin: 'auto',
-  maxWidth: '48rem',
-  width: '100%',
-});
