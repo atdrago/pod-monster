@@ -7,7 +7,9 @@ export const useOpmlFileUrl = () => {
   const [url, setUrl] = useState('');
 
   useEffect(() => {
-    const feedEntries = Object.entries(feedSettings);
+    const feedEntries = Object.entries(feedSettings).filter(
+      ([_, { subscribedAt }]) => subscribedAt !== null
+    );
     const opml = `<?xml version="1.0" encoding="UTF-8"?>
 <opml version="1.0">
   <head>
