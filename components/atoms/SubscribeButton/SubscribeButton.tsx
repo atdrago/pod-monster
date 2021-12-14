@@ -22,9 +22,17 @@ export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
 }) => {
   const { feedSettings, setFeedSettings } = useSettingsContext();
 
-  const handleSubscribeClick: ReactEventHandler<HTMLButtonElement> = (
+  const handleSubscribeClick: ReactEventHandler<HTMLButtonElement> = async (
     event
   ) => {
+    if (navigator.storage && 'persist' in navigator.storage) {
+      const persistent = await navigator.storage.persisted();
+
+      if (!persistent) {
+        await navigator.storage.persist();
+      }
+    }
+
     // Quick fix to prevent navigation to the episode when this button is used
     // in search result items.
     event.preventDefault();
