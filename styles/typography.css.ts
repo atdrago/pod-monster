@@ -56,7 +56,7 @@ export const listItem = style({
    * })
    * ```
    */
-  lineHeight: '27.3281px',
-  margin: '-0.5195em 0',
+  lineHeight: 1.5,
+  margin: '-0.3765em 0 -0.4155em',
   wordWrap: 'break-word',
 });

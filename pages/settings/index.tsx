@@ -125,7 +125,12 @@ const SettingsPage: FunctionComponent = () => {
                   <Typography as="p" size="paragraph">
                     All feeds except the following were imported:
                   </Typography>
-                  <ul className={listLayout}>
+                  <Typography
+                    as="ul"
+                    className={listLayout}
+                    size="paragraph"
+                    shouldUseCapsize={false}
+                  >
                     {data.errors.map(({ title }, i) => {
                       return (
                         <li className={listItem} key={i}>
@@ -133,7 +138,7 @@ const SettingsPage: FunctionComponent = () => {
                         </li>
                       );
                     })}
-                  </ul>
+                  </Typography>
                 </>
               ) : (
                 <Typography as="p" size="paragraph">

@@ -18,6 +18,6 @@ export const centeredPageLayout = style({
 export const listLayout = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: vars.spacing.s016,
+  gap: vars.spacing.s032,
   paddingLeft: vars.spacing.s024,
 });
