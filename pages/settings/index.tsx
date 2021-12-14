@@ -1,7 +1,8 @@
 import type { GetStaticProps } from 'next';
-import { FunctionComponent, ReactEventHandler } from 'react';
+import { FunctionComponent, ReactEventHandler, useState } from 'react';
 import { useMutation } from 'react-query';
 
+import { Checkbox } from 'components/atoms/Checkbox';
 import { Head } from 'components/atoms/Head';
 import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
@@ -22,7 +23,10 @@ export const getStaticProps: GetStaticProps = () => {
 
 const SettingsPage: FunctionComponent = () => {
   const opmlFileUrl = useOpmlFileUrl();
-  const { setFeedSettings } = useSettingsContext();
+  const [shouldMergeOpmlImport, setShouldMergeOpmlImport] = useState(true);
+  const { feedSettings, setFeedSettings } = useSettingsContext();
+  const hasExistingSubscriptions = Object.keys(feedSettings).length > 0;
+
   const { data, error, isError, isLoading, isSuccess, mutate } = useMutation<
     OpmlImportResponse | null,
     { error: string },
@@ -30,7 +34,14 @@ const SettingsPage: FunctionComponent = () => {
   >(async ({ file }) => await fetchOpmlImport(file), {
     onSuccess: (successData) => {
       if (successData?.feedSettings) {
-        setFeedSettings(successData.feedSettings);
+        if (!shouldMergeOpmlImport) {
+          setFeedSettings(successData.feedSettings);
+        } else {
+          setFeedSettings({
+            ...feedSettings,
+            ...successData.feedSettings,
+          });
+        }
       }
     },
   });
@@ -41,6 +52,16 @@ const SettingsPage: FunctionComponent = () => {
     const file = event.currentTarget.files?.[0];
 
     if (file) {
+      if (
+        hasExistingSubscriptions &&
+        !shouldMergeOpmlImport &&
+        !window.confirm(
+          'Are you sure you want to remove your existing Pod Monster subscriptions and subscribe to the podcasts in this OPML file instead?'
+        )
+      ) {
+        return;
+      }
+
       mutate({ file });
     }
   };
@@ -74,6 +95,16 @@ const SettingsPage: FunctionComponent = () => {
             <Typography as="h3" size="headingSmall">
               Import
             </Typography>
+            {hasExistingSubscriptions ? (
+              <Checkbox
+                checked={shouldMergeOpmlImport}
+                onChange={(event) =>
+                  setShouldMergeOpmlImport(event.currentTarget.checked)
+                }
+              >
+                Merge imported podcasts with existing subscriptions
+              </Checkbox>
+            ) : null}
             <div>
               <FileField
                 accept=".opml, .xml, application/xml, text/xml, text/x-opml"
