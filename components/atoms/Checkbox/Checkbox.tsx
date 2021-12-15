@@ -24,7 +24,7 @@ export const Checkbox: CheckboxComponent = ({
         onChange={onChange}
         type="checkbox"
       />
-      <Stack kind="flexRow" space="small">
+      <Stack kind="flexRow" space="xsmall">
         {checked ? (
           <span className={checkboxChecked}>
             <Icon color="background" size="xsmall">
