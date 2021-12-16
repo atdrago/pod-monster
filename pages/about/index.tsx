@@ -219,7 +219,7 @@ const AboutPage: FunctionComponent = () => {
                 storage should be persistent. Still, there is no surefire way to
                 keep reliably persistent data in a web browser. For this reason,
                 I encourage you to{' '}
-                <Link className={underlinedLink} href="/">
+                <Link className={underlinedLink} href="/settings">
                   keep an OPML back-up
                 </Link>{' '}
                 of your subscriptions, just in case your subscriptions get wiped
@@ -262,7 +262,9 @@ const AboutPage: FunctionComponent = () => {
               Index.
             </li>
             <li className={listItem}>
-              <ExternalLink href="https://nextjs.org/">TypeScript</ExternalLink>{' '}
+              <ExternalLink href="https://www.typescriptlang.org/">
+                TypeScript
+              </ExternalLink>{' '}
               allows you to write statically-typed JavaScript and, when used in
               strict mode, eliminates an entire category of possible errors.
             </li>
