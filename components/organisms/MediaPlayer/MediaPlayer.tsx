@@ -38,10 +38,12 @@ import {
 export const MediaPlayer: FunctionComponent = () => {
   const {
     audioRef,
+    chapters,
     currentChapter,
     currentTime,
     episodeId,
     episodeImage,
+    episodeImageDimensions,
     episodeTitle,
     feedId,
     feedImage,
@@ -175,6 +177,7 @@ export const MediaPlayer: FunctionComponent = () => {
   };
 
   const isVideo = srcType && srcType.includes('video');
+  const hasChapters = chapters && chapters.length > 0;
 
   return (
     <AnimatePresence>
@@ -247,7 +250,10 @@ export const MediaPlayer: FunctionComponent = () => {
                     <Artwork
                       alt=""
                       edge="overflow"
+                      height={episodeImageDimensions?.height}
+                      isSquare={!!episodeImageDimensions && !!hasChapters}
                       src={playerArtworkProxyUrl.toString()}
+                      width={episodeImageDimensions?.width}
                     />
                   ) : null}
                 </Stack>

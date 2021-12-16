@@ -12,6 +12,7 @@ export interface IMediaContext {
   dateCrawled: number | null;
   episodeId: number | null;
   episodeImage: string | null;
+  episodeImageDimensions: { height: number; width: number } | null;
   episodeTitle: string | null;
   feedId: number | null;
   feedImage: string | null;
@@ -33,6 +34,9 @@ export interface IMediaContext {
   setDateCrawled: Dispatch<SetStateAction<number | null>>;
   setEpisodeId: Dispatch<SetStateAction<number | null>>;
   setEpisodeImage: Dispatch<SetStateAction<string | null>>;
+  setEpisodeImageDimensions: Dispatch<
+    SetStateAction<{ height: number; width: number } | null>
+  >;
   setEpisodeTitle: Dispatch<SetStateAction<string | null>>;
   setFeedId: Dispatch<SetStateAction<number | null>>;
   setFeedImage: Dispatch<SetStateAction<string | null>>;

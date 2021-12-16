@@ -1,4 +1,5 @@
 import type { GetStaticPaths, NextPage } from 'next';
+import probeImageSize from 'probe-image-size';
 import { useEffect, useState } from 'react';
 import ReactDomServer from 'react-dom/server';
 import { useQuery } from 'react-query';
@@ -51,6 +52,25 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
     episode: EpisodePageEpisode;
   };
   const { feed } = await podcastsByFeedId(feedId, config);
+
+  const episodeImageDimensions = {
+    height: 512,
+    width: 512,
+  };
+
+  try {
+    const { height, width } = await probeImageSize(
+      episode.image || episode.feedImage
+    );
+
+    // If the image is a square, keep the dimensions at 512x512
+    if (height !== width) {
+      episodeImageDimensions.height = height;
+      episodeImageDimensions.width = width;
+    }
+  } catch (err) {
+    // Failing to get image dimensions. This is fine, so do nothing.
+  }
 
   // Setup person proxy image paths and sorting on the server
   if (episode.persons && episode.persons.length > 0) {
@@ -112,6 +132,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
   return {
     props: {
       episode,
+      episodeImageDimensions,
       feedLink: feed.link,
       feedType: feed.type === 0 ? 'rss' : 'atom',
       feedUrl: feed.url,
@@ -130,6 +151,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const EpisodePage: NextPage<IEpisodePageProps> = ({
   episode,
+  episodeImageDimensions,
   feedLink,
   feedType,
   feedUrl,
@@ -149,6 +171,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     setDateCrawled,
     setEpisodeId,
     setEpisodeImage,
+    setEpisodeImageDimensions,
     setEpisodeTitle,
     setFeedId,
     setFeedImage,
@@ -214,11 +237,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
       : null;
 
   const episodeArtwork =
-    currentChapter?.img ||
-    // This isn't a great assumption, but this sort of aligns with what TWiT
-    // does. If it's a video, the `image` is the same dimensions as the video,
-    // so it should presumably be used as the poster frame.
-    (isVideo ? episode?.feedImage : episode?.image || episode?.feedImage);
+    currentChapter?.img || episode?.image || episode?.feedImage;
 
   let artworkProxyImage = null;
 
@@ -267,6 +286,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
       setDateCrawled(episode.dateCrawled);
       setEpisodeId(episode.id);
       setEpisodeImage(episode.image);
+      setEpisodeImageDimensions(episodeImageDimensions ?? null);
       setEpisodeTitle(episode.title);
       setFeedId(episode.feedId);
       setFeedImage(episode.feedImage);
@@ -313,9 +333,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
         <Artwork
           alt="Podcast episode or chapter artwork"
           edge="overflow"
+          height={episodeImageDimensions?.height}
           priority={true}
           shadow="medium"
+          isSquare={episodeImageDimensions && !!hasChapters}
           src={artworkProxyImage?.toString()}
+          width={episodeImageDimensions?.width}
         />
         <Stack
           aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
@@ -432,7 +455,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
             ? noteDateTimeFormat.format(new Date(episode.datePublished * 1000))
             : null}
         </Typography>
-        {episode && (
+        {episode && feedType && feedLink && feedUrl && (
           <SubscribeButton
             feedId={episode.feedId}
             feedType={feedType}

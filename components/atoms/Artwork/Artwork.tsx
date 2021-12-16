@@ -19,6 +19,7 @@ export const Artwork: ArtworkComponent = ({
   className,
   edge = 'normal',
   height = 512,
+  isSquare = true,
   label,
   shadow = 'none',
   size = 'full',
@@ -50,8 +51,32 @@ export const Artwork: ArtworkComponent = ({
           : { margin: 0, padding: 0 }
       }
     >
-      <div className={baseClassName}>
-        <div className={squareInner}>
+      {isSquare ? (
+        <div className={baseClassName}>
+          <div className={squareInner}>
+            {shouldShowImage ? (
+              <Box
+                as={Image}
+                className={imageClassName}
+                height={height}
+                onError={handleError}
+                src={src}
+                width={width}
+                {...props}
+              />
+            ) : (
+              <Typography
+                as="span"
+                size="headingLarge"
+                className={labelClassName}
+              >
+                {label}
+              </Typography>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
           {shouldShowImage ? (
             <Box
               as={Image}
@@ -60,6 +85,7 @@ export const Artwork: ArtworkComponent = ({
               onError={handleError}
               src={src}
               width={width}
+              layout="responsive"
               {...props}
             />
           ) : (
@@ -71,8 +97,8 @@ export const Artwork: ArtworkComponent = ({
               {label}
             </Typography>
           )}
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

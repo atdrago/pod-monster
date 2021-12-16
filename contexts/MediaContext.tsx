@@ -26,6 +26,7 @@ export const mediaContextDefaults: IMediaContext = {
   dateCrawled: null,
   episodeId: null,
   episodeImage: null,
+  episodeImageDimensions: null,
   episodeTitle: null,
   feedId: null,
   feedImage: null,
@@ -43,6 +44,7 @@ export const mediaContextDefaults: IMediaContext = {
   setDateCrawled: (_) => {},
   setEpisodeId: (_) => {},
   setEpisodeImage: (_) => {},
+  setEpisodeImageDimensions: (_) => {},
   setEpisodeTitle: (_) => {},
   setFeedId: (_) => {},
   setFeedImage: (_) => {},
@@ -96,6 +98,9 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   );
   const [episodeImage, setEpisodeImage] = useState(
     mediaContextDefaults.episodeImage
+  );
+  const [episodeImageDimensions, setEpisodeImageDimensions] = useState(
+    mediaContextDefaults.episodeImageDimensions
   );
   const [episodeTitle, setEpisodeTitle] = useState(
     mediaContextDefaults.episodeTitle
@@ -389,6 +394,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         dateCrawled,
         episodeId,
         episodeImage,
+        episodeImageDimensions,
         episodeTitle,
         feedId,
         feedImage,
@@ -406,6 +412,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setDateCrawled,
         setEpisodeId,
         setEpisodeImage,
+        setEpisodeImageDimensions,
         setEpisodeTitle,
         setFeedId,
         setFeedImage,

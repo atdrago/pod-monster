@@ -10,9 +10,10 @@ export type EpisodePageEpisode = ApiResponse.EpisodeById['episode'] & {
  */
 export interface IEpisodePageProps {
   episode?: EpisodePageEpisode;
-  feedLink: string;
-  feedType: 'rss' | 'atom';
-  feedUrl: string;
+  episodeImageDimensions?: { height: number; width: number };
+  feedLink?: string;
+  feedType?: 'rss' | 'atom';
+  feedUrl?: string;
 }
 
 export type EpisodePageGetStaticProps = GetStaticProps<IEpisodePageProps>;

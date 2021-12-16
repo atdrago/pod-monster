@@ -10,6 +10,7 @@ export type ArtworkComponent = PolymorphicComponent<
   {
     alt: string;
     edge?: 'normal' | 'overflow';
+    isSquare?: boolean;
     label?: string;
     priority?: ImageProps['priority'];
     shadow?: keyof typeof shadowVariant;
