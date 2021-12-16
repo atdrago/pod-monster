@@ -10,6 +10,11 @@ export const Footer = () => {
       <nav>
         <Stack as="ul" kind="flexRow" className={footerList}>
           <li>
+            <Typography as={Link} href="/about" size="paragraph">
+              About
+            </Typography>
+          </li>
+          <li>
             <Typography as={Link} href="/settings" size="paragraph">
               Settings
             </Typography>
