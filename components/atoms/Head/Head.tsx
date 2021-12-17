@@ -6,6 +6,10 @@ import type { IHeadProps } from 'types';
 export const Head = ({ description, ogMetadata, titles }: IHeadProps) => {
   const titlesWithAppName = [...titles, process.env.NEXT_PUBLIC_APP_NAME];
 
+  // These truncation lengths were taken from https://www.opengraph.xyz/
+  const truncatedTitle = ogMetadata?.title?.substring(0, 60);
+  const truncatedDescription = ogMetadata?.description?.substring(0, 155);
+
   return (
     <NextHead>
       <title>{titlesWithAppName.join(' - ')}</title>
@@ -13,7 +17,7 @@ export const Head = ({ description, ogMetadata, titles }: IHeadProps) => {
       <meta name="theme-color" content={vars.color.background} />
       {ogMetadata && (
         <>
-          <meta property="og:title" content={ogMetadata.title} />
+          <meta property="og:title" content={truncatedTitle} />
           <meta property="og:image" content={ogMetadata.image} />
           <meta property="og:type" content={ogMetadata.type} />
           <meta property="og:url" content={ogMetadata.url} />
@@ -22,7 +26,7 @@ export const Head = ({ description, ogMetadata, titles }: IHeadProps) => {
             <meta property="og:audio" content={ogMetadata.audio} />
           )}
           {ogMetadata.description && (
-            <meta property="og:description" content={ogMetadata.description} />
+            <meta property="og:description" content={truncatedDescription} />
           )}
           {ogMetadata.locale && (
             <meta property="og:locale" content={ogMetadata.locale} />
@@ -30,6 +34,13 @@ export const Head = ({ description, ogMetadata, titles }: IHeadProps) => {
           {ogMetadata.video && (
             <meta property="og:video" content={ogMetadata.video} />
           )}
+
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta property="twitter:domain" content="pod.monster" />
+          <meta property="twitter:url" content={ogMetadata.url} />
+          <meta name="twitter:title" content={truncatedTitle} />
+          <meta name="twitter:description" content={truncatedDescription} />
+          <meta name="twitter:image" content={ogMetadata.image} />
         </>
       )}
 
