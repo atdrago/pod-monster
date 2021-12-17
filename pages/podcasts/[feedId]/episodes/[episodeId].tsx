@@ -33,6 +33,7 @@ import type {
 } from 'types';
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { getEpisodePath } from 'utils/paths';
 import { episodeById, podcastsByFeedId } from 'utils/podcastIndex';
 import { toTitleCase } from 'utils/toTitleCase';
 
@@ -327,6 +328,18 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
         <Head
           titles={[episode.title, episode.feedTitle]}
           description={episode.descriptionRaw || episode.description}
+          ogMetadata={{
+            audio: isVideo ? undefined : episode.enclosureUrl,
+            description: episode.descriptionRaw,
+            image: episodeArtwork ?? '',
+            title: episode.title,
+            type: 'website',
+            url: getEpisodePath({
+              episodeId: episode.id,
+              feedId: episode.feedId,
+            }),
+            video: isVideo ? episode.enclosureUrl : undefined,
+          }}
         />
       )}
       <Stack as="main" maxWidth="small">

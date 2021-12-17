@@ -17,7 +17,7 @@ import { episodeItemClassName } from 'styles/feed.css';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { getEpisodePath } from 'utils/paths';
+import { getEpisodePath, getPodcastPath } from 'utils/paths';
 import { episodesByFeedId, podcastsByFeedId } from 'utils/podcastIndex';
 
 export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
@@ -67,7 +67,17 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
 
   return (
     <>
-      <Head titles={[feed.title]} description={feed.description} />
+      <Head
+        titles={[feed.title]}
+        description={feed.description}
+        ogMetadata={{
+          description: feed.description,
+          image: feed.image,
+          title: feed.title,
+          type: 'website',
+          url: getPodcastPath({ id: feed.id }),
+        }}
+      />
       <Stack as="main" maxWidth="small">
         <Stack as="article" space="small">
           <Stack kind="flexRow" space="small" align="center">
