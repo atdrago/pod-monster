@@ -24,6 +24,12 @@ export const artworkFallback = style([
   },
 ]);
 
+export const shadowContainer = style({
+  flex: '0 0 auto',
+  lineHeight: 0,
+  maxWidth: '100%',
+});
+
 export const shadowVariant = styleVariants({
   high: {
     boxShadow: vars.color.shadowElevationHigh,

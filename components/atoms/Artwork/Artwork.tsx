@@ -9,6 +9,7 @@ import type { ArtworkComponent } from 'types';
 import {
   artwork,
   artworkFallback,
+  shadowContainer,
   shadowVariant,
   square,
   squareInner,
@@ -16,7 +17,6 @@ import {
 
 export const Artwork: ArtworkComponent = ({
   className,
-  edge = 'normal',
   height = 512,
   isSquare = true,
   label,
@@ -26,9 +26,10 @@ export const Artwork: ArtworkComponent = ({
   ...props
 }) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
-  const baseClassName = useClassNames(className, square);
-  const imageClassName = useClassNames(artwork, className);
-  const labelClassName = useClassNames(artworkFallback, className);
+  const squareClassName = useClassNames(square, className);
+  const artworkClassName = useClassNames(artwork, className);
+  const artworkFallbackClassName = useClassNames(artworkFallback, className);
+  const shadowClassName = useClassNames(shadowContainer, shadowVariant[shadow]);
 
   const shouldShowImage = src && !failedToLoad;
 
@@ -36,62 +37,34 @@ export const Artwork: ArtworkComponent = ({
     setFailedToLoad(true);
   };
 
-  return (
-    <div
-      className={shadowVariant[shadow]}
-      style={
-        edge === 'normal'
-          ? { flex: '0 0 auto', height: `${height}px`, width: `${width}px` }
-          : { margin: 0, padding: 0 }
-      }
+  const imageOrPlaceholder = shouldShowImage ? (
+    <Box
+      as={Image}
+      className={artworkClassName}
+      height={height}
+      onError={handleError}
+      src={src}
+      width={width}
+      {...props}
+    />
+  ) : (
+    <Typography
+      as="span"
+      size="headingLarge"
+      className={artworkFallbackClassName}
     >
+      {label}
+    </Typography>
+  );
+
+  return (
+    <div className={shadowClassName} style={{ width: `${width}px` }}>
       {isSquare ? (
-        <div className={baseClassName}>
-          <div className={squareInner}>
-            {shouldShowImage ? (
-              <Box
-                as={Image}
-                className={imageClassName}
-                height={height}
-                onError={handleError}
-                src={src}
-                width={width}
-                {...props}
-              />
-            ) : (
-              <Typography
-                as="span"
-                size="headingLarge"
-                className={labelClassName}
-              >
-                {label}
-              </Typography>
-            )}
-          </div>
+        <div className={squareClassName}>
+          <div className={squareInner}>{imageOrPlaceholder}</div>
         </div>
       ) : (
-        <>
-          {shouldShowImage ? (
-            <Box
-              as={Image}
-              className={imageClassName}
-              height={height}
-              onError={handleError}
-              src={src}
-              width={width}
-              layout="responsive"
-              {...props}
-            />
-          ) : (
-            <Typography
-              as="span"
-              size="headingLarge"
-              className={labelClassName}
-            >
-              {label}
-            </Typography>
-          )}
-        </>
+        imageOrPlaceholder
       )}
     </div>
   );

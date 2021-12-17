@@ -345,7 +345,6 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
       <Stack as="main" maxWidth="small">
         <Artwork
           alt="Podcast episode or chapter artwork"
-          edge="overflow"
           height={episodeImageDimensions?.height}
           priority={true}
           shadow="medium"

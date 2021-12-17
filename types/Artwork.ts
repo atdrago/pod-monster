@@ -6,7 +6,6 @@ import { shadowVariant } from 'components/atoms/Artwork/artwork.css';
 export type ArtworkComponent = PolymorphicComponent<
   {
     alt: string;
-    edge?: 'normal' | 'overflow';
     isSquare?: boolean;
     label?: string;
     priority?: ImageProps['priority'];

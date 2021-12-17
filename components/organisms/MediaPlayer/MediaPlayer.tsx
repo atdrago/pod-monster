@@ -249,7 +249,6 @@ export const MediaPlayer: FunctionComponent = () => {
                   {!isVideo && playerArtwork ? (
                     <Artwork
                       alt=""
-                      edge="overflow"
                       height={episodeImageDimensions?.height}
                       isSquare={!!episodeImageDimensions && !!hasChapters}
                       src={playerArtworkProxyUrl.toString()}
