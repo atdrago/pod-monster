@@ -4,8 +4,11 @@ import { vars } from 'styles';
 
 export const artwork = style({
   alignSelf: 'center',
+  height: 'auto',
   maxHeight: '100%',
+  objectFit: 'contain',
   position: 'absolute',
+  width: '100%',
 });
 
 export const artworkFallback = style([
@@ -32,22 +35,6 @@ export const shadowVariant = styleVariants({
     boxShadow: vars.color.shadowElevationMedium,
   },
   none: {},
-});
-
-export const sizeVariant = styleVariants({
-  full: {
-    height: 'auto',
-    objectFit: 'contain',
-    width: '100%',
-  },
-  medium: {
-    height: '10rem',
-    width: '10rem',
-  },
-  small: {
-    height: '5rem',
-    width: '5rem',
-  },
 });
 
 export const square = style({

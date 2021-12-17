@@ -10,7 +10,6 @@ import {
   artwork,
   artworkFallback,
   shadowVariant,
-  sizeVariant,
   square,
   squareInner,
 } from './artwork.css';
@@ -22,19 +21,14 @@ export const Artwork: ArtworkComponent = ({
   isSquare = true,
   label,
   shadow = 'none',
-  size = 'full',
   src,
   width = 512,
   ...props
 }) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
   const baseClassName = useClassNames(className, square);
-  const imageClassName = useClassNames(artwork, sizeVariant[size], className);
-  const labelClassName = useClassNames(
-    artworkFallback,
-    sizeVariant[size],
-    className
-  );
+  const imageClassName = useClassNames(artwork, className);
+  const labelClassName = useClassNames(artworkFallback, className);
 
   const shouldShowImage = src && !failedToLoad;
 
