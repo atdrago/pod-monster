@@ -4,12 +4,11 @@ import { Box } from 'react-polymorphic-box';
 import { useClassNames } from 'hooks/useClassNames';
 import type { ButtonProps } from 'types';
 
-import { button, buttonVariant, edgeVariant, sizeVariant } from './button.css';
+import { button, buttonVariant, sizeVariant } from './button.css';
 
 export const Button: FunctionComponent<ButtonProps> = ({
   as = 'button',
   className,
-  edge = 'normal',
   size = 'medium',
   variant = 'default',
   ...rest
@@ -18,7 +17,6 @@ export const Button: FunctionComponent<ButtonProps> = ({
     button,
     buttonVariant[variant],
     sizeVariant[size],
-    edgeVariant[edge],
     className
   );
 

@@ -1,5 +1,4 @@
 import { style, styleVariants } from '@vanilla-extract/css';
-import { calc } from '@vanilla-extract/css-utils';
 import capsize from 'capsize';
 
 import { vars } from 'styles';
@@ -43,17 +42,5 @@ export const sizeVariant = styleVariants({
     }),
     fontSize: vars.typography.fontSize.s12,
     padding: vars.spacing.s008,
-  },
-});
-
-export const edgeVariant = styleVariants({
-  mediumOverflow: {
-    margin: `${calc(vars.spacing.s012).negate().toString()} 0 `,
-  },
-  normal: {
-    margin: 0,
-  },
-  smallOverflow: {
-    margin: `${calc(vars.spacing.s008).negate().toString()} 0 `,
   },
 });
