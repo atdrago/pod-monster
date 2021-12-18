@@ -1,10 +1,30 @@
 import { NextApiHandler } from 'next';
-import { opmlToJSON } from 'opml-to-json';
+import {
+  ExternalOpmlFile,
+  ExternalOpmlOutline,
+  opmlToJSON,
+} from 'opml-to-json';
 
 import type { FeedSettings, IErrorResponse, OpmlImportResponse } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { podcastsByFeedUrl } from 'utils/podcastIndex';
 import { getAuthValues } from 'utils/podcastIndex/getAuthValues';
+
+const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
+  const feeds = [];
+
+  if ('xmlurl' in outline && outline.xmlurl) {
+    feeds.push(outline);
+  }
+
+  if (outline.children) {
+    outline.children.forEach((child) => {
+      feeds.push(...getOpmlFeeds(child));
+    });
+  }
+
+  return feeds;
+};
 
 const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
   req,
@@ -23,16 +43,18 @@ const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
   );
   const config = getPodcastIndexConfig(`${authTime}`, authToken);
-  const json = await opmlToJSON(req.body);
+  const opmlRoot = await opmlToJSON(req.body);
 
-  if (!json.children) {
+  if (!opmlRoot.children) {
     return res.status(400).json({ error: 'Invalid OPML file.' });
   }
 
+  const feeds = getOpmlFeeds(opmlRoot);
+
   const feedResponses = await Promise.allSettled(
-    json.children.map(async (child) => {
-      if (child && child.xmlurl) {
-        return await podcastsByFeedUrl(child.xmlurl, config);
+    feeds.map(async (feed) => {
+      if (feed && feed.xmlurl) {
+        return await podcastsByFeedUrl(feed.xmlurl, config);
       }
 
       return null;
@@ -44,11 +66,11 @@ const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
   const feedSettingsErrors: Array<{ title: string }> = [];
 
   feedResponses.forEach((feedResponse, index) => {
-    const opmlFeed = json.children?.[index];
+    const opmlFeed = feeds?.[index];
 
     if (feedResponse.status === 'rejected') {
       feedSettingsErrors.push({
-        title: opmlFeed?.title ?? 'Unknown',
+        title: opmlFeed?.title ?? opmlFeed?.text ?? 'Unknown',
       });
 
       return;
@@ -59,7 +81,7 @@ const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
 
       if (!feed) {
         feedSettingsErrors.push({
-          title: opmlFeed?.title ?? 'Unknown',
+          title: opmlFeed?.title ?? opmlFeed?.text ?? 'Unknown',
         });
 
         return;

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 declare module 'opml-to-json' {
-  interface ExternalOpmlOutline {
+  export interface ExternalOpmlOutline {
+    children?: Array<ExternalOpmlOutline>;
     htmlurl?: string;
     text?: string;
     title?: string;
@@ -8,7 +9,7 @@ declare module 'opml-to-json' {
     xmlurl?: string;
   }
 
-  interface ExternalOpmlFile {
+  export interface ExternalOpmlFile {
     children?: Array<ExternalOpmlOutline>;
     title: string;
   }
