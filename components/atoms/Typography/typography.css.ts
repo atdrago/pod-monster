@@ -1,8 +1,8 @@
 import { StyleRule, style, styleVariants } from '@vanilla-extract/css';
 import capsize from 'capsize';
 
-import { removeNullAndUndefined } from 'components/utils/removeNullAndUndefined';
 import { vars } from 'styles';
+import { removeNullAndUndefined } from 'utils/removeNullAndUndefined';
 import { getFontMetricsFromUserAgent } from 'utils/typography';
 
 export const typography = style({
