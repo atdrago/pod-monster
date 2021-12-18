@@ -28,6 +28,16 @@ export const ellipsisContainer = style({
   whiteSpace: 'nowrap',
 });
 
+export const lineClampContainer = style({
+  WebkitBoxOrient: 'vertical',
+  background: 'none',
+  border: 0,
+  color: vars.color.foreground,
+  display: '-webkit-box',
+  overflow: 'hidden',
+  wordBreak: 'break-word',
+});
+
 function removeBeforeAndAfter<TInput = unknown>(css: TInput): TInput {
   return removeNullAndUndefined({
     ...css,

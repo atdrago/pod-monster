@@ -170,10 +170,15 @@ export const MediaPlayer: FunctionComponent = () => {
   }, [src]);
 
   const animationProperties = {
-    animate: { height: 'auto', marginBottom: 0, opacity: 1 },
-    exit: { height: 0, marginBottom: -16, opacity: 0 },
-    initial: { height: 0, marginBottom: -16, opacity: 0 },
-    style: { overflow: 'hidden' },
+    animate: {
+      height: 'auto',
+      marginBottom: 0,
+      opacity: 1,
+      overflow: 'visible',
+    },
+    enter: { height: 'auto', marginBottom: 0, opacity: 1, overflow: 'hidden' },
+    exit: { height: 0, marginBottom: -16, opacity: 0, overflow: 'hidden' },
+    initial: { height: 0, marginBottom: -16, opacity: 0, overflow: 'hidden' },
   };
 
   const isVideo = srcType && srcType.includes('video');
@@ -222,7 +227,6 @@ export const MediaPlayer: FunctionComponent = () => {
                       )}
                     </Typography>
                   ) : null}
-
                   {currentChapter && currentChapter.title && (
                     <Typography
                       size="paragraph"

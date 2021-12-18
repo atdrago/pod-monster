@@ -1,11 +1,11 @@
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { vars } from 'styles';
 import { TypographyComponent } from 'types/Typography';
 
 import {
   ellipsisContainer,
+  lineClampContainer,
   sizeVariant,
   sizeVariantNoCapsize,
   textAlignVariant,
@@ -37,16 +37,8 @@ export const Typography: TypographyComponent = ({
         <span className={ellipsisContainer}>{children}</span>
       ) : typeof whitespace === 'number' && shouldUseCapsize ? (
         <span
-          style={{
-            WebkitBoxOrient: 'vertical',
-            WebkitLineClamp: whitespace,
-            background: 'none',
-            border: 0,
-            color: vars.color.foreground,
-            display: '-webkit-box',
-            overflow: 'hidden',
-            wordBreak: 'break-word',
-          }}
+          className={lineClampContainer}
+          style={{ WebkitLineClamp: whitespace }}
         >
           {children}
         </span>
