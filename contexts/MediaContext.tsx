@@ -164,6 +164,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setDateCrawled(mediaContextDefaults.dateCrawled);
     setEpisodeId(mediaContextDefaults.episodeId);
     setEpisodeImage(mediaContextDefaults.episodeImage);
+    setEpisodeImageDimensions(mediaContextDefaults.episodeImageDimensions);
     setEpisodeTitle(mediaContextDefaults.episodeTitle);
     setFeedId(mediaContextDefaults.feedId);
     setFeedImage(mediaContextDefaults.feedImage);
@@ -224,6 +225,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       setDateCrawled(mediaPlayerSettings.dateCrawled);
       setEpisodeId(mediaPlayerSettings.episodeId);
       setEpisodeImage(mediaPlayerSettings.episodeImage);
+      setEpisodeImageDimensions(mediaPlayerSettings.episodeImageDimensions);
       setEpisodeTitle(mediaPlayerSettings.episodeTitle);
       setFeedId(mediaPlayerSettings.feedId);
       setFeedImage(mediaPlayerSettings.feedImage);
@@ -274,6 +276,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         dateCrawled,
         episodeId,
         episodeImage,
+        episodeImageDimensions,
         episodeTitle,
         feedId,
         feedImage,
@@ -291,6 +294,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     dateCrawled,
     episodeId,
     episodeImage,
+    episodeImageDimensions,
     episodeTitle,
     feedId,
     feedImage,

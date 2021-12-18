@@ -29,6 +29,7 @@ export type MediaPlayerSettings = {
   dateCrawled: number | null;
   episodeId: number | null;
   episodeImage: string | null;
+  episodeImageDimensions: { height: number; width: number } | null;
   episodeTitle: string | null;
   feedId: number | null;
   feedImage: string | null;
