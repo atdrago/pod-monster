@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
 
 import { blockquote } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
