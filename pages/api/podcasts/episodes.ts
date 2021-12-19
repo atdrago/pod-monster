@@ -1,4 +1,4 @@
-import { NextApiHandler } from 'next';
+import type { NextApiHandler } from 'next';
 
 import { episodesByFeedId, getAuthValues } from '@atdrago/podcast-index';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';

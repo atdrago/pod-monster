@@ -1,7 +1,7 @@
 import type { FunctionComponent } from 'react';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { RangeProps } from 'types';
+import type { RangeProps } from 'types';
 
 import { range, rangeVariant } from './range.css';
 

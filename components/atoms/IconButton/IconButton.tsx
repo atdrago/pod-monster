@@ -2,7 +2,7 @@ import { ElementType } from 'react';
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { IconButtonComponent } from 'types';
+import type { IconButtonComponent } from 'types';
 
 import { backgroundVariant, iconButton, sizeVariant } from './iconButton.css';
 

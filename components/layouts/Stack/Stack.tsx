@@ -2,7 +2,7 @@ import { FunctionComponent, forwardRef } from 'react';
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { StackProps } from 'types';
+import type { StackProps } from 'types';
 
 import {
   alignVariant,

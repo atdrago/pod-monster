@@ -1,4 +1,4 @@
-import { ReactEventHandler } from 'react';
+import type { ReactEventHandler } from 'react';
 
 import { Button } from 'components/atoms/Button';
 import { Stack } from 'components/layouts/Stack';

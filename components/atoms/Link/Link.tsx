@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import type { FunctionComponent } from 'react';
 
-import { ILinkProps } from 'types';
+import type { ILinkProps } from 'types';
 
 export const Link: FunctionComponent<ILinkProps> = ({
   anchorProps,

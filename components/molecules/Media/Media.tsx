@@ -10,7 +10,7 @@ import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
 import { useUniqueId } from 'hooks/useUniqueId';
-import { MediaProps } from 'types';
+import type { MediaProps } from 'types';
 import { secondsToFormattedTime } from 'utils/date';
 
 import {

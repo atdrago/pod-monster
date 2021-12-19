@@ -3,7 +3,7 @@ import type { FunctionComponent } from 'react';
 import { Link } from 'components/atoms/Link';
 import { Stack } from 'components/layouts/Stack';
 import { useClassNames } from 'hooks/useClassNames';
-import { ILinkProps, StackProps } from 'types';
+import type { ILinkProps, StackProps } from 'types';
 
 import { linkStackClassName } from './linkStack.css';
 

@@ -3,7 +3,7 @@ import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useClassNames } from 'hooks/useClassNames';
 import CheckedIcon from 'icons/checkmark.svg';
-import { CheckboxComponent } from 'types';
+import type { CheckboxComponent } from 'types';
 
 import { checkbox, checkboxChecked, input, label } from './checkbox.css';
 

@@ -1,7 +1,7 @@
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { TypographyComponent } from 'types/Typography';
+import type { TypographyComponent } from 'types';
 
 import {
   ellipsisContainer,

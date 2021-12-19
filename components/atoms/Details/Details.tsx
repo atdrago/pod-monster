@@ -3,7 +3,7 @@ import { FunctionComponent, useState } from 'react';
 import { Icon } from 'components/atoms/Icon';
 import { Stack } from 'components/layouts/Stack';
 import PlayIcon from 'icons/play3.svg';
-import { DetailsProps } from 'types';
+import type { DetailsProps } from 'types';
 
 import {
   articleClassName,

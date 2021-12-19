@@ -1,4 +1,4 @@
-import { NextApiHandler } from 'next';
+import type { NextApiHandler } from 'next';
 
 import { getAuthValues, podcastsByFeedId } from '@atdrago/podcast-index';
 import type { FeedSettings, IErrorResponse, OpmlImportResponse } from 'types';

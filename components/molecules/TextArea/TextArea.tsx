@@ -3,7 +3,7 @@ import type { FunctionComponent } from 'react';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useUniqueId } from 'hooks/useUniqueId';
-import { TextAreaProps } from 'types';
+import type { TextAreaProps } from 'types';
 
 import { textArea, textareaInputGroup } from './textArea.css';
 

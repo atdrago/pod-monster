@@ -1,4 +1,4 @@
-import { NextApiHandler } from 'next';
+import type { NextApiHandler } from 'next';
 
 const handler: NextApiHandler = async (req, res) => {
   let image;
