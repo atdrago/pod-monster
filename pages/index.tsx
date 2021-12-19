@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { ChangeEventHandler, FunctionComponent, useEffect } from 'react';
 import { QueryClient, dehydrate, useQuery } from 'react-query';
 
+import { searchByTerm, setConfig } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Head } from 'components/atoms/Head';
 import { Link } from 'components/atoms/Link';
@@ -17,7 +18,6 @@ import { nonUnderlinedLink } from 'styles';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
-import { searchByTerm, setConfig } from 'utils/podcastIndex';
 
 export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
   query,

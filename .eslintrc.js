@@ -17,7 +17,11 @@ module.exports = {
       ],
       files: ['**/*.ts', '**/*.tsx'],
       parserOptions: {
-        project: ['./tsconfig.json', './tsconfig.*.json'],
+        project: [
+          './tsconfig.json',
+          './packages/podcast-index/tsconfig.ref.json',
+        ],
+        tsconfigRootDir: __dirname,
       },
       plugins: ['typescript-sort-keys'],
       rules: {
@@ -96,6 +100,8 @@ module.exports = {
   ],
 
   plugins: ['sort-destructure-keys', 'sort-keys-fix'],
+
+  root: true,
   rules: {
     '@next/next/no-img-element': 'off',
     'default-case': 'warn',

@@ -1,6 +1,6 @@
 import { NextApiHandler } from 'next';
 
-import { getAuthValues } from 'utils/podcastIndex/getAuthValues';
+import { getAuthValues } from '@atdrago/podcast-index';
 
 const handler: NextApiHandler = (_req, res) => {
   res

@@ -5,10 +5,9 @@ import {
   opmlToJSON,
 } from 'opml-to-json';
 
+import { getAuthValues, podcastsByFeedUrl } from '@atdrago/podcast-index';
 import type { FeedSettings, IErrorResponse, OpmlImportResponse } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { podcastsByFeedUrl } from 'utils/podcastIndex';
-import { getAuthValues } from 'utils/podcastIndex/getAuthValues';
 
 const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
   const feeds = [];

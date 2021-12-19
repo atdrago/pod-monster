@@ -1,0 +1,7 @@
+{
+  "include": ["packages/podcast-index/**/*.ts"],
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true
+  }
+}

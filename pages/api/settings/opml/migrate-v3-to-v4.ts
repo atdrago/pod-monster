@@ -1,9 +1,8 @@
 import { NextApiHandler } from 'next';
 
+import { getAuthValues, podcastsByFeedId } from '@atdrago/podcast-index';
 import type { FeedSettings, IErrorResponse, OpmlImportResponse } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { podcastsByFeedId } from 'utils/podcastIndex';
-import { getAuthValues } from 'utils/podcastIndex/getAuthValues';
 
 const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
   req,

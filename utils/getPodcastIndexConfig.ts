@@ -1,4 +1,4 @@
-import { IPodcastIndexConfig } from 'utils/podcastIndex';
+import type { IPodcastIndexConfig } from '@atdrago/podcast-index';
 
 export const getPodcastIndexConfig = (
   authTime: string,

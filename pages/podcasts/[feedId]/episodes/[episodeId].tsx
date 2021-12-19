@@ -9,6 +9,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeStripHtml from 'rehype-strip-html';
 import { unified } from 'unified';
 
+import { episodeById, podcastsByFeedId } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
 import { Head } from 'components/atoms/Head';
@@ -34,7 +35,6 @@ import type {
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getEpisodePath } from 'utils/paths';
-import { episodeById, podcastsByFeedId } from 'utils/podcastIndex';
 import { toTitleCase } from 'utils/toTitleCase';
 
 export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {

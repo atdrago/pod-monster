@@ -1,5 +1,6 @@
 import type { GetStaticPaths, NextPage } from 'next';
 
+import { episodesByFeedId, podcastsByFeedId } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
 import { Dot } from 'components/atoms/Dot';
@@ -18,7 +19,6 @@ import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
 import { noteDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
-import { episodesByFeedId, podcastsByFeedId } from 'utils/podcastIndex';
 
 export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
   const feedId = typeof params?.feedId === 'string' ? params.feedId : null;

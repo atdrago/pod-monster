@@ -1,8 +1,7 @@
 import { NextApiHandler } from 'next';
 
+import { episodesByFeedId, getAuthValues } from '@atdrago/podcast-index';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { episodesByFeedId } from 'utils/podcastIndex';
-import { getAuthValues } from 'utils/podcastIndex/getAuthValues';
 
 const handler: NextApiHandler = async (req, res) => {
   const feedId = typeof req.query.feedId === 'string' ? req.query.feedId : null;
