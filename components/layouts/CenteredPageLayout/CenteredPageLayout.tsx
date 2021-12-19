@@ -1,7 +1,8 @@
 import { Box, PolymorphicComponent } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import { centeredPageLayout } from 'styles';
+
+import { centeredPageLayout } from './centeredPageLayout.css';
 
 export const CenteredPageLayout: PolymorphicComponent<unknown> = ({
   className,
