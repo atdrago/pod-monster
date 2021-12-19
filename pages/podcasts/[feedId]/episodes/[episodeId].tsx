@@ -409,7 +409,14 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                         height={80}
                         shadow="medium"
                       />
-                      <Stack space="small" style={{ flex: '0 1 auto' }}>
+                      <Stack
+                        space="small"
+                        style={{
+                          flex: '0 1 auto',
+                          overflow: 'hidden',
+                          padding: '4px 0',
+                        }}
+                      >
                         <Typography as="h5" size="paragraph">
                           {person.name}
                         </Typography>
@@ -419,7 +426,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                           </Typography>
                         )}
                         {person.href && (
-                          <Typography as="p" size="legal">
+                          <Typography as="p" size="legal" whitespace="ellipsis">
                             {person.href}
                           </Typography>
                         )}
