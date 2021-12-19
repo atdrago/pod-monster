@@ -21,8 +21,6 @@ export const spaceVariant = styleVariants({
 });
 
 export const maxWidthVariant = styleVariants({
-  large: { maxWidth: '102.4rem' },
-  maxContent: { maxWidth: 'max-content' },
   none: { maxWidth: 'none' },
   small: { maxWidth: '48rem' },
 });
