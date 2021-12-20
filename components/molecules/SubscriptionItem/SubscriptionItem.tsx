@@ -78,7 +78,7 @@ export const SubscriptionItem = ({
       />
       <Stack align="center" space="small" kind="flexRow">
         <Artwork
-          alt={`Podcast artwork for "${title}"`}
+          alt=""
           width={80}
           height={80}
           src={proxyFeedImage.toString()}

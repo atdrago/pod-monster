@@ -5,7 +5,7 @@ import { QueryClient, dehydrate, useQuery } from 'react-query';
 import { searchByTerm, setConfig } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Head } from 'components/atoms/Head';
-import { Link } from 'components/atoms/Link';
+import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
@@ -14,7 +14,6 @@ import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
-import { nonUnderlinedLink } from 'styles';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
@@ -145,7 +144,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
             onChange={handleSearchChange}
           />
           {searchResponse && (
-            <Stack space="small">
+            <Stack as={'ol'} space="small">
               {searchResponse.feeds.map((feed, index) => {
                 const proxyFeedImage = new URL(
                   '/api/images/proxy',
@@ -156,46 +155,54 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
                 return (
                   <Stack
-                    as={Link}
-                    className={nonUnderlinedLink}
+                    as="li"
                     key={feed.id}
                     kind="flexRow"
                     space="small"
-                    href={getPodcastPath({ id: `${feed.id}` })}
                     align="center"
                   >
-                    <Artwork
-                      alt={`${index + 1}. `}
-                      width={80}
-                      height={80}
-                      src={proxyFeedImage.toString()}
-                      shadow="medium"
-                      label={`${index + 1}.`}
-                    />
-                    <Stack
+                    <LinkStack
+                      href={getPodcastPath({ id: `${feed.id}` })}
+                      kind="flexRow"
                       space="small"
-                      style={{
-                        overflowY: 'hidden',
-                        padding: '4px 0',
+                      align="center"
+                      anchorProps={{
+                        style: { flex: '0 1 auto', minWidth: '0' },
                       }}
                     >
-                      <Typography
-                        as="h2"
-                        size="headingSmaller"
-                        whitespace="ellipsis"
+                      <Artwork
+                        alt=""
+                        width={80}
+                        height={80}
+                        src={proxyFeedImage.toString()}
+                        shadow="medium"
+                        label={`${index + 1}.`}
+                      />
+                      <Stack
+                        space="small"
+                        style={{
+                          overflow: 'hidden',
+                          padding: '4px 0',
+                        }}
                       >
-                        {feed.title}
-                      </Typography>
-                      {feed.author ? (
                         <Typography
-                          as="p"
-                          size="paragraph"
+                          as="h2"
+                          size="headingSmaller"
                           whitespace="ellipsis"
                         >
-                          {feed.author}
+                          {feed.title}
                         </Typography>
-                      ) : null}
-                    </Stack>
+                        {feed.author ? (
+                          <Typography
+                            as="p"
+                            size="paragraph"
+                            whitespace="ellipsis"
+                          >
+                            {feed.author}
+                          </Typography>
+                        ) : null}
+                      </Stack>
+                    </LinkStack>
                     <SubscribeButton
                       feedId={feed.id}
                       feedType={feed.type === 0 ? 'rss' : 'atom'}
