@@ -3,7 +3,7 @@ import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 /**
  * @example "October 7, 2021 at 4:14 PM"
  */
-export const noteDateTimeFormat = new Intl.DateTimeFormat('default', {
+export const longDateTimeFormat = new Intl.DateTimeFormat('default', {
   dateStyle: 'long',
   timeStyle: 'short',
 });
@@ -43,13 +43,12 @@ export const secondsToFormattedTime = (
     .join(':');
 };
 
-export const urlEncodableTimeToSeconds = (time: string): number => {
-  time = time.trim();
-
+export const formattedTimeToSeconds = (time: string): number => {
   let seconds = 0;
 
   time
-    .split('-')
+    .trim()
+    .split(/\D/)
     .reverse()
     .forEach((value, i) => {
       switch (i) {
@@ -83,6 +82,9 @@ export const urlEncodableTimeToSeconds = (time: string): number => {
           break;
       }
     });
+
+  // Round to 2 decimal places
+  seconds = Math.round(seconds * 100) / 100;
 
   return seconds;
 };

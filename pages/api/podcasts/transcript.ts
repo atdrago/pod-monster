@@ -2,7 +2,7 @@ import type { NextApiHandler } from 'next';
 import SrtParser from 'srt-parser-2';
 
 import type { ITranscriptItem, TranscriptDocument } from 'types';
-import { urlEncodableTimeToSeconds } from 'utils/date';
+import { formattedTimeToSeconds } from 'utils/date';
 
 const handler: NextApiHandler = async (req, res) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
@@ -41,12 +41,8 @@ const handler: NextApiHandler = async (req, res) => {
       .map((item) => {
         const transcriptItem: ITranscriptItem = {
           ...item,
-          endTimeSeconds: urlEncodableTimeToSeconds(
-            item.endTime.replace(/\D/g, '-')
-          ),
-          startTimeSeconds: urlEncodableTimeToSeconds(
-            item.startTime.replace(/\D/g, '-')
-          ),
+          endTimeSeconds: formattedTimeToSeconds(item.endTime),
+          startTimeSeconds: formattedTimeToSeconds(item.startTime),
         };
 
         return transcriptItem;

@@ -16,7 +16,7 @@ import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import { headingLink, nonUnderlinedLink } from 'styles';
 import { episodeItemClassName } from 'styles/feed.css';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
-import { noteDateTimeFormat } from 'utils/date';
+import { longDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 
@@ -213,7 +213,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                       {title}
                     </Typography>
                     <Typography as="p" size="paragraph" whitespace="ellipsis">
-                      {noteDateTimeFormat.format(
+                      {longDateTimeFormat.format(
                         new Date(datePublished * 1000)
                       )}
                     </Typography>

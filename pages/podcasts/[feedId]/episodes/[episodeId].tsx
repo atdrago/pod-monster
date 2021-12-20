@@ -32,7 +32,7 @@ import type {
   IEpisodePageProps,
   ITimedListItem,
 } from 'types';
-import { noteDateTimeFormat } from 'utils/date';
+import { longDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getEpisodePath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
@@ -471,7 +471,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
         <Typography as="p" size="paragraph">
           Published:{' '}
           {episode
-            ? noteDateTimeFormat.format(new Date(episode.datePublished * 1000))
+            ? longDateTimeFormat.format(new Date(episode.datePublished * 1000))
             : null}
         </Typography>
         {episode && feedType && feedLink && feedUrl && (
