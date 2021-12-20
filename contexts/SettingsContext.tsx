@@ -21,7 +21,7 @@ import {
   tryLocalStorageSetItem,
 } from 'utils/localStorage';
 
-export const SettingsContext = createContext<ISettingsContext>({
+const SettingsContext = createContext<ISettingsContext>({
   /* eslint-disable @typescript-eslint/no-empty-function */
   episodeSettings: {},
   feedSettings: {},

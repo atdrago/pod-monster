@@ -8,61 +8,6 @@ export const noteDateTimeFormat = new Intl.DateTimeFormat('default', {
   timeStyle: 'short',
 });
 
-/**
- * @example "10/10/2021"
- */
-export const shortDateFormat = new Intl.DateTimeFormat('en-US', {
-  day: 'numeric',
-  month: 'numeric',
-  year: 'numeric',
-});
-
-const getPaddedMonth = (date: Date): string => {
-  // Get the 1-indexed month and add a 0 if it is only 1 digit
-  return `${date.getMonth() + 1}`.replace(/^(\d)$/, '0$1');
-};
-
-const getPaddedDayOfTheMonth = (date: Date): string => {
-  // Get the day of the month, and add a 0 if it is only 1 digit
-  return `${date.getDate()}`.replace(/^(\d)$/, '0$1');
-};
-
-const getPaddedHour = (date: Date): string => {
-  // Get the hour, and add a 0 if it is only 1 digit
-  return `${date.getHours()}`.replace(/^(\d)$/, '0$1');
-};
-
-const getPaddedMinute = (date: Date): string => {
-  // Get the hour, and add a 0 if it is only 1 digit
-  return `${date.getMinutes()}`.replace(/^(\d)$/, '0$1');
-};
-
-export const dateInputFormat = {
-  format: (date: Date): string => {
-    const month = getPaddedMonth(date);
-    const dayOfTheMonth = getPaddedDayOfTheMonth(date);
-    const year = date.getFullYear();
-
-    return `${year}-${month}-${dayOfTheMonth}`;
-  },
-};
-
-export const timeInputFormat = {
-  format: (date: Date): string => {
-    const hour = getPaddedHour(date);
-    const minute = getPaddedMinute(date);
-
-    return `${hour}:${minute}`;
-  },
-};
-
-export const dateAndTimeToJson = (
-  date = '1970-01-01',
-  time = '00:00'
-): string => {
-  return new Date(`${date}T${time}`).toJSON();
-};
-
 export const secondsToFormattedTime = (
   seconds: number,
   { includeMilliseconds = false }: { includeMilliseconds?: boolean } = {}
@@ -96,13 +41,6 @@ export const secondsToFormattedTime = (
   ]
     .filter(notNullOrUndefined)
     .join(':');
-};
-
-export const secondsToUrlEncodableTime = (seconds: number): string => {
-  return secondsToFormattedTime(seconds, { includeMilliseconds: true }).replace(
-    /:/g,
-    '-'
-  );
 };
 
 export const urlEncodableTimeToSeconds = (time: string): number => {

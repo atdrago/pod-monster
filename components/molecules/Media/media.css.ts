@@ -45,26 +45,3 @@ export const timeLabelRight = style([
     textAlign: 'right',
   },
 ]);
-
-export const iconButton = style({
-  alignItems: 'center',
-  background: 'none',
-  border: '0',
-  color: vars.color.foreground,
-  cursor: 'pointer',
-  display: 'inline-flex',
-  margin: '0',
-  padding: `${vars.spacing.s004} ${vars.spacing.s008}`,
-  width: '30px',
-});
-
-export const volumeLayout = style({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  width: '200px',
-});
-
-export const controlsLayout = style({
-  display: 'flex',
-  justifyContent: 'space-between',
-});

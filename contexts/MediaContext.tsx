@@ -64,7 +64,7 @@ export const mediaContextDefaults: IMediaContext = {
   /* eslint-enable @typescript-eslint/no-empty-function */
 };
 
-export const MediaContext = createContext<IMediaContext | undefined>(undefined);
+const MediaContext = createContext<IMediaContext | undefined>(undefined);
 
 export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   children,

@@ -8,8 +8,3 @@ export interface ITranscriptItem {
 }
 
 export type TranscriptDocument = Array<ITranscriptItem>;
-
-export interface ITranscriptProps {
-  currentTranscriptIndex: number;
-  transcript: TranscriptDocument;
-}

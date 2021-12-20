@@ -1,4 +1,4 @@
-export class NetworkError extends Error {
+class NetworkError extends Error {
   name = 'NetworkError';
 
   constructor(message: string, public response: Response) {
