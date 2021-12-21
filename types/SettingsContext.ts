@@ -1,5 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 
+import type { PlaybackRate } from 'types';
+
 export type EpisodeSettings = Record<
   string,
   {
@@ -43,6 +45,7 @@ export type MediaPlayerSettings = {
    * @deprecated - use `size` instead (true = 2, false = 1)
    */
   isPlayerOpen?: boolean;
+  playbackRate: PlaybackRate;
   size: 1 | 2;
   src: string | null;
   srcType: string | null;

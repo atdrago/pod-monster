@@ -17,6 +17,7 @@ import { Typography } from 'components/atoms/Typography';
 import { VolumeIcon } from 'components/atoms/VolumeIcon';
 import { Stack } from 'components/layouts/Stack';
 import { Media } from 'components/molecules/Media';
+import { SelectField } from 'components/molecules/SelectField';
 import { SizeField } from 'components/molecules/SizeField';
 import { mediaContextDefaults, useMediaContext } from 'contexts/MediaContext';
 import { useClassNames } from 'hooks/useClassNames';
@@ -24,11 +25,14 @@ import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
 import { underlinedLink } from 'styles';
+import type { PlaybackRate } from 'types';
 import { getEpisodePath } from 'utils/paths';
+import { playbackRates } from 'utils/playbackRates';
 
 import {
   iconButton,
   intersectionObserverClassName,
+  playbackRateContainer,
   player,
   playerButtons,
   playerElevatedVariant,
@@ -52,12 +56,14 @@ export const MediaPlayer: FunctionComponent = () => {
     isPaused,
     mediaPlayerCurrentTime,
     playPause,
+    playbackRate,
     resetMediaContext,
     seekBackward,
     seekForward,
     setIsMuted,
     setIsPaused,
     setMediaPlayerCurrentTime,
+    setPlaybackRate,
     setSize,
     setVolume,
     size,
@@ -281,6 +287,7 @@ export const MediaPlayer: FunctionComponent = () => {
               onPlay={() => setIsPaused(false)}
               onPlaying={() => setIsPaused(false)}
               onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
+              playbackRate={playbackRate}
               poster={playerArtworkProxyUrl?.toString()}
               src={src}
               srcType={srcType ?? undefined}
@@ -326,6 +333,7 @@ export const MediaPlayer: FunctionComponent = () => {
                 justify="center"
                 kind="flexRow"
                 space="small"
+                style={{ gridColumnStart: 3 }}
               >
                 <IconButton
                   background="circle"
@@ -356,6 +364,24 @@ export const MediaPlayer: FunctionComponent = () => {
                   </Icon>
                 </IconButton>
               </Stack>
+              <div className={playbackRateContainer}>
+                <SelectField
+                  value={playbackRate}
+                  onChange={(event) => {
+                    setPlaybackRate(
+                      parseFloat(event.currentTarget.value) as PlaybackRate
+                    );
+                  }}
+                >
+                  {playbackRates.map((rate) => {
+                    return (
+                      <option key={rate} value={rate}>
+                        {rate}x
+                      </option>
+                    );
+                  })}
+                </SelectField>
+              </div>
               <SizeField
                 label="Player size"
                 value={size}

@@ -29,7 +29,7 @@ export const playerElevatedVariant = styleVariants({
 export const playerButtons = style({
   alignItems: 'center',
   display: 'grid',
-  gridTemplateColumns: '30px 1fr 30px',
+  gridTemplateColumns: '30px 1fr 155px 1fr 18px',
 });
 
 const VOLUME_ICON_BUTTON_WIDTH = '30px';
@@ -53,6 +53,10 @@ export const iconButton = style({
   margin: '0',
   padding: `${vars.spacing.s004} ${vars.spacing.s008}`,
   width: VOLUME_ICON_BUTTON_WIDTH,
+});
+
+export const playbackRateContainer = style({
+  margin: `0 ${vars.spacing.s004}`,
 });
 
 export const intersectionObserverClassName = style({

@@ -1,6 +1,6 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 
-import type { IChapter } from 'types';
+import type { IChapter, PlaybackRate } from 'types';
 
 export interface IMediaContext {
   audioRef: MutableRefObject<HTMLAudioElement | null>;
@@ -26,6 +26,7 @@ export interface IMediaContext {
   mediaPlayerCurrentTime: number;
   mediaPlayerCurrentTimeDebounced: number;
   playPause: () => void;
+  playbackRate: PlaybackRate;
   resetMediaContext: () => void;
   seekBackward: (details?: Partial<MediaSessionActionDetails>) => void;
   seekForward: (details?: Partial<MediaSessionActionDetails>) => void;
@@ -48,6 +49,7 @@ export interface IMediaContext {
    */
   setIsPlayerOpen?: Dispatch<SetStateAction<boolean>>;
   setMediaPlayerCurrentTime: Dispatch<SetStateAction<number>>;
+  setPlaybackRate: Dispatch<SetStateAction<PlaybackRate>>;
   setSize: Dispatch<SetStateAction<1 | 2>>;
   setSrc: Dispatch<SetStateAction<string | null>>;
   setSrcType: Dispatch<SetStateAction<string | null>>;

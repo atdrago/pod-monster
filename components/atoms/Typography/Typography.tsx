@@ -1,7 +1,7 @@
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import type { TypographyComponent } from 'types';
+import type { ITypographyProps, TypographyComponent } from 'types';
 
 import {
   ellipsisContainer,
@@ -12,6 +12,24 @@ import {
   typography,
 } from './typography.css';
 
+export const useTypography = ({
+  className,
+  shouldUseCapsize = true,
+  size = 'headingLarge',
+  textAlign = 'left',
+  whitespace = 'normal',
+}: ITypographyProps) => {
+  return useClassNames(
+    typography,
+    shouldUseCapsize ? sizeVariant[size] : sizeVariantNoCapsize[size],
+    textAlignVariant[textAlign],
+    whitespace === 'ellipsis' && !shouldUseCapsize
+      ? ellipsisContainer
+      : undefined,
+    className
+  );
+};
+
 export const Typography: TypographyComponent = ({
   children,
   className,
@@ -21,15 +39,13 @@ export const Typography: TypographyComponent = ({
   whitespace = 'normal',
   ...spanProps
 }) => {
-  const rootClassName = useClassNames(
-    typography,
-    shouldUseCapsize ? sizeVariant[size] : sizeVariantNoCapsize[size],
-    textAlignVariant[textAlign],
-    whitespace === 'ellipsis' && !shouldUseCapsize
-      ? ellipsisContainer
-      : undefined,
-    className
-  );
+  const rootClassName = useTypography({
+    className,
+    shouldUseCapsize,
+    size,
+    textAlign,
+    whitespace,
+  });
 
   return (
     <Box as="span" className={rootClassName} {...spanProps}>

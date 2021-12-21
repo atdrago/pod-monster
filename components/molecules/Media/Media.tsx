@@ -35,6 +35,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
   onPlay = () => ({}),
   onPlaying = () => ({}),
   onVolumeChange = () => ({}),
+  playbackRate = 1,
   poster,
   src,
   srcType,
@@ -134,6 +135,19 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
     // We only want to set the current time when the component mounts.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /**
+   * Update the playbackRate whenever it changes
+   */
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate;
+    }
+
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackRate;
+    }
+  }, [audioRef, playbackRate, videoRef, src]);
 
   return (
     <>

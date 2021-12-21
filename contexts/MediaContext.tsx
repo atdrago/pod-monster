@@ -13,7 +13,7 @@ import { useQuery } from 'react-query';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
-import type { IMediaContext } from 'types';
+import type { IMediaContext, PlaybackRate } from 'types';
 
 export const mediaContextDefaults: IMediaContext = {
   /* eslint-disable @typescript-eslint/no-empty-function */
@@ -36,6 +36,7 @@ export const mediaContextDefaults: IMediaContext = {
   mediaPlayerCurrentTime: 0,
   mediaPlayerCurrentTimeDebounced: 0,
   playPause: () => {},
+  playbackRate: 1,
   resetMediaContext: () => {},
   seekBackward: () => {},
   seekForward: () => {},
@@ -52,6 +53,7 @@ export const mediaContextDefaults: IMediaContext = {
   setIsMuted: (_) => {},
   setIsPaused: (_) => {},
   setMediaPlayerCurrentTime: (_) => {},
+  setPlaybackRate: (_) => {},
   setSize: (_) => {},
   setSrc: (_) => {},
   setSrcType: (_) => {},
@@ -112,6 +114,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [isPaused, setIsPaused] = useState<boolean>(
     mediaContextDefaults.isPaused
   );
+  const [playbackRate, setPlaybackRate] = useState<PlaybackRate>(1);
   const [src, setSrc] = useState<string | null>(mediaContextDefaults.src);
   const [srcType, setSrcType] = useState<string | null>(
     mediaContextDefaults.srcType
@@ -171,6 +174,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setFeedTitle(mediaContextDefaults.feedTitle);
     setIsMuted(mediaContextDefaults.isMuted);
     setIsPaused(mediaContextDefaults.isPaused);
+    setPlaybackRate(mediaContextDefaults.playbackRate);
     setSize(mediaContextDefaults.size);
     setSrc(mediaContextDefaults.src);
     setSrcType(mediaContextDefaults.srcType);
@@ -219,7 +223,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
   useEffect(() => {
     if (isFirstRenderAfterHydration) {
-      setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
       setChaptersUrl(mediaPlayerSettings.chaptersUrl);
       setCurrentTime(mediaPlayerSettings.currentTime);
       setDateCrawled(mediaPlayerSettings.dateCrawled);
@@ -231,6 +234,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       setFeedImage(mediaPlayerSettings.feedImage);
       setFeedTitle(mediaPlayerSettings.feedTitle);
       setIsMuted(mediaPlayerSettings.isMuted);
+      setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
+      setPlaybackRate(mediaPlayerSettings.playbackRate);
       setSize(mediaPlayerSettings.size);
       setSrc(mediaPlayerSettings.src);
       setSrcType(mediaPlayerSettings.srcType);
@@ -282,6 +287,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedImage,
         feedTitle,
         isMuted,
+        playbackRate,
         size,
         src,
         srcType,
@@ -289,7 +295,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       });
     }
   }, [
-    mediaPlayerCurrentTimeDebounced,
     chaptersUrl,
     dateCrawled,
     episodeId,
@@ -302,8 +307,10 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     isDoneHydratingFromLocalStorage,
     isFirstRenderAfterHydration,
     isMuted,
-    size,
+    mediaPlayerCurrentTimeDebounced,
+    playbackRate,
     setMediaPlayerSettings,
+    size,
     src,
     srcType,
     volume,
@@ -408,6 +415,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         mediaPlayerCurrentTime,
         mediaPlayerCurrentTimeDebounced,
         playPause,
+        playbackRate,
         resetMediaContext,
         seekBackward,
         seekForward,
@@ -424,6 +432,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setIsMuted,
         setIsPaused,
         setMediaPlayerCurrentTime,
+        setPlaybackRate,
         setSize,
         setSrc,
         setSrcType,
