@@ -32,7 +32,7 @@ const SettingsContext = createContext<ISettingsContext>({
   /* eslint-enable @typescript-eslint/no-empty-function */
 });
 
-const SETTINGS_VERSION = 4;
+const SETTINGS_VERSION = 5;
 
 export const SettingsProvider: FunctionComponent<
   PropsWithChildren<unknown>
@@ -123,6 +123,15 @@ export const SettingsProvider: FunctionComponent<
             } catch (err) {
               // Do nothing
             }
+          }
+
+          // In 5, `playbackRate` was added to audio player settings
+          if (settings._version < 5 && SETTINGS_VERSION >= 5) {
+            tmpMediaPlayerSettings = {
+              ...settings.audioPlayerSettings,
+            };
+
+            tmpMediaPlayerSettings.playbackRate = 1;
           }
 
           if (
