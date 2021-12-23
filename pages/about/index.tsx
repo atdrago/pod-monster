@@ -183,6 +183,12 @@ const AboutPage: FunctionComponent = () => {
               podcast or episode.
             </li>
             <li className={listItem}>
+              Wherever possible, the interface uses standard, native web
+              controls in place of custom JavaScript-based controls. The goal is
+              to give you an accessible experience that feels familiar and
+              comfortable, not custom.
+            </li>
+            <li className={listItem}>
               Every consumer-focused feature of the Podcast Index is in the
               plans, and I will implement them in the order that I see fit.
             </li>
