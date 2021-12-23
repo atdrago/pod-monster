@@ -26,6 +26,7 @@ import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
 import { underlinedLink } from 'styles';
 import type { PlaybackRate } from 'types';
+import { logger } from 'utils/logger';
 import { getEpisodePath } from 'utils/paths';
 import { playbackRates } from 'utils/playbackRates';
 
@@ -284,7 +285,10 @@ export const MediaPlayer: FunctionComponent = () => {
               onLoadedData={handleLoadedData}
               onLoadedMetadata={handleLoadedMetaData}
               onPause={() => setIsPaused(true)}
-              onPlay={() => setIsPaused(false)}
+              onPlay={() => {
+                logger.info('hello');
+                setIsPaused(false);
+              }}
               onPlaying={() => setIsPaused(false)}
               onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
               playbackRate={playbackRate}

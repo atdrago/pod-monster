@@ -16,12 +16,15 @@ import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { logger } from 'utils/logger';
 import { getPodcastPath } from 'utils/paths';
 
 export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
   query,
   res,
 }) => {
+  logger.info('HELLLLOOOOOO');
+
   const queryClient = new QueryClient();
   const [authTime, authToken] = await fetchPodcastIndexAuth();
 

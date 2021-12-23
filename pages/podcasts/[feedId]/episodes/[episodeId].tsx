@@ -34,6 +34,7 @@ import type {
 } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { logger } from 'utils/logger';
 import { getEpisodePath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
 
@@ -129,6 +130,10 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
       </HtmlViewer>
     );
   }
+
+  logger.info(
+    `Rebuilding static page for feed ${feed.title}, episode "${episode.title}".`
+  );
 
   return {
     props: {
