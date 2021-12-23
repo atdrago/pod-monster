@@ -20,6 +20,7 @@ import {
   tryLocalStorageRemoveItem,
   tryLocalStorageSetItem,
 } from 'utils/localStorage';
+import { logger } from 'utils/logger';
 
 const SettingsContext = createContext<ISettingsContext>({
   /* eslint-disable @typescript-eslint/no-empty-function */
@@ -144,7 +145,15 @@ export const SettingsProvider: FunctionComponent<
             );
             setEpisodeSettings(settings.episodeSettings);
             setFeedSettings(tmpFeedSettings || settings.feedSettings);
+
+            logger.info(
+              `Successfully migrated settings from ${settings._version} to ${SETTINGS_VERSION}.`
+            );
           } else {
+            logger.error(
+              `Failed to migrate settings from ${settings._version} to ${SETTINGS_VERSION}.`
+            );
+
             // If no migrations were found, we have an incompatible version, so bail.
             tryLocalStorageRemoveItem('pod2.settings');
           }
@@ -157,19 +166,15 @@ export const SettingsProvider: FunctionComponent<
 
   // Write to localStorage when any settings change
   useEffect(() => {
-    try {
-      tryLocalStorageSetItem(
-        'pod2.settings',
-        JSON.stringify({
-          _version: SETTINGS_VERSION,
-          audioPlayerSettings: mediaPlayerSettings,
-          episodeSettings,
-          feedSettings,
-        })
-      );
-    } catch (err) {
-      // TODO: Capture exception?
-    }
+    tryLocalStorageSetItem(
+      'pod2.settings',
+      JSON.stringify({
+        _version: SETTINGS_VERSION,
+        audioPlayerSettings: mediaPlayerSettings,
+        episodeSettings,
+        feedSettings,
+      })
+    );
   }, [mediaPlayerSettings, episodeSettings, feedSettings]);
 
   return (
