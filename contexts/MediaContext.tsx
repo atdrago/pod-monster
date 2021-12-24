@@ -199,6 +199,18 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     [mediaPlayerCurrentTime]
   );
 
+  const pause = () => {
+    setIsPaused(true);
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+  };
+
   const playPause = useCallback(async () => {
     const nextIsPaused = !isPaused;
 
@@ -349,7 +361,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     if ('mediaSession' in window.navigator) {
       navigator.mediaSession.setActionHandler('play', playPause);
       navigator.mediaSession.setActionHandler('pause', playPause);
-      navigator.mediaSession.setActionHandler('stop', null);
+      navigator.mediaSession.setActionHandler('stop', pause);
       navigator.mediaSession.setActionHandler('seekbackward', seekBackward);
       navigator.mediaSession.setActionHandler('seekforward', seekForward);
       navigator.mediaSession.setActionHandler('seekto', ({ seekTime }) => {
