@@ -15,6 +15,7 @@ import {
   paragraph,
   transcriptItem,
   transcriptItemHighlight,
+  transcriptItemOuter,
 } from './timedList.css';
 
 const ListItemComponent = memo(function Row({
@@ -24,20 +25,20 @@ const ListItemComponent = memo(function Row({
 }: ListChildComponentProps) {
   const { text } = data.list[listItemIndex];
   const isCurrentTranscriptItem = data.index === listItemIndex;
-  const className = useClassNames(
-    transcriptItem,
+  const outerClassName = useClassNames(
+    transcriptItemOuter,
     isCurrentTranscriptItem ? transcriptItemHighlight : undefined
   );
 
   return (
     <span
       role="button"
-      className={className}
       key={listItemIndex}
+      className={outerClassName}
       style={style}
       onClick={() => data.onItemClick(data.list[listItemIndex])}
     >
-      {text}
+      <span className={transcriptItem}>{text}</span>
     </span>
   );
 },

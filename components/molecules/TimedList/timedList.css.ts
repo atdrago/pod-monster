@@ -3,7 +3,7 @@ import { calc } from '@vanilla-extract/css-utils';
 
 import { vars } from 'styles';
 
-export const transcriptItem = style({
+export const transcriptItemOuter = style({
   // Disable the background transition on devices that don't support smooth
   // scrolling. It feels awkward for the background to animate if the list is
   // jumping to a new item.
@@ -12,14 +12,19 @@ export const transcriptItem = style({
       transition: 'background 250ms ease-in-out',
     },
   },
-  WebkitBoxOrient: 'vertical',
-  WebkitLineClamp: 2,
+  alignItems: 'center',
   background: 'none',
   border: 0,
-  color: vars.color.foreground,
   cursor: 'pointer',
-  display: '-webkit-box',
+  display: 'flex',
   minHeight: '48px',
+});
+
+export const transcriptItem = style({
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 2,
+  color: vars.color.foreground,
+  display: '-webkit-box',
   overflow: 'hidden',
   padding: `0 ${vars.spacing.s008}`,
   wordBreak: 'break-word',
