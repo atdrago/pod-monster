@@ -1,9 +1,15 @@
 import { useRouter } from 'next/router';
-import { ChangeEventHandler, FunctionComponent, useEffect } from 'react';
+import {
+  ChangeEventHandler,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from 'react';
 import { QueryClient, dehydrate, useQuery } from 'react-query';
 
 import { searchByTerm, setConfig } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
+import { Checkbox } from 'components/atoms/Checkbox';
 import { Head } from 'components/atoms/Head';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
@@ -67,6 +73,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 }) => {
   const router = useRouter();
   const { feedSettings } = useSettingsContext();
+  const [shouldIncludeDeadFeeds, setShouldIncludeDeadFeeds] = useState(false);
   const [searchTerm, searchTermDebounced, setSearchTerm] = useStateWithDebounce(
     initialSearchTerm ?? '',
     1000
@@ -111,6 +118,9 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
     searchFeedback = 'Loading...';
   }
 
+  const hasDeadFeeds =
+    searchResponse && searchResponse.feeds.some((feed) => feed.dead > 0);
+
   return (
     <>
       <Head
@@ -128,24 +138,40 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
           browser.
         </Typography> */}
         <Stack maxWidth="small">
-          <InputField
-            feedback={searchFeedback}
-            label={
-              <Typography
-                as="h2"
-                size="headingSmall"
-                style={{ display: 'inline-block' }}
+          <Stack space="small">
+            <InputField
+              feedback={searchFeedback}
+              label={
+                <Typography
+                  as="h2"
+                  size="headingSmall"
+                  style={{ display: 'inline-block' }}
+                >
+                  Search
+                </Typography>
+              }
+              type="search"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            {hasDeadFeeds && (
+              <Checkbox
+                checked={shouldIncludeDeadFeeds}
+                onChange={(event) =>
+                  setShouldIncludeDeadFeeds(event.currentTarget.checked)
+                }
               >
-                Search
-              </Typography>
-            }
-            type="search"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
+                Include &ldquo;dead&rdquo; feeds in search results
+              </Checkbox>
+            )}
+          </Stack>
           {searchResponse && (
             <Stack as={'ol'} space="small">
               {searchResponse.feeds.map((feed, index) => {
+                if (feed.dead) {
+                  return null;
+                }
+
                 const proxyFeedImage = new URL(
                   '/api/images/proxy',
                   process.env.NEXT_PUBLIC_BASE_URL
