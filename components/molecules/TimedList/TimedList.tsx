@@ -76,11 +76,22 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
       isOpenRef.current = isOpen;
     }, [isOpen]);
 
+    const indexDelta = Math.abs(index - indexRef.current);
+    const indexUpdatedAtDelta = Math.abs(
+      Date.now() - indexUpdatedAtRef.current
+    );
     /**
-     * Only smooth scroll the details element is open now, and was open on the
-     * last render.
+     * Only smooth scroll if it's a short distance to transition, and if the
+     * current item hasn't changed within the last 750ms, and if the details
+     * element is open now, and was also open on the last render. Otherwise,
+     * the effect can be overwhelming and react-window has a hard time keeping
+     * up.
      */
-    const shouldSmoothScroll = isOpenRef.current && isOpen;
+    const shouldSmoothScroll =
+      indexDelta < 5 &&
+      indexUpdatedAtDelta > 750 &&
+      isOpenRef.current &&
+      isOpen;
 
     return list.length > 0 ? (
       <Details
