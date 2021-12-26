@@ -17,6 +17,9 @@ export const logger = pino(
         level: 'info',
         send,
       },
+      write: () => {
+        // Prevent logs from being output to the browser console
+      },
     },
     level: 'debug',
   },
