@@ -58,6 +58,8 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
     const indexUpdatedAtRef = useRef<number>(Date.now());
     const listRef = useRef<List | null>(null);
     const [isScrollingLocked, setIsScrollingLocked] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
+    const isOpenRef = useRef(isOpen);
 
     useEffect(() => {
       if (isScrollingLocked) {
@@ -70,16 +72,15 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
       indexUpdatedAtRef.current = Date.now();
     }, [index]);
 
-    const indexDelta = Math.abs(index - indexRef.current);
-    const indexUpdatedAtDelta = Math.abs(
-      Date.now() - indexUpdatedAtRef.current
-    );
+    useEffect(() => {
+      isOpenRef.current = isOpen;
+    }, [isOpen]);
+
     /**
-     * Only smooth scroll if it's a short distance to transition, and if the
-     * current item hasn't changed within the last 750ms. Otherwise, the effect
-     * can be overwhelming and react-window has a hard time keeping up.
+     * Only smooth scroll the details element is open now, and was open on the
+     * last render.
      */
-    const shouldSmoothScroll = indexDelta < 5 && indexUpdatedAtDelta > 750;
+    const shouldSmoothScroll = isOpenRef.current && isOpen;
 
     return list.length > 0 ? (
       <Details
@@ -97,7 +98,9 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
           // Fixes an issue where the transcript would show an empty box on the
           // first page load if the `start` query parameter was provided.
           listRef.current?.forceUpdate();
+          setIsOpen(!isOpen);
         }}
+        open={isOpen}
         summary={
           <Typography as="h4" size="headingSmaller">
             {title}
