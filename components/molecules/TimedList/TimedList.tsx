@@ -8,8 +8,8 @@ import {
 import { Checkbox } from 'components/atoms/Checkbox';
 import { Details } from 'components/atoms/Details';
 import { Typography } from 'components/atoms/Typography';
+import { useClassNames } from 'hooks/useClassNames';
 import type { ITimedListProps } from 'types';
-import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
 import {
   paragraph,
@@ -24,12 +24,10 @@ const ListItemComponent = memo(function Row({
 }: ListChildComponentProps) {
   const { text } = data.list[listItemIndex];
   const isCurrentTranscriptItem = data.index === listItemIndex;
-  const className = [
+  const className = useClassNames(
     transcriptItem,
-    isCurrentTranscriptItem ? transcriptItemHighlight : undefined,
-  ]
-    .filter(notNullOrUndefined)
-    .join(' ');
+    isCurrentTranscriptItem ? transcriptItemHighlight : undefined
+  );
 
   return (
     <span
@@ -122,10 +120,10 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
           <List
             ref={listRef}
             width={'100%'}
-            height={56 * 5}
+            height={48 * 5}
             itemCount={list.length}
             itemData={{ index, list, onItemClick }}
-            itemSize={56}
+            itemSize={48}
             style={
               isScrollingLocked
                 ? {

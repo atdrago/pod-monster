@@ -19,7 +19,7 @@ export const transcriptItem = style({
   color: vars.color.foreground,
   cursor: 'pointer',
   display: '-webkit-box',
-  minHeight: '56px',
+  minHeight: '48px',
   overflow: 'hidden',
   padding: `0 ${vars.spacing.s008}`,
   wordBreak: 'break-word',
