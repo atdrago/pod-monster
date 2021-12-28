@@ -19,6 +19,7 @@ export * from './PlayPauseIcon';
 export * from './PodcastPage';
 export * from './PodcastsPage';
 export * from './Range';
+export * from './SearchField';
 export * from './SettingsContext';
 export * from './Stack';
 export * from './TimedList';

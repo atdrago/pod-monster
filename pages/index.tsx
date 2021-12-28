@@ -15,7 +15,7 @@ import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { InputField } from 'components/molecules/InputField';
+import { SearchField } from 'components/molecules/SearchField';
 import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
@@ -139,7 +139,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
         </Typography> */}
         <Stack maxWidth="small">
           <Stack space="small">
-            <InputField
+            <SearchField
               feedback={searchFeedback}
               label={
                 <Typography
@@ -153,6 +153,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
               type="search"
               value={searchTerm}
               onChange={handleSearchChange}
+              placeholder="By term"
             />
             {hasDeadFeeds && (
               <Checkbox
