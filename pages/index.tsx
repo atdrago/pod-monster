@@ -100,7 +100,10 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
     router.replace(`?term=${event.currentTarget.value}`);
   };
 
-  const isSearchLoading = isLoading || searchTermDebounced !== searchTerm;
+  const isSearchEmpty = /^\s*$/.test(searchTerm);
+
+  const isSearchLoading =
+    (isLoading || searchTermDebounced !== searchTerm) && !isSearchEmpty;
 
   const feedSettingsEntries = Object.entries(feedSettings).filter(
     ([_, { subscribedAt }]) => {
@@ -108,11 +111,12 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
     }
   );
 
-  let searchFeedback = searchResponse
-    ? `${searchResponse.description} ${
-        searchResponse.count > 0 ? `(${searchResponse.count})` : ''
-      }`
-    : '';
+  let searchFeedback =
+    searchResponse && !isSearchEmpty
+      ? `${searchResponse.description} ${
+          searchResponse.count > 0 ? `(${searchResponse.count})` : ''
+        }`
+      : '';
 
   if (isSearchLoading) {
     searchFeedback = 'Loading...';
@@ -166,7 +170,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
               </Checkbox>
             )}
           </Stack>
-          {searchResponse && (
+          {searchResponse && !isSearchEmpty && (
             <Stack as={'ol'} space="small">
               {searchResponse.feeds.map((feed, index) => {
                 if (feed.dead) {
