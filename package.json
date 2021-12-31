@@ -31,7 +31,7 @@
     "react-query": "^3.34.6",
     "react-window": "^1.8.6",
     "rehype-parse": "^8.0.3",
-    "rehype-raw": "^6.1.0",
+    "rehype-raw": "^6.1.1",
     "rehype-sanitize": "^5.0.1",
     "rehype-strip-html": "^0.1.1",
     "sharp": "^0.29.3",
