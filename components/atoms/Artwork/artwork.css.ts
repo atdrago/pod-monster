@@ -15,7 +15,6 @@ export const artworkFallback = style([
   artwork,
   {
     alignItems: 'center',
-    background: vars.color.backgroundBlurred,
     display: 'flex',
     flex: '0 0 auto',
     justifyContent: 'center',
