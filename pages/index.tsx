@@ -49,10 +49,10 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
       'public, s-maxage=60, stale-while-revalidate=3600'
     );
   } else {
-    // If no search term, stay fresh for 1 hour, and stale for 12 hours
+    // If no search term, stay fresh for 24 hours, and stale for 30 days
     res.setHeader(
       'Cache-Control',
-      'public, s-maxage=3600, stale-while-revalidate=43200'
+      'public, s-maxage=86400, stale-while-revalidate=2592000'
     );
   }
 
