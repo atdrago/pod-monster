@@ -39,6 +39,50 @@ import {
   volumeLayout,
 } from './mediaPlayer.css';
 
+const rateDecimalToFraction = (rate: PlaybackRate): string => {
+  switch (rate) {
+    case 0.25:
+      return '¼';
+    case 0.5:
+      return '½';
+    case 0.75:
+      return '¾';
+    case 1.25:
+      return '1¼';
+    case 1.5:
+      return '1½';
+    case 1.75:
+      return '1¾';
+    case 1:
+    case 2:
+    default:
+      return `${rate}`;
+  }
+};
+
+const fractionToPlaybackRate = (fraction: string): PlaybackRate | null => {
+  switch (fraction) {
+    case '¼':
+      return 0.25;
+    case '½':
+      return 0.5;
+    case '¾':
+      return 0.75;
+    case '1¼':
+      return 1.25;
+    case '1½':
+      return 1.5;
+    case '1¾':
+      return 1.75;
+    case '1':
+      return 1;
+    case '2':
+      return 2;
+    default:
+      return null;
+  }
+};
+
 export const MediaPlayer: FunctionComponent = () => {
   const {
     audioRef,
@@ -366,17 +410,22 @@ export const MediaPlayer: FunctionComponent = () => {
               </Stack>
               <div className={playbackRateContainer}>
                 <SelectField
-                  value={playbackRate}
+                  value={rateDecimalToFraction(playbackRate)}
+                  label={`${rateDecimalToFraction(playbackRate)}x`}
                   onChange={(event) => {
-                    setPlaybackRate(
-                      parseFloat(event.currentTarget.value) as PlaybackRate
+                    const nextPlaybackRate = fractionToPlaybackRate(
+                      event.currentTarget.value
                     );
+
+                    if (nextPlaybackRate) {
+                      setPlaybackRate(nextPlaybackRate);
+                    }
                   }}
                 >
                   {playbackRates.map((rate) => {
                     return (
-                      <option key={rate} value={rate}>
-                        {rate}x
+                      <option key={rate} value={rateDecimalToFraction(rate)}>
+                        {rateDecimalToFraction(rate)}
                       </option>
                     );
                   })}

@@ -56,7 +56,7 @@ export const iconButton = style({
 });
 
 export const playbackRateContainer = style({
-  margin: `0 ${vars.spacing.s004}`,
+  margin: `0 ${vars.spacing.s008}`,
 });
 
 export const intersectionObserverClassName = style({

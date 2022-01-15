@@ -8,12 +8,17 @@ interface ISelectFieldOptionProps {
   value: string | number;
 }
 
+type SelectFieldProps = JSX.IntrinsicElements['select'] & {
+  label?: string;
+};
+
 export const SelectField = ({
   children,
   className,
+  label,
   value,
   ...props
-}: JSX.IntrinsicElements['select']) => {
+}: SelectFieldProps) => {
   const typographyClassName = useTypography({
     className,
     shouldUseCapsize: false,
@@ -26,7 +31,7 @@ export const SelectField = ({
       <select className={selectClassName} value={value} {...props}>
         {children}
       </select>
-      {value}x
+      {label ?? value}
     </label>
   );
 };
