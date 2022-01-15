@@ -1,4 +1,5 @@
 import { AnimatePresence, m } from 'framer-motion';
+import { useRouter } from 'next/router';
 import {
   FunctionComponent,
   ReactEventHandler,
@@ -117,6 +118,7 @@ export const MediaPlayer: FunctionComponent = () => {
     volume,
   } = useMediaContext() || mediaContextDefaults;
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
+  const { asPath } = useRouter();
   const [isPinned, setIsPinned] = useState(false);
   const playerClassName = useClassNames(
     player,
@@ -219,6 +221,11 @@ export const MediaPlayer: FunctionComponent = () => {
     };
   }, [src]);
 
+  const isPlayingEpisodeOfCurrentPage =
+    episodeId &&
+    feedId &&
+    asPath.includes(getEpisodePath({ episodeId, feedId }));
+
   const animationProperties = {
     animate: {
       height: 'auto',
@@ -265,10 +272,15 @@ export const MediaPlayer: FunctionComponent = () => {
                       textAlign="center"
                       whitespace="ellipsis"
                     >
-                      {episodeId && feedId ? (
+                      {episodeId && feedId && !isPlayingEpisodeOfCurrentPage ? (
                         <Link
                           className={underlinedLink}
                           href={getEpisodePath({ episodeId, feedId })}
+                          anchorProps={{
+                            onClick: () => {
+                              setSize(1);
+                            },
+                          }}
                         >
                           {episodeTitle}
                         </Link>
