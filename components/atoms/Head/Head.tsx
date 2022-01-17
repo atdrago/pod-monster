@@ -4,7 +4,7 @@ import { vars } from 'styles';
 import type { IHeadProps } from 'types';
 
 export const Head = ({ description, ogMetadata, titles }: IHeadProps) => {
-  const titlesWithAppName = [...titles, process.env.NEXT_PUBLIC_APP_NAME];
+  const titlesWithAppName = [...titles, 'pod.monster (alpha)'];
 
   // These truncation lengths were taken from https://www.opengraph.xyz/
   const truncatedTitle = ogMetadata?.title?.substring(0, 60);

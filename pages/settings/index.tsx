@@ -68,10 +68,7 @@ const SettingsPage: FunctionComponent = () => {
 
   return (
     <>
-      <Head
-        titles={['Settings']}
-        description={`${process.env.NEXT_PUBLIC_APP_NAME} settings`}
-      />
+      <Head titles={['Settings']} description={`Pod Monster settings`} />
       <Stack as="main" maxWidth="small">
         <Stack as="section">
           <Typography as="h3" size="headingMedium">
