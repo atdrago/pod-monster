@@ -1,6 +1,7 @@
 import type { GetStaticProps } from 'next';
 import type { FunctionComponent, ReactNode } from 'react';
 
+import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Head } from 'components/atoms/Head';
 import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
@@ -55,25 +56,6 @@ const HeadingAnchorLink = ({
 
   return (
     <a className={underlinedLink} href={`#${slug}`}>
-      {children}
-    </a>
-  );
-};
-
-const ExternalLink = ({
-  children,
-  href,
-}: {
-  children?: ReactNode;
-  href: string;
-}) => {
-  return (
-    <a
-      className={underlinedLink}
-      target="_blank"
-      href={href}
-      rel="noreferrer noopener"
-    >
       {children}
     </a>
   );

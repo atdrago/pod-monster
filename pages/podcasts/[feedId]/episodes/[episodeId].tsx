@@ -12,7 +12,9 @@ import { unified } from 'unified';
 import { episodeById, podcastsByFeedId } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
+import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Head } from 'components/atoms/Head';
+import { Icon } from 'components/atoms/Icon';
 import { IconButton } from 'components/atoms/IconButton';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
@@ -23,6 +25,7 @@ import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { TimedList } from 'components/molecules/TimedList';
 import { mediaContextDefaults, useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
+import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
@@ -353,25 +356,40 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           width={episodeImageDimensions?.width}
         />
         <Stack
-          aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
-          as="button"
           kind="flexRow"
-          space="small"
           align="center"
           justify="center"
-          style={{
-            cursor: 'pointer',
-            width: 'auto',
-          }}
-          onClick={handlePlayPauseClick}
-          type="button"
+          style={{ width: 'auto' }}
+          space="xsmall"
         >
-          <IconButton as="span" background="circle" size="medium">
-            <PlayPauseIcon size="medium" isPaused={isThisEpisodePaused} />
-          </IconButton>
-          <Typography size="headingSmaller" as="h3" whitespace={2}>
-            {episode?.title}
-          </Typography>
+          <Stack
+            aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
+            as="button"
+            kind="flexRow"
+            space="small"
+            align="center"
+            justify="center"
+            style={{
+              cursor: 'pointer',
+              width: 'auto',
+            }}
+            onClick={handlePlayPauseClick}
+            type="button"
+          >
+            <IconButton as="span" background="circle" size="medium">
+              <PlayPauseIcon size="medium" isPaused={isThisEpisodePaused} />
+            </IconButton>
+            <Typography size="headingSmaller" as="h3" whitespace={2}>
+              {currentChapter?.title ?? episode?.title}
+            </Typography>
+          </Stack>
+          {currentChapter?.url && (
+            <ExternalLink href={currentChapter.url}>
+              <Icon size="medium">
+                <ChapterLinkIcon />
+              </Icon>
+            </ExternalLink>
+          )}
         </Stack>
 
         <Stack space="large">
