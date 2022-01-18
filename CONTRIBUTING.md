@@ -18,8 +18,9 @@ Once Pod Monster leaves its alpha phase, the version will be incremented based o
 
 ### Conventional Commits
 
-All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This project uses 3 primary commit types:
+All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This project uses 4 primary commit types:
 
+- docs - A change to documentation
 - chore - A change that is not user-facing
 - feat - A change that is user-facing
 - fix - A change that fixes something
