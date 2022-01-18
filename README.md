@@ -1,4 +1,4 @@
-<h1 style="text-align: center;">👾<br />Pod Monster</h1>
+<h1 align="center">👾<br />Pod Monster</h1>
 
 [Pod Monster](https://pod.monster/) is a front-end implementation of many, but not all, of the features specified in new podcast namespace a.k.a. Podcasting 2.0.
 
