@@ -1,4 +1,4 @@
-import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
+import type { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 
 export interface IMarkdownViewerProps extends ReactMarkdownOptions {
   className?: string;
