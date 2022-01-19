@@ -1,6 +1,6 @@
 # Contributing
 
-Pod Monster is a project primarily maintained by @atdrago and is currently transitioning to open source. Since it's still early, you may encounter a few rough edges when attempting to contribute. This document's purpose is to try to make the process as clear and easy as possible.
+Pod Monster is a project primarily maintained by [@atdrago](https://github.com/atdrago) and is currently transitioning to open source. Since it's still early, you may encounter a few rough edges when attempting to contribute. This document's purpose is to try to make the process as clear and easy as possible.
 
 ### [Code of Conduct](https://github.com/atdrago/pod-monster/blob/main/CODE_OF_CONDUCT.md)
 
@@ -8,24 +8,31 @@ Pod Monster has adopted the [Contributor Covenant](https://www.contributor-coven
 
 ### Open Development
 
-All work on Pod Monster happens directly on [GitHub](https://github.com/atdrago/pod-monster). The main contributor to the project is @atdrago. All other contributors are expected to fork the repository, create a branch, and send pull requests to the `main` branch which will go through a pull request review process by the primary maintainers.
+All work on Pod Monster happens directly on [GitHub](https://github.com/atdrago/pod-monster). The main contributor to the project is [@atdrago](https://github.com/atdrago). All other contributors are expected to fork the repository, create a branch, and send pull requests to the `main` branch which will go through a pull request review process by the primary maintainers.
 
-### Semantic Versioning
+### [Semantic Versioning](https://semver.org/)
 
 Pod Monster is currently in its alpha phase. All commits to the `main` branch go directly to production and are available to end users immediately. The project's version is never incremented during this process.
 
 Once Pod Monster leaves its alpha phase, the version will be incremented based on the rules in the [Semantic Versioning](https://semver.org/) specification.
 
-### Conventional Commits
+### [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
-All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This project uses 4 primary commit types:
+**Template**
+```
+type(scope): Short message
+```
+
+All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. 
+
+This project uses 4 primary commit `type`s:
 
 - docs - A change to documentation
-- chore - A change that is not user-facing
-- feat - A change that is user-facing
 - fix - A change that fixes something
+- feat - A change that is user-facing
+- chore - A change that is not user-facing
 
-It is generally fine to leave out commit scope, but if specified it should be as short as possible and probably falls into one of the following:
+It is generally fine to leave out commit `scope`, but if specified it should be as short as possible and probably falls into one of the following:
 
 - deps - Dependency updates
 - deps-dev - Development dependency updates
@@ -108,4 +115,4 @@ By contributing to React, you agree that your contributions will be licensed und
 
 ## Attribution
 
-This guide to contributing is adapted heavily from the React's [How to Contribute](https://reactjs.org/docs/how-to-contribute.html) guide.
+This guide to contributing is adapted heavily from React's [How to Contribute](https://reactjs.org/docs/how-to-contribute.html) guide.
