@@ -1,6 +1,6 @@
 <h1 align="center">👾<br />Pod Monster</h1>
 
-[Pod Monster](https://pod.monster/) is a front-end implementation of many, but not all, of the features specified in new podcast namespace a.k.a. Podcasting 2.0.
+[Pod Monster](https://pod.monster/) is a mobile-first, web-focused, front-end implementation of many, but not all, of the features specified in new podcast namespace, a.k.a. Podcasting 2.0.
 
 The following documentation is meant for developers trying to run this project. If you're attempting to learn more about Pod Monster itself, please visit the [About page](https://pod.monster/about).
 
@@ -10,7 +10,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 1. ### Install dependencies
 
-   Make sure you're running the version of Node specified in the `~/.nvmrc` file (currently "v16") before installing dependencies. If you use `nvm`, you can do this with `nvm use`.
+   Make sure you're running the version of Node specified in the `~/.nvmrc` file (currently "v16") before installing dependencies. This ensures you do not encounter any unexpected package-lock.json file changes. If you use `nvm`, you can do this with `nvm use`.
 
    Then, install dependencies:
 
@@ -29,16 +29,17 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
    NEXT_PUBLIC_PODCAST_INDEX_API_SECRET=
    ```
 
-   #### **Getting your Podcast Index API Key and Secret**
+   #### **Retrieve your Podcast Index API Key and Secret**
 
    You will need to obtain your Podcast Index API Key and Secret from your Podcastindex.org account:
 
    1. [Log in or sign up here.](https://api.podcastindex.org/)
-   2. In the "API Keys" section, click the "+" button to create a new API key / secret pair.
-   3. Copy the "Key" and paste it to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_KEY=`
-   4. Copy the "Secret" and paste it to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_SECRET=`
+   2. In the "API Keys" section, click the "+" button to create a new API Key / Secret pair.
+   3. You should copy these values down and put them in a safe place as they cannot be retrieved later, but for now it's fine to keep them only in the `.env.local` file you've created.
+   3. Copy and paste the "Key" into the `.env.local` file, to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_KEY=`
+   4. Copy and paste the "Secret" into the `.env.local` file, to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_SECRET=`
 
-   Depending on the characters used in your values, may need to enclose the API Key or Secret in double-quotes within the `~/.env.local` file.
+   Depending on the characters used in your Key and/or Secret, may need to enclose one of both values inside double-quotes within the `~/.env.local` file.
 
    **Example**
 

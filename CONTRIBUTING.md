@@ -8,7 +8,7 @@ Pod Monster has adopted the [Contributor Covenant](https://www.contributor-coven
 
 ### Open Development
 
-All work on Pod Monster happens directly on [GitHub](https://github.com/atdrago/pod-monster). The main contributor to the project is [@atdrago](https://github.com/atdrago). All other contributors are expected to fork the repository, create a branch, and send pull requests to the `main` branch which will go through a pull request review process by the primary maintainers.
+All work on Pod Monster happens directly on [GitHub](https://github.com/atdrago/pod-monster). The main contributor to the project is [@atdrago](https://github.com/atdrago). All other contributors are expected to fork the repository, create a branch, and send pull requests to the `main` branch which will go through a pull request review process by [@atdrago](https://github.com/atdrago) and/or any other primary maintainers.
 
 ### [Semantic Versioning](https://semver.org/)
 
@@ -18,12 +18,27 @@ Once Pod Monster leaves its alpha phase, the version will be incremented based o
 
 ### [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
-**Template**
+All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification, and the message should be in [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood). In general, you should be able to put your commit message into the blank space in the following sentence, and it should make sense: "If I merge this PR, it will _____." For example, if I added a "Subscribe" button to each search result item, I may be tempted to make my commit message "Added subscribe button to search result items", but completing the above sentece with this commit message will not make sense: "If I merge this PR, it will _added subscribe button to search result items_". Instead, "Added" should be changed to "Add", like so: "Add subscribe button to search result items", and now this sentence is easier to read: "If I merge this PR, it will _add subscribe button to search result items_"
+
+Below is a template and some examples to use when writing acceptable commit messages.
+
+Note that commits are easy to squash together and their messages easy to change, so don't worry too much about getting this correct on your first couple of PRs.
+
+#### **Commit Message Template**
+
 ```
-type(scope): Short message
+type(scope): Short specific message describing the change
 ```
 
-All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. 
+#### **Commit Message Examples**
+
+```
+feat(search): Add subscribe button to search results
+fix(player): Ensure video element changes when src changes
+chore(deps): Bump react-query from 3.34.2 to 3.34.4
+```
+
+####  **Commit Message `type`**
 
 This project uses 4 primary commit `type`s:
 
@@ -31,6 +46,8 @@ This project uses 4 primary commit `type`s:
 - fix - A change that fixes something
 - feat - A change that is user-facing
 - chore - A change that is not user-facing
+
+####  **Commit Message `scope`**
 
 It is generally fine to leave out commit `scope`, but if specified it should be as short as possible and probably falls into one of the following:
 
@@ -44,14 +61,6 @@ It is generally fine to leave out commit `scope`, but if specified it should be 
 - about - Changes to the about page
 - settings - Changes to the settings page
 - artwork - Changes to how artwork is handled
-
-Some examples of conventional commits:
-
-```
-feat(search): Add subscribe button to search results
-fix(player): Ensure video element changes when src changes
-chore(deps): Bump react-query from 3.34.2 to 3.34.4
-```
 
 ### Branch Organization
 
@@ -99,12 +108,17 @@ The core team is monitoring for pull requests. We will review your pull request 
 4. ~~If you've fixed a bug or added code that should be tested, add tests!~~ _Not required until other tests are added._
 5. Make sure the linter passes (`npm run lint`)
 6. Make sure the build passes (`npm run build`)
-7. Make sure the code is formatted [prettier](https://github.com/prettier/prettier) (`npm run format`)
+7. Make sure the code is formatted (`npm run format`)
 
 ### Style Guide
 
-We use an automatic code formatter called [Prettier](https://prettier.io/).
-If you don't have an extension taking care of this for you, you make need to run `npm run format` after making any changes to the code.
+In general, all changes related to formatting or linting should be caught by Prettier or ESLint prior to the pull request being made, however there are automatic checks that happen for every PR as well. If a human reviewer requests a stylistic (formatting or linting) change to a PR, a suitable linting or formatting rule should be agreed upon and be added to the appropriate configuration file, or otherwise should not be requested.
+
+#### Formatting with Prettier
+
+We use an automatic code formatter called [Prettier](https://prettier.io/) and recommend that you use [an extension](???) to take care of formatting code for you on save. If you don't have this setup, please run `npm run format` after making any changes to the code.
+
+#### Linting with ESLint
 
 Then, our linter will catch most issues that may exist in your code.
 You can check the status of your code styling by simply running `npm run lint`.
