@@ -18,7 +18,7 @@ Once Pod Monster leaves its alpha phase, the version will be incremented based o
 
 ### [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
-All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification, and the message should be in [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood). In general, you should be able to put your commit message into the blank space in the following sentence, and it should make sense: "If I merge this PR, it will _____." For example, if I added a "Subscribe" button to each search result item, I may be tempted to make my commit message "Added subscribe button to search result items", but completing the above sentece with this commit message will not make sense: "If I merge this PR, it will _added subscribe button to search result items_". Instead, "Added" should be changed to "Add", like so: "Add subscribe button to search result items", and now this sentence is easier to read: "If I merge this PR, it will _add subscribe button to search result items_"
+All commits that land on the `main` branch and PR titles are expected to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification, and the message should be in [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood). In general, you should be able to put your commit message into the blank space in the following sentence, and it should make sense: "If I merge this PR, it will **\_**." For example, if I added a "Subscribe" button to each search result item, I may be tempted to make my commit message "Added subscribe button to search result items", but completing the above sentece with this commit message will not make sense: "If I merge this PR, it will _added subscribe button to search result items_". Instead, "Added" should be changed to "Add", like so: "Add subscribe button to search result items", and now this sentence is easier to read: "If I merge this PR, it will _add subscribe button to search result items_"
 
 Below is a template and some examples to use when writing acceptable commit messages.
 
@@ -38,7 +38,7 @@ fix(player): Ensure video element changes when src changes
 chore(deps): Bump react-query from 3.34.2 to 3.34.4
 ```
 
-####  **Commit Message `type`**
+#### **Commit Message `type`**
 
 This project uses 4 primary commit `type`s:
 
@@ -47,7 +47,7 @@ This project uses 4 primary commit `type`s:
 - feat - A change that is user-facing
 - chore - A change that is not user-facing
 
-####  **Commit Message `scope`**
+#### **Commit Message `scope`**
 
 It is generally fine to leave out commit `scope`, but if specified it should be as short as possible and probably falls into one of the following:
 

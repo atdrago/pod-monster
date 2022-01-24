@@ -36,8 +36,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
    1. [Log in or sign up here.](https://api.podcastindex.org/)
    2. In the "API Keys" section, click the "+" button to create a new API Key / Secret pair.
    3. You should copy these values down and put them in a safe place as they cannot be retrieved later, but for now it's fine to keep them only in the `.env.local` file you've created.
-   3. Copy and paste the "Key" into the `.env.local` file, to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_KEY=`
-   4. Copy and paste the "Secret" into the `.env.local` file, to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_SECRET=`
+   4. Copy and paste the "Key" into the `.env.local` file, to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_KEY=`
+   5. Copy and paste the "Secret" into the `.env.local` file, to the right of `NEXT_PUBLIC_PODCAST_INDEX_API_SECRET=`
 
    Depending on the characters used in your Key and/or Secret, may need to enclose one of both values inside double-quotes within the `~/.env.local` file.
 
