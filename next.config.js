@@ -3,6 +3,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 const withSvgr = require('next-plugin-svgr');
+const withPwa = require('next-pwa');
 
 const withVanillaExtract = createVanillaExtractPlugin();
 
@@ -16,10 +17,15 @@ const nextConfig = {
     minimumCacheTTL: 31536000,
   },
   productionBrowserSourceMaps: true,
+  pwa: {
+    dest: 'public',
+  },
   reactStrictMode: true,
   svgrOptions: {
     icon: true,
   },
 };
 
-module.exports = withBundleAnalyzer(withSvgr(withVanillaExtract(nextConfig)));
+module.exports = withPwa(
+  withBundleAnalyzer(withSvgr(withVanillaExtract(nextConfig)))
+);

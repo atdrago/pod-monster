@@ -61,6 +61,7 @@
     "husky": "^7.0.4",
     "import-sort-style-atdrago": "^0.1.4",
     "lint-staged": "^12.3.2",
+    "next-pwa": "^5.4.4",
     "podcastdx-client": "^5.0.0",
     "prettier": "2.5.1",
     "prettier-plugin-import-sort": "^0.0.7",

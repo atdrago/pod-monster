@@ -22,5 +22,6 @@
       "type": "image/png"
     }
   ],
+  "orientation": "portrait",
   "theme_color": "#272822"
 }
