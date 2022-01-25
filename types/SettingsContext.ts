@@ -41,6 +41,7 @@ export type MediaPlayerSettings = {
    */
   isDefaults?: boolean;
   isMuted: boolean;
+  isPaused: boolean;
   /**
    * @deprecated - use `size` instead (true = 2, false = 1)
    */
