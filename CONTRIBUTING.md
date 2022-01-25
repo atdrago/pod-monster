@@ -116,7 +116,7 @@ In general, all changes related to formatting or linting should be caught by Pre
 
 #### Formatting with Prettier
 
-We use an automatic code formatter called [Prettier](https://prettier.io/) and recommend that you use [an extension](???) to take care of formatting code for you on save. If you don't have this setup, please run `npm run format` after making any changes to the code.
+We use an automatic code formatter called [Prettier](https://prettier.io/) and recommend that you use [an extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) to take care of formatting code for you on save. If you don't have this setup, please run `npm run format` after making any changes to the code.
 
 #### Linting with ESLint
 
