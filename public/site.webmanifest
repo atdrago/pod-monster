@@ -1,7 +1,10 @@
 {
+  "background_color": "#272822",
+  "categories": ["education", "entertainment", "podcasts", "utilities"],
+  "description": "A front-end to the Podcast Index",
+  "display": "minimal-ui",
   "name": "pod.monster",
   "short_name": "podmonster",
-  "description": "A front-end to the Podcast Index",
   "icons": [
     {
       "sizes": "512x512",
@@ -19,7 +22,5 @@
       "type": "image/png"
     }
   ],
-  "display": "minimal-ui",
-  "theme_color": "#272822",
-  "background_color": "#272822"
+  "theme_color": "#272822"
 }
