@@ -78,7 +78,7 @@ The best way to get your bug fixed is to provide a reduced test case.
 
 #### Security Bugs
 
-For any security issues, please email the main project maintainer directly at atdrago@gmail.com with the subject line "Pod Monster Security".
+Please use [GitHub Issues](https://github.com/atdrago/pod.monster/issues) to report all security issues. Please **do not** add any sensitive or potentially sensitive information in a GitHub Issue. If it is absolutely necessary to include sensitive information as part of the bug report, please email the main project maintainer directly at atdrago@gmail.com with the subject line "Pod Monster Security", and reference the GitHub Issue within the body for further instructions.
 
 ### Proposing a Change
 
