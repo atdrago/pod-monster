@@ -1,7 +1,3 @@
-# next.js
-/.next/
-/out/
-
 # next-pwa
 /public/sw.js*
 /public/workbox-*

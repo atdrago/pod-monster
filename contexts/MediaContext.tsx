@@ -245,6 +245,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       setFeedId(mediaPlayerSettings.feedId);
       setFeedImage(mediaPlayerSettings.feedImage);
       setFeedTitle(mediaPlayerSettings.feedTitle);
+      setIsPaused(mediaPlayerSettings.isPaused);
       setIsMuted(mediaPlayerSettings.isMuted);
       setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
       setPlaybackRate(mediaPlayerSettings.playbackRate);
@@ -299,6 +300,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedImage,
         feedTitle,
         isMuted,
+        isPaused,
         playbackRate,
         size,
         src,
@@ -319,6 +321,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     isDoneHydratingFromLocalStorage,
     isFirstRenderAfterHydration,
     isMuted,
+    isPaused,
     mediaPlayerCurrentTimeDebounced,
     playbackRate,
     setMediaPlayerSettings,
