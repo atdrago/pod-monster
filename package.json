@@ -19,7 +19,7 @@
     "@vanilla-extract/next-plugin": "^2.0.1",
     "capsize": "^2.0.0",
     "framer-motion": "^6.2.1",
-    "next": "12.0.8",
+    "next": "12.0.9",
     "next-plugin-svgr": "^1.1.1",
     "opml-to-json": "^1.0.1",
     "pino": "^7.6.4",
@@ -40,7 +40,7 @@
     "use-debounce": "^7.0.1"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.0.8",
+    "@next/bundle-analyzer": "^12.0.9",
     "@types/probe-image-size": "^7.0.1",
     "@types/react": "17.0.38",
     "@types/react-window": "^1.8.5",
