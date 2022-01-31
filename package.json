@@ -30,7 +30,7 @@
     "react-polymorphic-box": "^3.0.3",
     "react-query": "^3.34.12",
     "react-window": "^1.8.6",
-    "rehype-parse": "^8.0.3",
+    "rehype-parse": "^8.0.4",
     "rehype-raw": "^6.1.1",
     "rehype-sanitize": "^5.0.1",
     "rehype-strip-html": "^0.1.1",
