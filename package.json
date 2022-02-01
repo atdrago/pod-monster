@@ -78,6 +78,7 @@
     "*.{ts,tsx}": "eslint --fix --max-warnings 0",
     "*.{gql,md,js,json,svg,ts,tsx}": "prettier --write"
   },
+  "packageManager": "npm@8.1.0",
   "workspaces": [
     "packages/podcast-index"
   ]
