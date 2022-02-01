@@ -10,7 +10,9 @@ import { QueryClient, dehydrate, useQuery } from 'react-query';
 import { searchByTerm, setConfig } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Checkbox } from 'components/atoms/Checkbox';
+import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Head } from 'components/atoms/Head';
+import { Link } from 'components/atoms/Link';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
@@ -20,6 +22,7 @@ import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
+import { underlinedLink } from 'styles';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
@@ -132,15 +135,23 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
         description="Search for and subscribe to podcasts"
       />
       <Stack as="main">
-        {/* <Typography as="p" size="headingMedium">
-          Welcome to Pod Monster, an application powered by the Podcast Index.
+        <Typography as="p" size="headingMedium">
+          Welcome to Pod Monster, an application powered by the{' '}
+          <ExternalLink href="https://podcastindex.org/">
+            Podcast Index
+          </ExternalLink>
+          .
         </Typography>
-        <Typography as="p" size="paragraph">
-          You&apos;re seeing this message because it looks like it&apos;s your
-          first time here. If it isn&apos;t your first time here, you may have
-          Private Browsing enabled, or your settings may have been erased by the
-          browser.
-        </Typography> */}
+        {feedSettingsEntries.length === 0 && (
+          <Typography as="p" size="paragraph">
+            Search the index below and subscribe to your favorite podcasts. All
+            subscriptions are private and stay on your device.{' '}
+            <Link className={underlinedLink} href="/about">
+              Learn more about the project
+            </Link>
+            .
+          </Typography>
+        )}
         <Stack maxWidth="small">
           <Stack space="small">
             <SearchField
