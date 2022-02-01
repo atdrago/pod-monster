@@ -1,3 +1,4 @@
+import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
@@ -17,6 +18,15 @@ export const Footer = () => {
           <li>
             <Typography as={Link} href="/settings" size="paragraph">
               Settings
+            </Typography>
+          </li>
+          <li>
+            <Typography
+              as={ExternalLink}
+              href="https://github.com/atdrago/pod-monster"
+              size="paragraph"
+            >
+              GitHub
             </Typography>
           </li>
         </Stack>
