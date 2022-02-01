@@ -135,22 +135,24 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
         description="Search for and subscribe to podcasts"
       />
       <Stack as="main">
-        <Typography as="p" size="headingMedium">
-          Welcome to Pod Monster, an application powered by the{' '}
-          <ExternalLink href="https://podcastindex.org/">
-            Podcast Index
-          </ExternalLink>
-          .
-        </Typography>
         {feedSettingsEntries.length === 0 && (
-          <Typography as="p" size="paragraph">
-            Search the index below and subscribe to your favorite podcasts. All
-            subscriptions are private and stay on your device.{' '}
-            <Link className={underlinedLink} href="/about">
-              Learn more about the project
-            </Link>
-            .
-          </Typography>
+          <>
+            <Typography as="p" size="headingMedium">
+              Welcome to Pod Monster, an application powered by the{' '}
+              <ExternalLink href="https://podcastindex.org/">
+                Podcast Index
+              </ExternalLink>
+              .
+            </Typography>
+            <Typography as="p" size="paragraph">
+              Search the index below and subscribe to your favorite podcasts.
+              All subscriptions are private and stay on your device.{' '}
+              <Link className={underlinedLink} href="/about">
+                Learn more about the project
+              </Link>
+              .
+            </Typography>
+          </>
         )}
         <Stack maxWidth="small">
           <Stack space="small">
