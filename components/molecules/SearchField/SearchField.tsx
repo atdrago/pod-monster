@@ -27,15 +27,17 @@ export const SearchField: FunctionComponent<SearchFieldProps> = ({
 
   return (
     <Stack as="form" className={className} maxWidth="small" space="small">
-      <Typography
-        as="label"
-        className={inputLabel}
-        htmlFor={id}
-        size="paragraph"
-      >
-        {label}
-        <span className={inputFeedback}>{feedback}</span>
-      </Typography>
+      {label && (
+        <Typography
+          as="label"
+          className={inputLabel}
+          htmlFor={id}
+          size="paragraph"
+        >
+          {label}
+          <span className={inputFeedback}>{feedback}</span>
+        </Typography>
+      )}
       <div className={fieldContainer}>
         <input
           className={inputField}

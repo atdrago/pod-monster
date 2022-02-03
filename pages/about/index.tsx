@@ -66,7 +66,7 @@ const AboutPage: FunctionComponent = () => {
     <>
       <Head
         titles={['About']}
-        description={`Hello, and welcome to pod.monster (alpha)!`}
+        description={`Hello, and welcome to Pod Monster!`}
       />
       <Stack as="main">
         <Typography as="h3" size="headingMedium">

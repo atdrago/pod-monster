@@ -10,9 +10,7 @@ import { QueryClient, dehydrate, useQuery } from 'react-query';
 import { searchByTerm, setConfig } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Checkbox } from 'components/atoms/Checkbox';
-import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Head } from 'components/atoms/Head';
-import { Link } from 'components/atoms/Link';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
@@ -22,7 +20,6 @@ import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
-import { underlinedLink } from 'styles';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
@@ -135,42 +132,15 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
         description="Search for and subscribe to podcasts"
       />
       <Stack as="main">
-        {feedSettingsEntries.length === 0 && (
-          <>
-            <Typography as="p" size="headingMedium">
-              Welcome to Pod Monster, an application powered by the{' '}
-              <ExternalLink href="https://podcastindex.org/">
-                Podcast Index
-              </ExternalLink>
-              .
-            </Typography>
-            <Typography as="p" size="paragraph">
-              Search the index below and subscribe to your favorite podcasts.
-              All subscriptions are private and stay on your device.{' '}
-              <Link className={underlinedLink} href="/about">
-                Learn more about the project
-              </Link>
-              .
-            </Typography>
-          </>
-        )}
         <Stack maxWidth="small">
           <Stack space="small">
             <SearchField
+              aria-label="Search"
               feedback={searchFeedback}
-              label={
-                <Typography
-                  as="h2"
-                  size="headingSmall"
-                  style={{ display: 'inline-block' }}
-                >
-                  Search
-                </Typography>
-              }
+              onChange={handleSearchChange}
+              placeholder="Search by term"
               type="search"
               value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder="By term"
             />
             {hasDeadFeeds && (
               <Checkbox

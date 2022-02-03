@@ -70,14 +70,14 @@ export const Header: FunctionComponent<IHeaderProps> = ({
         shouldUseCapsize={false}
       >
         <Link
-          anchorProps={{ 'aria-label': 'pod.monster (alpha)' }}
+          anchorProps={{ 'aria-label': 'Pod Monster' }}
           href="/"
           className={homeLinkClassName}
         >
           <Icon size="large">
             <LogoIcon className={homeIconClassName} />
           </Icon>
-          {isAppNameHidden ? null : 'pod.monster (alpha)'}
+          {isAppNameHidden ? null : 'Pod Monster'}
         </Link>
       </Typography>
       {isStaticPage ? (
