@@ -26,7 +26,15 @@ export const SearchField: FunctionComponent<SearchFieldProps> = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <Stack as="form" className={className} maxWidth="small" space="small">
+    <Stack
+      as="form"
+      className={className}
+      maxWidth="small"
+      space="small"
+      onSubmit={(event: React.FormEvent) => {
+        event.preventDefault();
+      }}
+    >
       {label && (
         <Typography
           as="label"
