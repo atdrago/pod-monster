@@ -68,7 +68,12 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
       videoRef.current.currentTime = startTime;
     }
 
-    setDuration(event.currentTarget.duration);
+    if (
+      event.currentTarget.duration &&
+      event.currentTarget.duration !== Infinity
+    ) {
+      setDuration(event.currentTarget.duration);
+    }
 
     onLoadedMetadata(event);
   };
@@ -86,6 +91,13 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
 
     if (videoRef.current) {
       videoRef.current.currentTime = startTime;
+    }
+
+    if (
+      event.currentTarget.duration &&
+      event.currentTarget.duration !== Infinity
+    ) {
+      setDuration(event.currentTarget.duration);
     }
 
     onLoadedData(event);
@@ -113,8 +125,13 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
     // If `onLoadedMetadata` doesn't fire, this will set the duration for us
     const nextDuration =
       audioRef.current?.duration ?? videoRef.current?.duration ?? 0;
-    // Sometimes it's NaN...
-    setDuration(isNaN(nextDuration) ? 0 : nextDuration);
+
+    if (nextDuration) {
+      // Sometimes it's NaN...
+      setDuration(
+        isNaN(nextDuration) || nextDuration === Infinity ? 0 : nextDuration
+      );
+    }
   }, [
     audioRef,
     audioRef.current?.duration,
