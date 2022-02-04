@@ -8,6 +8,7 @@ export * from './EpisodePage';
 export * from './Head';
 export * from './Icon';
 export * from './IconButton';
+export * from './ImageDimensions';
 export * from './InputField';
 export * from './Link';
 export * from './MarkdownViewer';

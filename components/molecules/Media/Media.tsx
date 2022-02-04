@@ -32,6 +32,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
   onLoadedData = () => ({}),
   onLoadedMetadata = () => ({}),
   onEnded = () => ({}),
+  onError = () => ({}),
   onPause = () => ({}),
   onPlay = () => ({}),
   onPlaying = () => ({}),
@@ -165,9 +166,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
             key={src}
             controls={true}
             onEnded={onEnded}
-            onError={() => {
-              // TODO: Handle error when file does not load
-            }}
+            onError={onError}
             onLoadedData={handleLoadedData}
             onLoadedMetadata={handleLoadedMetaData}
             onPause={onPause}
@@ -190,9 +189,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
           className={audioClassName}
           controls={true}
           onEnded={onEnded}
-          onError={() => {
-            // TODO: Handle error when file does not load
-          }}
+          onError={onError}
           onLoadedData={handleLoadedData}
           onLoadedMetadata={handleLoadedMetaData}
           onPause={onPause}

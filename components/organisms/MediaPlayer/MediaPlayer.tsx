@@ -90,6 +90,7 @@ export const MediaPlayer: FunctionComponent = () => {
     chapters,
     currentChapter,
     currentTime,
+    didError,
     episodeId,
     episodeImage,
     episodeImageDimensions,
@@ -100,11 +101,13 @@ export const MediaPlayer: FunctionComponent = () => {
     isMuted,
     isPaused,
     mediaPlayerCurrentTime,
+    pause,
     playPause,
     playbackRate,
     resetMediaContext,
     seekBackward,
     seekForward,
+    setDidError,
     setIsMuted,
     setIsPaused,
     setMediaPlayerCurrentTime,
@@ -136,6 +139,11 @@ export const MediaPlayer: FunctionComponent = () => {
   }
 
   const isMobileDevice = useIsMobileDevice();
+
+  const handleError: ReactEventHandler<HTMLMediaElement> = async () => {
+    pause();
+    setDidError(true);
+  };
 
   const handleLoadedMetaData: ReactEventHandler<
     HTMLMediaElement
@@ -337,6 +345,7 @@ export const MediaPlayer: FunctionComponent = () => {
               isVideoVisible={size === 2}
               onCurrentTimeChange={setMediaPlayerCurrentTime}
               onEnded={() => setIsPaused(true)}
+              onError={handleError}
               onLoadedData={handleLoadedData}
               onLoadedMetadata={handleLoadedMetaData}
               onPause={() => setIsPaused(true)}
@@ -348,7 +357,11 @@ export const MediaPlayer: FunctionComponent = () => {
               src={src}
               srcType={srcType ?? undefined}
               startTime={currentTime}
-              title={feedTitle ?? ''}
+              title={
+                didError
+                  ? '⚠️ Failed to load episode. Press play to retry.'
+                  : feedTitle ?? ''
+              }
               videoRef={videoRef}
             />
             <AnimatePresence>

@@ -24,6 +24,7 @@ export const mediaContextDefaults: IMediaContext = {
   currentChapterIndex: -1,
   currentTime: 0,
   dateCrawled: null,
+  didError: false,
   episodeId: null,
   episodeImage: null,
   episodeImageDimensions: null,
@@ -35,7 +36,8 @@ export const mediaContextDefaults: IMediaContext = {
   isPaused: true,
   mediaPlayerCurrentTime: 0,
   mediaPlayerCurrentTimeDebounced: 0,
-  playPause: () => {},
+  pause: () => {},
+  playPause: async () => {},
   playbackRate: 1,
   resetMediaContext: () => {},
   seekBackward: () => {},
@@ -43,6 +45,7 @@ export const mediaContextDefaults: IMediaContext = {
   setChaptersUrl: (_) => {},
   setCurrentTime: (_) => {},
   setDateCrawled: (_) => {},
+  setDidError: (_) => {},
   setEpisodeId: (_) => {},
   setEpisodeImage: (_) => {},
   setEpisodeImageDimensions: (_) => {},
@@ -95,6 +98,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [dateCrawled, setDateCrawled] = useState<number | null>(
     mediaContextDefaults.dateCrawled
   );
+  const [didError, setDidError] = useState(false);
   const [episodeId, setEpisodeId] = useState<number | null>(
     mediaContextDefaults.episodeId
   );
@@ -165,6 +169,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
     setChaptersUrl(mediaContextDefaults.chaptersUrl);
     setDateCrawled(mediaContextDefaults.dateCrawled);
+    setDidError(mediaContextDefaults.didError);
     setEpisodeId(mediaContextDefaults.episodeId);
     setEpisodeImage(mediaContextDefaults.episodeImage);
     setEpisodeImageDimensions(mediaContextDefaults.episodeImageDimensions);
@@ -220,6 +225,11 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       if (nextIsPaused) {
         audioRef.current.pause();
       } else {
+        if (didError) {
+          setDidError(false);
+          audioRef.current.load();
+        }
+
         await audioRef.current.play();
       }
     }
@@ -228,10 +238,15 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       if (nextIsPaused) {
         videoRef.current.pause();
       } else {
+        if (didError) {
+          setDidError(false);
+          videoRef.current.load();
+        }
+
         await videoRef.current.play();
       }
     }
-  }, [isPaused]);
+  }, [didError, isPaused]);
 
   useEffect(() => {
     if (isFirstRenderAfterHydration) {
@@ -415,6 +430,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         currentChapterIndex,
         currentTime,
         dateCrawled,
+        didError,
         episodeId,
         episodeImage,
         episodeImageDimensions,
@@ -426,6 +442,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         isPaused,
         mediaPlayerCurrentTime,
         mediaPlayerCurrentTimeDebounced,
+        pause,
         playPause,
         playbackRate,
         resetMediaContext,
@@ -434,6 +451,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setChaptersUrl,
         setCurrentTime,
         setDateCrawled,
+        setDidError,
         setEpisodeId,
         setEpisodeImage,
         setEpisodeImageDimensions,
