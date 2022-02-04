@@ -42,7 +42,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^12.0.10",
     "@types/probe-image-size": "^7.0.1",
-    "@types/react": "17.0.38",
+    "@types/react": "17.0.39",
     "@types/react-window": "^1.8.5",
     "@types/sharp": "^0.29.5",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
