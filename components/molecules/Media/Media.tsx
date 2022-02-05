@@ -31,19 +31,15 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
   onCurrentTimeChange = () => ({}),
   onLoadedData = () => ({}),
   onLoadedMetadata = () => ({}),
-  onEnded = () => ({}),
-  onError = () => ({}),
-  onPause = () => ({}),
-  onPlay = () => ({}),
-  onPlaying = () => ({}),
-  onVolumeChange = () => ({}),
   playbackRate = 1,
   poster,
+  ref: _ref,
   src,
   srcType,
   startTime = 0,
   title,
   videoRef,
+  ...props
 }) {
   const audioClassName = useClassNames(audio, className);
   const [duration, setDuration] = useState(0);
@@ -180,23 +176,18 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
         >
           <video
             autopictureinpicture=""
-            key={src}
             controls={true}
-            onEnded={onEnded}
-            onError={onError}
+            key={src}
             onLoadedData={handleLoadedData}
             onLoadedMetadata={handleLoadedMetaData}
-            onPause={onPause}
-            onPlay={onPlay}
-            onPlaying={onPlaying}
             onSeeking={handleTimeUpdate}
             onTimeUpdate={handleTimeUpdate}
-            onVolumeChange={onVolumeChange}
             playsInline={true}
             poster={poster}
             preload="metadata"
             ref={videoRef}
             width={'100%'}
+            {...props}
           >
             <source src={src} type={srcType} />
           </video>
@@ -205,19 +196,14 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
         <audio
           className={audioClassName}
           controls={true}
-          onEnded={onEnded}
-          onError={onError}
           onLoadedData={handleLoadedData}
           onLoadedMetadata={handleLoadedMetaData}
-          onPause={onPause}
-          onPlay={onPlay}
-          onPlaying={onPlaying}
           onSeeking={handleTimeUpdate}
           onTimeUpdate={handleTimeUpdate}
-          onVolumeChange={onVolumeChange}
           preload="metadata"
           ref={audioRef}
           src={src}
+          {...props}
         />
       )}
       <div className={mediaBase}>

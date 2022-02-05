@@ -7,9 +7,9 @@ import UploadIcon8 from 'icons/upload2.svg';
 
 import {
   buttonClassName,
+  fileSpinnerClassName,
   iconClassName,
   inputClassName,
-  spinnerClassName,
 } from './fileField.css';
 
 interface IFileFieldProps {
@@ -37,7 +37,7 @@ export const FileField = ({
       />
       <Stack kind="flexRow" space="xsmall" align="center">
         {isLoading ? (
-          <SpinnerIcon aria-hidden="true" className={spinnerClassName} />
+          <SpinnerIcon aria-hidden="true" className={fileSpinnerClassName} />
         ) : (
           <UploadIcon8 aria-hidden="true" className={iconClassName} />
         )}

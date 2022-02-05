@@ -18,6 +18,7 @@ export interface IMediaContext {
   feedId: number | null;
   feedImage: string | null;
   feedTitle: string | null;
+  isLoadingAtCurrentTime: boolean;
   isMuted: boolean;
   isPaused: boolean;
   /**
@@ -29,6 +30,7 @@ export interface IMediaContext {
   pause: () => void;
   playPause: () => Promise<void>;
   playbackRate: PlaybackRate;
+  progressEventBufferedTuples: Array<[number, number]>;
   resetMediaContext: () => void;
   seekBackward: (details?: Partial<MediaSessionActionDetails>) => void;
   seekForward: (details?: Partial<MediaSessionActionDetails>) => void;
@@ -53,6 +55,9 @@ export interface IMediaContext {
   setIsPlayerOpen?: Dispatch<SetStateAction<boolean>>;
   setMediaPlayerCurrentTime: Dispatch<SetStateAction<number>>;
   setPlaybackRate: Dispatch<SetStateAction<PlaybackRate>>;
+  setProgressEventBufferedTuples: Dispatch<
+    SetStateAction<Array<[number, number]>>
+  >;
   setSize: Dispatch<SetStateAction<1 | 2>>;
   setSrc: Dispatch<SetStateAction<string | null>>;
   setSrcType: Dispatch<SetStateAction<string | null>>;

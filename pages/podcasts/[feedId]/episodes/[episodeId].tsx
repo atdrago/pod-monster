@@ -162,7 +162,6 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   );
   const {
     episodeId,
-    isPaused,
     mediaPlayerCurrentTime,
     mediaPlayerCurrentTimeDebounced,
     setCurrentTime,
@@ -170,7 +169,6 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
 
   const isVideo = episode?.enclosureType.includes('video');
   const isThisEpisodeInThePlayer = episodeId === episode?.id;
-  const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;
 
   const interprettedCurrentTime = isThisEpisodeInThePlayer
     ? mediaPlayerCurrentTime
@@ -298,7 +296,6 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           episode={episode}
           episodeCurrentTime={episodeCurrentTime}
           episodeImageDimensions={episodeImageDimensions}
-          isEpisodePaused={isThisEpisodePaused}
           isVideo={isVideo}
         />
         <Stack space="large">

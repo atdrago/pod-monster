@@ -27,6 +27,7 @@ import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
 import { underlinedLink } from 'styles';
 import type { PlaybackRate } from 'types';
+import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 import { getEpisodePath } from 'utils/paths';
 import { playbackRates } from 'utils/playbackRates';
 
@@ -98,6 +99,7 @@ export const MediaPlayer: FunctionComponent = () => {
     feedId,
     feedImage,
     feedTitle,
+    isLoadingAtCurrentTime,
     isMuted,
     isPaused,
     mediaPlayerCurrentTime,
@@ -112,6 +114,7 @@ export const MediaPlayer: FunctionComponent = () => {
     setIsPaused,
     setMediaPlayerCurrentTime,
     setPlaybackRate,
+    setProgressEventBufferedTuples,
     setSize,
     setVolume,
     size,
@@ -344,7 +347,8 @@ export const MediaPlayer: FunctionComponent = () => {
               isTitleVisible={!!feedTitle}
               isVideoVisible={size === 2}
               onCurrentTimeChange={setMediaPlayerCurrentTime}
-              onEnded={() => setIsPaused(true)}
+              onAbort={pause}
+              onEnded={pause}
               onError={handleError}
               onLoadedData={handleLoadedData}
               onLoadedMetadata={handleLoadedMetaData}
@@ -352,6 +356,11 @@ export const MediaPlayer: FunctionComponent = () => {
               onPlay={() => setIsPaused(false)}
               onPlaying={() => setIsPaused(false)}
               onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
+              onProgress={(event) => {
+                setProgressEventBufferedTuples(
+                  bufferedTimeRangesToTuples(event.currentTarget.buffered)
+                );
+              }}
               playbackRate={playbackRate}
               poster={playerArtworkProxyUrl?.toString()}
               src={src}
@@ -420,7 +429,11 @@ export const MediaPlayer: FunctionComponent = () => {
                   onClick={playPause}
                   size={'medium'}
                 >
-                  <PlayPauseIcon size={'medium'} isPaused={isPaused} />
+                  <PlayPauseIcon
+                    size="medium"
+                    isPaused={isPaused}
+                    isLoading={isLoadingAtCurrentTime}
+                  />
                 </IconButton>
                 <IconButton
                   background="circle"

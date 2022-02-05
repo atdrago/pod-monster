@@ -14,6 +14,7 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import type { IMediaContext, PlaybackRate } from 'types';
+import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 
 export const mediaContextDefaults: IMediaContext = {
   /* eslint-disable @typescript-eslint/no-empty-function */
@@ -32,6 +33,7 @@ export const mediaContextDefaults: IMediaContext = {
   feedId: null,
   feedImage: null,
   feedTitle: null,
+  isLoadingAtCurrentTime: false,
   isMuted: false,
   isPaused: true,
   mediaPlayerCurrentTime: 0,
@@ -39,6 +41,7 @@ export const mediaContextDefaults: IMediaContext = {
   pause: () => {},
   playPause: async () => {},
   playbackRate: 1,
+  progressEventBufferedTuples: [],
   resetMediaContext: () => {},
   seekBackward: () => {},
   seekForward: () => {},
@@ -57,6 +60,7 @@ export const mediaContextDefaults: IMediaContext = {
   setIsPaused: (_) => {},
   setMediaPlayerCurrentTime: (_) => {},
   setPlaybackRate: (_) => {},
+  setProgressEventBufferedTuples: (_) => {},
   setSize: (_) => {},
   setSrc: (_) => {},
   setSrcType: (_) => {},
@@ -92,6 +96,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   ] = useStateWithDebounce(mediaContextDefaults.currentTime, 500, {
     maxWait: 5000,
   });
+  const [progressEventBufferedTuples, setProgressEventBufferedTuples] =
+    useState(mediaContextDefaults.progressEventBufferedTuples);
   const [currentTime, setCurrentTime] = useState(
     mediaContextDefaults.currentTime
   );
@@ -118,6 +124,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [isPaused, setIsPaused] = useState<boolean>(
     mediaContextDefaults.isPaused
   );
+  const [isLoadingAtCurrentTime, setIsLoadingAtCurrentTime] = useState(false);
   const [playbackRate, setPlaybackRate] = useState<PlaybackRate>(1);
   const [src, setSrc] = useState<string | null>(mediaContextDefaults.src);
   const [srcType, setSrcType] = useState<string | null>(
@@ -177,6 +184,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setFeedId(mediaContextDefaults.feedId);
     setFeedImage(mediaContextDefaults.feedImage);
     setFeedTitle(mediaContextDefaults.feedTitle);
+    setIsLoadingAtCurrentTime(mediaContextDefaults.isLoadingAtCurrentTime);
     setIsMuted(mediaContextDefaults.isMuted);
     setIsPaused(mediaContextDefaults.isPaused);
     setPlaybackRate(mediaContextDefaults.playbackRate);
@@ -420,6 +428,37 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setMediaPlayerCurrentTime(currentTime);
   }, [audioRef, videoRef, currentTime, setMediaPlayerCurrentTime]);
 
+  /**
+   * Update `isLoadingAtCurrentTime` whenever the buffered time ranges change,
+   * either from the element's `progress` event, or from changes to the
+   * element's `.buffered` property.
+   */
+  useEffect(() => {
+    const elementBufferedTuples = bufferedTimeRangesToTuples(
+      videoRef.current?.buffered ?? audioRef.current?.buffered
+    );
+
+    const isCurrentTimeInTuple = ([begin, end]: [number, number]) => {
+      return mediaPlayerCurrentTime >= begin && mediaPlayerCurrentTime <= end;
+    };
+
+    const isBufferedAtCurrentTime =
+      elementBufferedTuples.some(isCurrentTimeInTuple) ||
+      progressEventBufferedTuples.some(isCurrentTimeInTuple);
+
+    if (!isBufferedAtCurrentTime && !isPaused) {
+      setIsLoadingAtCurrentTime(true);
+    } else {
+      setIsLoadingAtCurrentTime(false);
+    }
+  }, [
+    progressEventBufferedTuples,
+    isPaused,
+    mediaPlayerCurrentTime,
+    audioRef.current?.buffered,
+    videoRef.current?.buffered,
+  ]);
+
   return (
     <MediaContext.Provider
       value={{
@@ -438,6 +477,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedId,
         feedImage,
         feedTitle,
+        isLoadingAtCurrentTime,
         isMuted,
         isPaused,
         mediaPlayerCurrentTime,
@@ -445,6 +485,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         pause,
         playPause,
         playbackRate,
+        progressEventBufferedTuples,
         resetMediaContext,
         seekBackward,
         seekForward,
@@ -463,6 +504,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setIsPaused,
         setMediaPlayerCurrentTime,
         setPlaybackRate,
+        setProgressEventBufferedTuples,
         setSize,
         setSrc,
         setSrcType,

@@ -13,7 +13,6 @@ interface IEpisodePlayButtonProps {
   episode?: EpisodePageEpisode;
   episodeCurrentTime: number;
   episodeImageDimensions?: IImageDimensions;
-  isEpisodePaused: boolean;
   isVideo?: boolean;
 }
 
@@ -22,12 +21,14 @@ export const EpisodePlayButton = ({
   episode,
   episodeCurrentTime,
   episodeImageDimensions,
-  isEpisodePaused,
   isVideo,
 }: IEpisodePlayButtonProps) => {
   const {
     audioRef,
     didError,
+    episodeId,
+    isLoadingAtCurrentTime,
+    isPaused,
     setChaptersUrl,
     setCurrentTime,
     setDateCrawled,
@@ -47,12 +48,17 @@ export const EpisodePlayButton = ({
     videoRef,
   } = useMediaContext() || mediaContextDefaults;
 
+  const isThisEpisodeInThePlayer = episodeId === episode?.id;
+  const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;
+  const isThisEpisodeLoadingAtCurrentTime =
+    isThisEpisodeInThePlayer && !isThisEpisodePaused && isLoadingAtCurrentTime;
+
   const handlePlayPauseClick = async () => {
     if (!episode) {
       return;
     }
 
-    const nextIsPaused = !isEpisodePaused;
+    const nextIsPaused = !isThisEpisodePaused;
 
     if (!nextIsPaused && episode.enclosureUrl !== src) {
       setChaptersUrl(episode.chaptersUrl);
@@ -108,7 +114,7 @@ export const EpisodePlayButton = ({
       space="xsmall"
     >
       <Stack
-        aria-label={isEpisodePaused ? 'Play podcast' : 'Pause podcast'}
+        aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
         as="button"
         kind="flexRow"
         space="small"
@@ -122,7 +128,11 @@ export const EpisodePlayButton = ({
         type="button"
       >
         <IconButton as="span" background="circle" size="medium">
-          <PlayPauseIcon size="medium" isPaused={isEpisodePaused} />
+          <PlayPauseIcon
+            size="medium"
+            isPaused={isThisEpisodePaused}
+            isLoading={isThisEpisodeLoadingAtCurrentTime}
+          />
         </IconButton>
         <Typography size="headingSmaller" as="h3" whitespace={2}>
           {currentChapter?.title ?? episode?.title}

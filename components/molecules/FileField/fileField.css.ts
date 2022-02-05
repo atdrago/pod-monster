@@ -1,6 +1,6 @@
-import { keyframes, style } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 
-import { vars } from 'styles';
+import { spinnerClassName, vars } from 'styles';
 
 export const buttonClassName = style({
   display: 'inline-block',
@@ -15,19 +15,4 @@ export const iconClassName = style({
   width: vars.spacing.s016,
 });
 
-const spinnerAnimation = keyframes({
-  '0%': {
-    transform: 'rotate(0deg)',
-  },
-  '100%': {
-    transform: 'rotate(359deg)',
-  },
-});
-
-export const spinnerClassName = style([
-  iconClassName,
-  {
-    animation: `1s infinite ${spinnerAnimation} linear`,
-    transformOrigin: 'center',
-  },
-]);
+export const fileSpinnerClassName = style([iconClassName, spinnerClassName]);
