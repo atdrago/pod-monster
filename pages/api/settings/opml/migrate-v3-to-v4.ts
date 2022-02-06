@@ -1,10 +1,15 @@
 import type { NextApiHandler } from 'next';
 
 import { getAuthValues, podcastsByFeedId } from '@atdrago/podcast-index';
-import type { FeedSettings, IErrorResponse, OpmlImportResponse } from 'types';
+import type {
+  FeedSettings,
+  IApiErrorResponse,
+  OpmlImportResponse,
+} from 'types';
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
-const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
+const handler: NextApiHandler<OpmlImportResponse | IApiErrorResponse> = async (
   req,
   res
 ) => {
@@ -15,7 +20,7 @@ const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
     : null;
 
   if (!ids) {
-    return res.status(400).json({ error: '`ids` is required' });
+    return res.status(400).json(createApiErrorResponse('`ids` is required'));
   }
 
   const [authTime, authToken] = getAuthValues(

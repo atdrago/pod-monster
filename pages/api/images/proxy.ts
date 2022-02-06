@@ -1,5 +1,7 @@
 import type { NextApiHandler } from 'next';
 
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+
 const handler: NextApiHandler = async (req, res) => {
   let image;
 
@@ -8,15 +10,13 @@ const handler: NextApiHandler = async (req, res) => {
       image = await fetch(req.query.url);
     }
   } catch (err) {
-    res.status(400).send({ error: 'Could not fetch image.' });
-
-    return;
+    return res.status(400).send(createApiErrorResponse(err));
   }
 
   if (!image || image?.status !== 200) {
-    res.status(400).send({ error: 'Could not fetch image.' });
-
-    return;
+    return res
+      .status(400)
+      .send(createApiErrorResponse('Could not fetch image.'));
   }
 
   res

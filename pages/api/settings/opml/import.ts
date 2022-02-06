@@ -6,7 +6,12 @@ import {
 } from 'opml-to-json';
 
 import { getAuthValues, podcastsByFeedUrl } from '@atdrago/podcast-index';
-import type { FeedSettings, IErrorResponse, OpmlImportResponse } from 'types';
+import type {
+  FeedSettings,
+  IApiErrorResponse,
+  OpmlImportResponse,
+} from 'types';
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
 const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
@@ -25,16 +30,16 @@ const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
   return feeds;
 };
 
-const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
+const handler: NextApiHandler<OpmlImportResponse | IApiErrorResponse> = async (
   req,
   res
 ) => {
   if (req.method?.toLowerCase() !== 'post') {
-    return res.status(400).json({ error: 'Method must be POST' });
+    return res.status(400).json(createApiErrorResponse('Method must be POST'));
   }
 
   if (!req.body) {
-    return res.status(400).json({ error: 'Missing body' });
+    return res.status(400).json(createApiErrorResponse('Missing body'));
   }
 
   const [authTime, authToken] = getAuthValues(
@@ -45,7 +50,7 @@ const handler: NextApiHandler<OpmlImportResponse | IErrorResponse> = async (
   const opmlRoot = await opmlToJSON(req.body);
 
   if (!opmlRoot.children) {
-    return res.status(400).json({ error: 'Invalid OPML file.' });
+    return res.status(400).json(createApiErrorResponse('Invalid OPML file.'));
   }
 
   const feeds = getOpmlFeeds(opmlRoot);

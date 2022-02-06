@@ -13,7 +13,7 @@ import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport } from 'rest/fetchOpmlImport';
 import { listItem, listLayout, underlinedLink } from 'styles';
-import type { OpmlImportResponse } from 'types';
+import type { IApiErrorResponse, OpmlImportResponse } from 'types';
 
 export const getStaticProps: GetStaticProps = () => {
   return {
@@ -28,12 +28,12 @@ const SettingsPage: FunctionComponent = () => {
   const hasExistingSubscriptions = Object.keys(feedSettings).length > 0;
 
   const { data, error, isError, isLoading, isSuccess, mutate } = useMutation<
-    OpmlImportResponse | null,
-    { error: string },
+    OpmlImportResponse | IApiErrorResponse,
+    IApiErrorResponse,
     { file: File }
   >(async ({ file }) => await fetchOpmlImport(file), {
     onSuccess: (successData) => {
-      if (successData?.feedSettings) {
+      if ('feedSettings' in successData && successData?.feedSettings) {
         if (!shouldMergeOpmlImport) {
           setFeedSettings(successData.feedSettings);
         } else {
@@ -134,10 +134,11 @@ const SettingsPage: FunctionComponent = () => {
             </div>
             {isError && error?.error ? (
               <Typography as="p" size="paragraph">
-                The following error occurred during the import: {error?.error}
+                The following error occurred during the import:{' '}
+                {error?.error.message}
               </Typography>
             ) : null}
-            {isSuccess && data ? (
+            {isSuccess && data && 'errors' in data ? (
               data.errors.length > 0 ? (
                 <>
                   <Typography as="p" size="paragraph">

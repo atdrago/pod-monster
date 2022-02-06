@@ -1,12 +1,13 @@
 import type { NextApiHandler } from 'next';
 
 import type { IChapter } from 'types';
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 
 const handler: NextApiHandler = async (req, res) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
 
   if (!url) {
-    return res.status(400).json({ error: '`url` is required' });
+    return res.status(400).json(createApiErrorResponse('`url` is required'));
   }
 
   try {
@@ -33,9 +34,7 @@ const handler: NextApiHandler = async (req, res) => {
       .status(200)
       .json(chaptersSorted);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ error: `An error occurred processing the transcript: ${err}` });
+    return res.status(500).json(createApiErrorResponse(err));
   }
 };
 

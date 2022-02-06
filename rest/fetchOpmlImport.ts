@@ -1,8 +1,9 @@
-import type { OpmlImportResponse } from 'types';
+import type { IApiErrorResponse, OpmlImportResponse } from 'types';
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 
 export const fetchOpmlImport = async (
   opmlFile: File
-): Promise<OpmlImportResponse | null> => {
+): Promise<OpmlImportResponse | IApiErrorResponse> => {
   try {
     const opmlImportProxyUrl = new URL(
       '/api/settings/opml/import',
@@ -18,13 +19,11 @@ export const fetchOpmlImport = async (
     });
 
     if (!opmlImportResponse.ok) {
-      throw new Error('no k');
+      throw new Error(opmlImportResponse.statusText);
     }
 
     return await opmlImportResponse.json();
   } catch (err) {
-    // TODO: Capture exception
-
-    return null;
+    return createApiErrorResponse(err);
   }
 };

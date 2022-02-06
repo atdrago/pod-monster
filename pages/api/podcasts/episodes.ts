@@ -1,6 +1,7 @@
 import type { NextApiHandler } from 'next';
 
 import { episodesByFeedId, getAuthValues } from '@atdrago/podcast-index';
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
 const handler: NextApiHandler = async (req, res) => {
@@ -9,13 +10,15 @@ const handler: NextApiHandler = async (req, res) => {
     typeof req.query.since === 'string' ? parseInt(req.query.since) : null;
 
   if (!feedId) {
-    return res.status(400).json({ error: '`feedId` is required' });
+    return res.status(400).json(createApiErrorResponse('`feedId` is required'));
   }
 
   if (!since || isNaN(since)) {
     return res
       .status(400)
-      .json({ error: '`since` is required and must be a valid number' });
+      .json(
+        createApiErrorResponse('`since` is required and must be a valid number')
+      );
   }
 
   const [authTime, authToken] = getAuthValues(
@@ -36,9 +39,7 @@ const handler: NextApiHandler = async (req, res) => {
       .status(200)
       .json(episodesResponse);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ error: `An error occurred processing the transcript: ${err}` });
+    return res.status(500).json(createApiErrorResponse(err));
   }
 };
 

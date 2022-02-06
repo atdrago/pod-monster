@@ -2,6 +2,7 @@ import type { NextApiHandler } from 'next';
 import SrtParser from 'srt-parser-2';
 
 import type { ITranscriptItem, TranscriptDocument } from 'types';
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { formattedTimeToSeconds } from 'utils/date';
 
 const handler: NextApiHandler = async (req, res) => {
@@ -9,17 +10,19 @@ const handler: NextApiHandler = async (req, res) => {
   const type = typeof req.query.type === 'string' ? req.query.type : null;
 
   if (!url) {
-    return res.status(400).json({ error: '`url` is required' });
+    return res.status(400).json(createApiErrorResponse('`url` is required'));
   }
 
   if (!type) {
-    return res.status(400).json({ error: '`type` is required' });
+    return res.status(400).json(createApiErrorResponse('`type` is required'));
   }
 
   if (type !== 'application/srt') {
     return res
       .status(501)
-      .json({ error: 'Only SRT transcripts are currently supported' });
+      .json(
+        createApiErrorResponse('Only SRT transcripts are currently supported')
+      );
   }
 
   try {
@@ -56,9 +59,7 @@ const handler: NextApiHandler = async (req, res) => {
       .status(200)
       .json(transcriptDocument);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ error: `An error occurred processing the transcript: ${err}` });
+    return res.status(500).json(createApiErrorResponse(res));
   }
 };
 
