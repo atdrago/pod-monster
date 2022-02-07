@@ -174,24 +174,30 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     ? mediaPlayerCurrentTime
     : episodeCurrentTime;
 
-  const { data: transcript } = useQuery(
+  const hasTranscripts =
+    episode && episode.transcripts && episode.transcripts.length > 0;
+
+  const {
+    data: transcript,
+    error: transcriptsError,
+    isLoading: isTranscriptLoading,
+  } = useQuery(
     ['transcript', episode?.transcripts?.length, episode?.dateCrawled],
     async () =>
       await fetchPodcastEpisodeTranscript(episode?.transcripts ?? null),
     {
-      enabled: !!(
-        episode &&
-        typeof episode.dateCrawled === 'number' &&
-        episode.transcripts &&
-        episode.transcripts.length > 0
-      ),
+      enabled: !!(hasTranscripts && typeof episode.dateCrawled === 'number'),
       refetchOnMount: false,
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     }
   );
 
-  const { data: chapters } = useQuery(
+  const {
+    data: chapters,
+    error: chaptersError,
+    isLoading: isChaptersLoading,
+  } = useQuery(
     ['chapters', episode?.chaptersUrl, episode?.dateCrawled],
     async () => await fetchPodcastEpisodeChapters(episode?.chaptersUrl),
     {
@@ -207,6 +213,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     }
   );
 
+  const hasChaptersUrl = !!(episode && episode?.chaptersUrl);
   const hasChapters = chapters && chapters.length > 0;
   const currentChapterIndex = hasChapters
     ? chapters.findIndex(({ startTime: chapterStartTime }) => {
@@ -361,21 +368,29 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
               </Stack>
             </Details>
           ) : null}
-          {transcript && (
+          {hasTranscripts && (
             <TimedList
+              hasError={!!transcriptsError}
               index={currentTranscriptIndex}
-              list={transcript}
+              isLoading={isTranscriptLoading}
+              list={transcript ?? []}
               title="Transcript"
               onItemClick={handleTimedListItemClick}
             />
           )}
-          {chapters && (
+          {hasChaptersUrl && (
             <TimedList
+              hasError={!!chaptersError}
               index={currentChapterIndex}
-              list={chapters.map(({ startTime: chapterStartTime, title }) => ({
-                startTimeSeconds: chapterStartTime ?? undefined,
-                text: title ?? 'No title',
-              }))}
+              isLoading={isChaptersLoading}
+              list={
+                hasChapters
+                  ? chapters.map(({ startTime: chapterStartTime, title }) => ({
+                      startTimeSeconds: chapterStartTime ?? undefined,
+                      text: title ?? 'No title',
+                    }))
+                  : []
+              }
               title="Chapters"
               onItemClick={handleTimedListItemClick}
             />

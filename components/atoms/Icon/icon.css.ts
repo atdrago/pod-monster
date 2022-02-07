@@ -1,5 +1,7 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 
+import { spinnerAnimation } from 'styles';
+
 export const icon = style({
   alignItems: 'center',
   display: 'inline-flex',
@@ -41,5 +43,9 @@ export const iconOrientationVariant = styleVariants({
   },
   rotate90: {
     transform: 'rotate(90deg)',
+  },
+  spinning: {
+    animation: `1s infinite ${spinnerAnimation} linear`,
+    transformOrigin: 'center',
   },
 });

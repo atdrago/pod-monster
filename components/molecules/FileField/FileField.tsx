@@ -1,16 +1,12 @@
 import type { ReactEventHandler } from 'react';
 
 import { Button } from 'components/atoms/Button';
+import { Icon } from 'components/atoms/Icon';
 import { Stack } from 'components/layouts/Stack';
 import SpinnerIcon from 'icons/spinner8.svg';
 import UploadIcon8 from 'icons/upload2.svg';
 
-import {
-  buttonClassName,
-  fileSpinnerClassName,
-  iconClassName,
-  inputClassName,
-} from './fileField.css';
+import { buttonClassName, inputClassName } from './fileField.css';
 
 interface IFileFieldProps {
   accept?: string;
@@ -37,9 +33,14 @@ export const FileField = ({
       />
       <Stack kind="flexRow" space="xsmall" align="center">
         {isLoading ? (
-          <SpinnerIcon aria-hidden="true" className={fileSpinnerClassName} />
+          <Icon
+            as={SpinnerIcon}
+            size="small"
+            aria-hidden="true"
+            orientation="spinning"
+          />
         ) : (
-          <UploadIcon8 aria-hidden="true" className={iconClassName} />
+          <Icon as={UploadIcon8} size="small" aria-hidden="true" />
         )}
         {isLoading ? loadingLabel : label}
       </Stack>

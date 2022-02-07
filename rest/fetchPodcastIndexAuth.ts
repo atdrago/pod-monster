@@ -1,4 +1,4 @@
-import { http } from 'utils/http';
+import { request } from 'utils/request';
 
 export const fetchPodcastIndexAuth = async (): Promise<[string, string]> => {
   const url = new URL(
@@ -6,7 +6,7 @@ export const fetchPodcastIndexAuth = async (): Promise<[string, string]> => {
     process.env.NEXT_PUBLIC_BASE_URL
   ).toString();
 
-  const [authTime, authToken] = await http<[string, string]>(url, {
+  const [authTime, authToken] = await request<[string, string]>(url, {
     method: 'get',
   });
 

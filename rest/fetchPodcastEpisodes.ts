@@ -1,34 +1,31 @@
 import type { ApiResponse } from 'podcastdx-client/src/types';
 
+import { request } from 'utils/request';
+
 export const fetchPodcastEpisodes = async (
   feedId: string,
   since: number
-): Promise<ApiResponse.EpisodesByFeedId | null> => {
-  if (!feedId || !since) {
-    return null;
+): Promise<ApiResponse.EpisodesByFeedId> => {
+  if (!feedId) {
+    throw new Error('`feedId` is required');
   }
 
-  try {
-    const episodesProxyUrl = new URL(
-      '/api/podcasts/episodes',
-      process.env.NEXT_PUBLIC_BASE_URL
-    );
+  if (!since) {
+    throw new Error('`since` is required');
+  }
 
-    episodesProxyUrl.searchParams.set('feedId', feedId);
-    episodesProxyUrl.searchParams.set('since', `${since}`);
+  const episodesProxyUrl = new URL(
+    '/api/podcasts/episodes',
+    process.env.NEXT_PUBLIC_BASE_URL
+  );
 
-    const episodesResponse = await fetch(episodesProxyUrl.toString(), {
+  episodesProxyUrl.searchParams.set('feedId', feedId);
+  episodesProxyUrl.searchParams.set('since', `${since}`);
+
+  return await request<ApiResponse.EpisodesByFeedId>(
+    episodesProxyUrl.toString(),
+    {
       method: 'GET',
-    });
-
-    if (!episodesResponse.ok) {
-      throw new Error('no k');
     }
-
-    return await episodesResponse.json();
-  } catch (err) {
-    // TODO: Capture exception
-
-    return null;
-  }
+  );
 };

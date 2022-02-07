@@ -1,12 +1,13 @@
 import type { PIApiEpisodeDetail } from 'podcastdx-client/src/types';
 
 import type { TranscriptDocument } from 'types';
+import { request } from 'utils/request';
 
 export const fetchPodcastEpisodeTranscript = async (
   transcripts: PIApiEpisodeDetail['transcripts']
-): Promise<TranscriptDocument | null> => {
+): Promise<TranscriptDocument> => {
   if (!transcripts) {
-    return null;
+    throw new Error('`transcripts` is required');
   }
 
   const srtTranscript = transcripts.find(
@@ -14,30 +15,18 @@ export const fetchPodcastEpisodeTranscript = async (
   );
 
   if (!srtTranscript) {
-    return null;
+    throw new Error('Only SRT transcripts are currently supported');
   }
 
-  try {
-    const transcriptProxyUrl = new URL(
-      '/api/podcasts/transcript',
-      process.env.NEXT_PUBLIC_BASE_URL
-    );
+  const transcriptProxyUrl = new URL(
+    '/api/podcasts/transcript',
+    process.env.NEXT_PUBLIC_BASE_URL
+  );
 
-    transcriptProxyUrl.searchParams.set('type', srtTranscript.type);
-    transcriptProxyUrl.searchParams.set('url', srtTranscript.url);
+  transcriptProxyUrl.searchParams.set('type', srtTranscript.type);
+  transcriptProxyUrl.searchParams.set('url', srtTranscript.url);
 
-    const transcriptResponse = await fetch(transcriptProxyUrl.toString(), {
-      method: 'GET',
-    });
-
-    if (!transcriptResponse.ok) {
-      throw new Error('no k');
-    }
-
-    return await transcriptResponse.json();
-  } catch (err) {
-    // TODO: Capture exception
-
-    return null;
-  }
+  return await request(transcriptProxyUrl.toString(), {
+    method: 'GET',
+  });
 };

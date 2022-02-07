@@ -47,7 +47,9 @@ areEqual);
 export const TimedList: FunctionComponent<ITimedListProps> = memo(
   function TimedListMemo({
     index,
+    isLoading,
     list,
+    hasError,
     onItemClick = () => {
       // noop
     },
@@ -92,17 +94,21 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
       isOpenRef.current &&
       isOpen;
 
-    return list.length > 0 ? (
+    return (
       <Details
+        isLoading={isLoading}
+        hasError={hasError}
         footer={
-          <Checkbox
-            checked={isScrollingLocked}
-            onChange={(event) => {
-              setIsScrollingLocked(event.currentTarget.checked);
-            }}
-          >
-            Lock scrolling
-          </Checkbox>
+          list.length > 0 ? (
+            <Checkbox
+              checked={isScrollingLocked}
+              onChange={(event) => {
+                setIsScrollingLocked(event.currentTarget.checked);
+              }}
+            >
+              Lock scrolling
+            </Checkbox>
+          ) : null
         }
         onToggle={() => {
           // Fixes an issue where the transcript would show an empty box on the
@@ -117,27 +123,29 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
           </Typography>
         }
       >
-        <Typography className={paragraph} as="div" size="paragraph">
-          <List
-            ref={listRef}
-            width={'100%'}
-            height={48 * 5}
-            itemCount={list.length}
-            itemData={{ index, list, onItemClick }}
-            itemSize={48}
-            style={
-              isScrollingLocked
-                ? {
-                    overflow: 'hidden',
-                    scrollBehavior: shouldSmoothScroll ? 'smooth' : 'auto',
-                  }
-                : {}
-            }
-          >
-            {ListItemComponent}
-          </List>
-        </Typography>
+        {list.length > 0 ? (
+          <Typography className={paragraph} as="div" size="paragraph">
+            <List
+              ref={listRef}
+              width={'100%'}
+              height={48 * 5}
+              itemCount={list.length}
+              itemData={{ index, list, onItemClick }}
+              itemSize={48}
+              style={
+                isScrollingLocked
+                  ? {
+                      overflow: 'hidden',
+                      scrollBehavior: shouldSmoothScroll ? 'smooth' : 'auto',
+                    }
+                  : {}
+              }
+            >
+              {ListItemComponent}
+            </List>
+          </Typography>
+        ) : null}
       </Details>
-    ) : null;
+    );
   }
 );
