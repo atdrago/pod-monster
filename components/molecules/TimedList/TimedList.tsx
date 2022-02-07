@@ -46,6 +46,7 @@ areEqual);
 
 export const TimedList: FunctionComponent<ITimedListProps> = memo(
   function TimedListMemo({
+    error,
     index,
     isLoading,
     list,
@@ -123,8 +124,9 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
           </Typography>
         }
       >
-        {list.length > 0 ? (
-          <Typography className={paragraph} as="div" size="paragraph">
+        <Typography className={paragraph} as="div" size="paragraph">
+          {hasError && error ? error.message : null}
+          {list.length > 0 ? (
             <List
               ref={listRef}
               width={'100%'}
@@ -143,8 +145,8 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
             >
               {ListItemComponent}
             </List>
-          </Typography>
-        ) : null}
+          ) : null}
+        </Typography>
       </Details>
     );
   }

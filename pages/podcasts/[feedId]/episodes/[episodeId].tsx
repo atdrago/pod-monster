@@ -28,8 +28,10 @@ import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import type {
   EpisodePageEpisode,
   EpisodePageGetStaticProps,
+  IChapter,
   IEpisodePageProps,
   ITimedListItem,
+  TranscriptDocument,
 } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
@@ -181,7 +183,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     data: transcript,
     error: transcriptsError,
     isLoading: isTranscriptLoading,
-  } = useQuery(
+  } = useQuery<TranscriptDocument, Error>(
     ['transcript', episode?.transcripts?.length, episode?.dateCrawled],
     async () =>
       await fetchPodcastEpisodeTranscript(episode?.transcripts ?? null),
@@ -197,7 +199,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     data: chapters,
     error: chaptersError,
     isLoading: isChaptersLoading,
-  } = useQuery(
+  } = useQuery<Array<IChapter>, Error>(
     ['chapters', episode?.chaptersUrl, episode?.dateCrawled],
     async () => await fetchPodcastEpisodeChapters(episode?.chaptersUrl),
     {
@@ -370,6 +372,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           ) : null}
           {hasTranscripts && (
             <TimedList
+              error={transcriptsError}
               hasError={!!transcriptsError}
               index={currentTranscriptIndex}
               isLoading={isTranscriptLoading}
@@ -380,6 +383,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           )}
           {hasChaptersUrl && (
             <TimedList
+              error={chaptersError}
               hasError={!!chaptersError}
               index={currentChapterIndex}
               isLoading={isChaptersLoading}

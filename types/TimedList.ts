@@ -7,6 +7,7 @@ export interface ITimedListItem {
 export interface ITimedListProps<
   TListItem extends ITimedListItem = ITimedListItem
 > {
+  error?: Error | null;
   hasError?: boolean;
   index: number;
   isLoading?: boolean;
