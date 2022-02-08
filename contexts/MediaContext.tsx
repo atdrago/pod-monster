@@ -26,6 +26,7 @@ const mediaContextDefaults: IMediaContext = {
   currentTime: 0,
   dateCrawled: null,
   didError: false,
+  duration: 0,
   episodeId: null,
   episodeImage: null,
   episodeImageDimensions: null,
@@ -49,6 +50,7 @@ const mediaContextDefaults: IMediaContext = {
   setCurrentTime: (_) => {},
   setDateCrawled: (_) => {},
   setDidError: (_) => {},
+  setDuration: (_) => {},
   setEpisodeId: (_) => {},
   setEpisodeImage: (_) => {},
   setEpisodeImageDimensions: (_) => {},
@@ -103,6 +105,9 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   );
   const [dateCrawled, setDateCrawled] = useState<number | null>(
     mediaContextDefaults.dateCrawled
+  );
+  const [duration, setDuration] = useState<number>(
+    mediaContextDefaults.duration
   );
   const [didError, setDidError] = useState(false);
   const [episodeId, setEpisodeId] = useState<number | null>(
@@ -298,10 +303,12 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         ...prevEpisodeSettings,
         [episodeId]: {
           currentTime: mediaPlayerCurrentTimeDebounced,
+          duration,
         },
       }));
     }
   }, [
+    duration,
     mediaPlayerCurrentTimeDebounced,
     isDoneHydratingFromLocalStorage,
     episodeId,
@@ -470,6 +477,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         currentTime,
         dateCrawled,
         didError,
+        duration,
         episodeId,
         episodeImage,
         episodeImageDimensions,
@@ -493,6 +501,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setCurrentTime,
         setDateCrawled,
         setDidError,
+        setDuration,
         setEpisodeId,
         setEpisodeImage,
         setEpisodeImageDimensions,

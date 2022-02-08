@@ -11,6 +11,7 @@ export interface IMediaContext {
   currentTime: number;
   dateCrawled: number | null;
   didError: boolean;
+  duration: number;
   episodeId: number | null;
   episodeImage: string | null;
   episodeImageDimensions: { height: number; width: number } | null;
@@ -38,6 +39,7 @@ export interface IMediaContext {
   setCurrentTime: Dispatch<SetStateAction<number>>;
   setDateCrawled: Dispatch<SetStateAction<number | null>>;
   setDidError: Dispatch<SetStateAction<boolean>>;
+  setDuration: Dispatch<SetStateAction<number>>;
   setEpisodeId: Dispatch<SetStateAction<number | null>>;
   setEpisodeImage: Dispatch<SetStateAction<string | null>>;
   setEpisodeImageDimensions: Dispatch<

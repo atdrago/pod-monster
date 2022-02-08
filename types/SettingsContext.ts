@@ -6,6 +6,7 @@ export type EpisodeSettings = Record<
   string,
   {
     currentTime: number;
+    duration?: number;
   }
 >;
 

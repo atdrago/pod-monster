@@ -110,6 +110,7 @@ export const MediaPlayer: FunctionComponent = () => {
     seekBackward,
     seekForward,
     setDidError,
+    setDuration,
     setIsMuted,
     setIsPaused,
     setMediaPlayerCurrentTime,
@@ -148,9 +149,9 @@ export const MediaPlayer: FunctionComponent = () => {
     setDidError(true);
   };
 
-  const handleLoadedMetaData: ReactEventHandler<
-    HTMLMediaElement
-  > = async () => {
+  const handleLoadedData: ReactEventHandler<HTMLMediaElement> = async (
+    event
+  ) => {
     if (audioRef.current) {
       if (audioRef.current.paused && !isPaused) {
         await audioRef.current.play();
@@ -162,19 +163,12 @@ export const MediaPlayer: FunctionComponent = () => {
         await videoRef.current.play();
       }
     }
-  };
 
-  const handleLoadedData: ReactEventHandler<HTMLMediaElement> = async () => {
-    if (audioRef.current) {
-      if (audioRef.current.paused && !isPaused) {
-        await audioRef.current.play();
-      }
-    }
-
-    if (videoRef.current) {
-      if (videoRef.current.paused && !isPaused) {
-        await videoRef.current.play();
-      }
+    if (
+      event.currentTarget?.duration &&
+      event.currentTarget.duration !== Infinity
+    ) {
+      setDuration(event.currentTarget.duration);
     }
   };
 
@@ -369,7 +363,7 @@ export const MediaPlayer: FunctionComponent = () => {
               onEnded={pause}
               onError={handleError}
               onLoadedData={handleLoadedData}
-              onLoadedMetadata={handleLoadedMetaData}
+              onLoadedMetadata={handleLoadedData}
               onPause={() => setIsPaused(true)}
               onPlay={() => setIsPaused(false)}
               onPlaying={() => setIsPaused(false)}
