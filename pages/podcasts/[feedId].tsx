@@ -242,7 +242,10 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                         bottomRightTitle={
                           currentEpisodeDuration > 0
                             ? secondsToFormattedTime(
-                                currentEpisodeDuration - currentEpisodeTime
+                                Math.max(
+                                  currentEpisodeDuration,
+                                  currentEpisodeTime
+                                ) - currentEpisodeTime
                               )
                             : undefined
                         }
