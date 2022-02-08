@@ -20,7 +20,7 @@ import { Stack } from 'components/layouts/Stack';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { TimedList } from 'components/molecules/TimedList';
 import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
-import { mediaContextDefaults, useMediaContext } from 'contexts/MediaContext';
+import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
@@ -167,7 +167,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     mediaPlayerCurrentTime,
     mediaPlayerCurrentTimeDebounced,
     setCurrentTime,
-  } = useMediaContext() || mediaContextDefaults;
+  } = useMediaContext();
 
   const isVideo = episode?.enclosureType.includes('video');
   const isThisEpisodeInThePlayer = episodeId === episode?.id;

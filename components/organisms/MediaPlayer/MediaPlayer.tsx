@@ -20,7 +20,7 @@ import { Stack } from 'components/layouts/Stack';
 import { Media } from 'components/molecules/Media';
 import { SelectField } from 'components/molecules/SelectField';
 import { SizeField } from 'components/molecules/SizeField';
-import { mediaContextDefaults, useMediaContext } from 'contexts/MediaContext';
+import { useMediaContext } from 'contexts/MediaContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
@@ -122,7 +122,7 @@ export const MediaPlayer: FunctionComponent = () => {
     srcType,
     videoRef,
     volume,
-  } = useMediaContext() || mediaContextDefaults;
+  } = useMediaContext();
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
   const { asPath } = useRouter();
   const [isPinned, setIsPinned] = useState(false);

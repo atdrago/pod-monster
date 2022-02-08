@@ -4,7 +4,7 @@ import { IconButton } from 'components/atoms/IconButton';
 import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { mediaContextDefaults, useMediaContext } from 'contexts/MediaContext';
+import { useMediaContext } from 'contexts/MediaContext';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import type { EpisodePageEpisode, IChapter, IImageDimensions } from 'types';
 
@@ -46,7 +46,7 @@ export const EpisodePlayButton = ({
     setSrcType,
     src,
     videoRef,
-  } = useMediaContext() || mediaContextDefaults;
+  } = useMediaContext();
 
   const isThisEpisodeInThePlayer = episodeId === episode?.id;
   const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;

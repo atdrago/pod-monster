@@ -16,7 +16,7 @@ import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import type { IMediaContext, PlaybackRate } from 'types';
 import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 
-export const mediaContextDefaults: IMediaContext = {
+const mediaContextDefaults: IMediaContext = {
   /* eslint-disable @typescript-eslint/no-empty-function */
   audioRef: { current: null },
   chapters: null,
@@ -521,5 +521,5 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   );
 };
 
-export const useMediaContext = (): IMediaContext | undefined =>
-  useContext(MediaContext);
+export const useMediaContext = (): IMediaContext =>
+  useContext(MediaContext) || mediaContextDefaults;
