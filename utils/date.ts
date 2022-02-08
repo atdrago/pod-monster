@@ -16,6 +16,10 @@ export const secondsToFormattedTime = (
     return '00:00:00';
   }
 
+  const isNegative = seconds < 0;
+
+  seconds = Math.abs(seconds);
+
   let milliseconds: number | null = null;
 
   if (includeMilliseconds) {
@@ -32,15 +36,18 @@ export const secondsToFormattedTime = (
   const hours = Math.floor((seconds / (60 * 60)) % 24);
   const days = Math.floor(seconds / (60 * 60 * 24));
 
-  return [
-    days ? days : null,
-    `${hours}`.padStart(2, '0'),
-    `${minutes}`.padStart(2, '0'),
-    `${second}`.padStart(2, '0'),
-    includeMilliseconds ? `${milliseconds}`.padStart(3, '0') : null,
-  ]
-    .filter(notNullOrUndefined)
-    .join(':');
+  return (
+    (isNegative ? '-' : '') +
+    [
+      days ? days : null,
+      `${hours}`.padStart(2, '0'),
+      `${minutes}`.padStart(2, '0'),
+      `${second}`.padStart(2, '0'),
+      includeMilliseconds ? `${milliseconds}`.padStart(3, '0') : null,
+    ]
+      .filter(notNullOrUndefined)
+      .join(':')
+  );
 };
 
 export const formattedTimeToSeconds = (time: string): number => {
