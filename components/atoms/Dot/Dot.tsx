@@ -2,13 +2,17 @@ import { useClassNames } from 'hooks/useClassNames';
 
 import { backgroundVariants, dotClassName } from './dot.css';
 
-interface IDotProps {
+type DotProps = JSX.IntrinsicElements['span'] & {
   color: keyof typeof backgroundVariants;
   label?: string;
-}
+};
 
-export const Dot = ({ color, label }: IDotProps) => {
-  const baseClassName = useClassNames(dotClassName, backgroundVariants[color]);
+export const Dot = ({ className, color, label, ...spanProps }: DotProps) => {
+  const baseClassName = useClassNames(
+    dotClassName,
+    backgroundVariants[color],
+    className
+  );
 
-  return <span className={baseClassName} aria-label={label} />;
+  return <span aria-label={label} className={baseClassName} {...spanProps} />;
 };
