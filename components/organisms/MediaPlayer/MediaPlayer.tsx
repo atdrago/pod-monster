@@ -258,9 +258,27 @@ export const MediaPlayer: FunctionComponent = () => {
         <Stack
           as={m.aside}
           maxWidth="small"
-          animate={{ opacity: 1, y: '0' }}
-          initial={{ opacity: 0, y: '100%' }}
-          exit={{ opacity: 0, y: '100%' }}
+          animate={{
+            height: 'auto',
+            marginBottom: 0,
+            marginTop: 0,
+            opacity: 1,
+            y: '0',
+          }}
+          initial={{
+            height: 'auto',
+            marginBottom: 0,
+            marginTop: 0,
+            opacity: 0,
+            y: '100%',
+          }}
+          exit={{
+            height: '0',
+            marginBottom: '-16px',
+            marginTop: '-16px',
+            opacity: 0,
+            y: '100%',
+          }}
           style={{
             bottom: 16,
             position: 'sticky',
