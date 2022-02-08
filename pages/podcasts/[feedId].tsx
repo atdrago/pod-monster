@@ -10,13 +10,15 @@ import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
+import { Progress } from 'components/molecules/Progress';
+import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import { headingLink, nonUnderlinedLink } from 'styles';
 import { episodeItemClassName } from 'styles/feed.css';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
-import { longDateTimeFormat } from 'utils/date';
+import { longDateTimeFormat, secondsToFormattedTime } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 
@@ -54,8 +56,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
   const { episodeSettings, feedSettings } = useSettingsContext();
+  const { episodeId } = useMediaContext();
 
-  const baseClassName = useClassNames(episodeItemClassName, nonUnderlinedLink);
+  const baseClassName = useClassNames(nonUnderlinedLink);
 
   const subscribedAt = feedSettings[feed.id]?.subscribedAt;
   const proxyFeedImage = new URL(
@@ -163,65 +166,94 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
           <Typography as="h4" size="headingSmaller">
             Episodes
           </Typography>
-          {episodes.map(({ datePublished, feedImage, id, image, title }) => {
-            const proxyImage = new URL(
-              '/api/images/proxy',
-              process.env.NEXT_PUBLIC_BASE_URL
-            );
+          {episodes.map(
+            ({ datePublished, duration, feedImage, id, image, title }) => {
+              const proxyImage = new URL(
+                '/api/images/proxy',
+                process.env.NEXT_PUBLIC_BASE_URL
+              );
 
-            proxyImage.searchParams.set('url', image || feedImage);
+              proxyImage.searchParams.set('url', image || feedImage);
 
-            const isUnlistened =
-              !episodeSettings[id] &&
-              new Date(datePublished * 1000) >
-                new Date(subscribedAt ?? Infinity);
+              const currentEpisodeSettings = episodeSettings[id];
+              const isUnlistened =
+                !currentEpisodeSettings &&
+                new Date(datePublished * 1000) >
+                  new Date(subscribedAt ?? Infinity);
 
-            return (
-              <Stack
-                align="center"
-                as={Link}
-                className={baseClassName}
-                href={getEpisodePath({
-                  episodeId: id,
-                  feedId: feed.id,
-                })}
-                key={id}
-                kind="flexRow"
-                space="xxsmall"
-              >
-                <Dot
-                  color={isUnlistened ? 'blue' : 'transparent'}
-                  label="New episodes"
-                />
-                <Stack align="center" space="small" kind="flexRow">
-                  <Artwork
-                    alt=""
-                    height={80}
-                    shadow="medium"
-                    src={proxyImage.toString()}
-                    width={80}
-                  />
-                  <Stack
-                    space="small"
-                    style={{ overflowY: 'hidden', padding: '4px 0' }}
-                  >
-                    <Typography
-                      as="h3"
-                      size="headingSmaller"
-                      whitespace="ellipsis"
+              const currentEpisodeDuration =
+                currentEpisodeSettings?.duration ?? duration ?? 0;
+              const currentEpisodeTime =
+                currentEpisodeSettings?.currentTime ?? 0;
+
+              return (
+                <Stack
+                  align="center"
+                  as={Link}
+                  className={baseClassName}
+                  href={getEpisodePath({
+                    episodeId: id,
+                    feedId: feed.id,
+                  })}
+                  key={id}
+                  kind="flexRow"
+                  space="xxsmall"
+                >
+                  {isUnlistened ? (
+                    <Dot
+                      color={'blue'}
+                      className={episodeItemClassName}
+                      label="New episodes"
+                    />
+                  ) : null}
+                  <Stack align="center" space="small" kind="flexRow">
+                    <Artwork
+                      alt=""
+                      height={80}
+                      shadow="medium"
+                      src={proxyImage.toString()}
+                      width={80}
+                    />
+                    <Stack
+                      space="small"
+                      style={{ overflowY: 'hidden', padding: '4px 0' }}
                     >
-                      {title}
-                    </Typography>
-                    <Typography as="p" size="paragraph" whitespace="ellipsis">
-                      {longDateTimeFormat.format(
-                        new Date(datePublished * 1000)
-                      )}
-                    </Typography>
+                      <Typography
+                        as="h3"
+                        size="headingSmaller"
+                        whitespace="ellipsis"
+                      >
+                        {title}
+                      </Typography>
+                      <Progress
+                        topLeftTitle={longDateTimeFormat.format(
+                          new Date(datePublished * 1000)
+                        )}
+                        percent={
+                          currentEpisodeDuration > 0
+                            ? currentEpisodeTime / currentEpisodeDuration
+                            : undefined
+                        }
+                        bottomLeftTitle={
+                          currentEpisodeDuration > 0
+                            ? secondsToFormattedTime(currentEpisodeTime)
+                            : undefined
+                        }
+                        bottomRightTitle={
+                          currentEpisodeDuration > 0
+                            ? secondsToFormattedTime(
+                                currentEpisodeDuration - currentEpisodeTime
+                              )
+                            : undefined
+                        }
+                        isHighlighted={episodeId === id}
+                      />
+                    </Stack>
                   </Stack>
                 </Stack>
-              </Stack>
-            );
-          })}
+              );
+            }
+          )}
         </Stack>
       </Stack>
     </>

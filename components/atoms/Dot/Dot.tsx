@@ -14,5 +14,12 @@ export const Dot = ({ className, color, label, ...spanProps }: DotProps) => {
     className
   );
 
-  return <span aria-label={label} className={baseClassName} {...spanProps} />;
+  return (
+    <span
+      aria-label={label}
+      className={baseClassName}
+      role="status"
+      {...spanProps}
+    />
+  );
 };

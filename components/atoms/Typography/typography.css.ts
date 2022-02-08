@@ -134,4 +134,5 @@ export const sizeVariantNoCapsize = styleVariants({
 export const textAlignVariant = styleVariants({
   center: { textAlign: 'center' },
   left: { textAlign: 'left' },
+  right: { textAlign: 'right' },
 });

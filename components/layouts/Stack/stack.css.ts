@@ -59,4 +59,7 @@ export const justifyVariant = styleVariants({
   center: {
     justifyContent: 'center',
   },
+  spaceBetween: {
+    justifyContent: 'space-between',
+  },
 });
