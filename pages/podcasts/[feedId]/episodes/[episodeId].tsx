@@ -449,9 +449,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           </Details>
         </Stack>
         <Typography as="p" size="paragraph">
-          Published:{' '}
+          {episode && episode.season ? `Season ${episode.season}. ` : null}
+          {episode && episode.episode ? `Episode ${episode.episode}. ` : null}
           {episode
-            ? longDateTimeFormat.format(new Date(episode.datePublished * 1000))
+            ? `Published on ${longDateTimeFormat.format(
+                new Date(episode.datePublished * 1000)
+              )}.`
             : null}
         </Typography>
         {episode && feedType && feedLink && feedUrl && (
