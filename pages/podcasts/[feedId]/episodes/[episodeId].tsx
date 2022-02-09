@@ -448,9 +448,13 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
             />
           </Details>
         </Stack>
+        {episode && (episode.season || episode.episode) ? (
+          <Typography as="p" size="paragraph">
+            {episode.season ? `Season ${episode.season}. ` : null}
+            {episode.episode ? `Episode ${episode.episode}. ` : null}
+          </Typography>
+        ) : null}
         <Typography as="p" size="paragraph">
-          {episode && episode.season ? `Season ${episode.season}. ` : null}
-          {episode && episode.episode ? `Episode ${episode.episode}. ` : null}
           {episode
             ? `Published on ${longDateTimeFormat.format(
                 new Date(episode.datePublished * 1000)
