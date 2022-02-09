@@ -217,15 +217,33 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
 
   const hasChaptersUrl = !!(episode && episode?.chaptersUrl);
   const hasChapters = chapters && chapters.length > 0;
-  const currentChapterIndex = hasChapters
-    ? chapters.findIndex(({ startTime: chapterStartTime }) => {
-        return interprettedCurrentTime < (chapterStartTime ?? 0);
-      }) - 1
-    : -1;
+  const currentChapterIndex = (() => {
+    if (!hasChapters) {
+      return -1;
+    }
+
+    for (let i = chapters.length - 1; i >= 0; i--) {
+      const { startTime } = chapters[i];
+
+      if (startTime && interprettedCurrentTime > startTime) {
+        return i;
+      }
+    }
+
+    return -1;
+  })();
+
   const currentChapter =
     hasChapters && currentChapterIndex >= 0
       ? chapters[currentChapterIndex]
       : null;
+
+  const chaptersAsTimedList = chapters?.map(
+    ({ startTime: chapterStartTime, title }) => ({
+      startTimeSeconds: chapterStartTime ?? undefined,
+      text: title ?? 'No title',
+    })
+  );
 
   const episodeArtwork =
     currentChapter?.img || episode?.image || episode?.feedImage;
@@ -242,8 +260,10 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   }
 
   const currentTranscriptIndex =
-    transcript && transcript.length > 0
-      ? transcript.findIndex(({ endTimeSeconds = 0 }) => {
+    transcript &&
+    Array.isArray(transcript.content) &&
+    transcript.content.length > 0
+      ? transcript.content.findIndex(({ endTimeSeconds = 0 }) => {
           // Restrictig this check also by startTimeSeconds in the future might
           // be good, but we need to handle moments where there is no speaking,
           // and currentTranscriptIndex is `-1`
@@ -370,31 +390,48 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
               </Stack>
             </Details>
           ) : null}
-          {hasTranscripts && (
-            <TimedList
-              error={transcriptsError}
-              hasError={!!transcriptsError}
-              index={currentTranscriptIndex}
-              isLoading={isTranscriptLoading}
-              list={transcript ?? []}
-              title="Transcript"
-              onItemClick={handleTimedListItemClick}
-            />
-          )}
+          {hasTranscripts ? (
+            transcript?.type === 'application/srt' ? (
+              <TimedList
+                index={currentTranscriptIndex}
+                list={transcript.content ?? []}
+                title="Transcript"
+                onItemClick={handleTimedListItemClick}
+              />
+            ) : (
+              <Details
+                hasError={!!transcriptsError}
+                isLoading={isTranscriptLoading}
+                summary={
+                  <Typography as="h4" size="headingSmaller">
+                    Transcript
+                  </Typography>
+                }
+              >
+                <Typography
+                  as="p"
+                  size="paragraph"
+                  style={{
+                    height: transcriptsError ? 'auto' : 48 * 5,
+                    overflow: 'auto',
+                    padding: '4px 0',
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {transcriptsError
+                    ? transcriptsError.message
+                    : transcript?.content}
+                </Typography>
+              </Details>
+            )
+          ) : null}
           {hasChaptersUrl && (
             <TimedList
               error={chaptersError}
               hasError={!!chaptersError}
               index={currentChapterIndex}
               isLoading={isChaptersLoading}
-              list={
-                hasChapters
-                  ? chapters.map(({ startTime: chapterStartTime, title }) => ({
-                      startTimeSeconds: chapterStartTime ?? undefined,
-                      text: title ?? 'No title',
-                    }))
-                  : []
-              }
+              list={chaptersAsTimedList ?? []}
               title="Chapters"
               onItemClick={handleTimedListItemClick}
             />

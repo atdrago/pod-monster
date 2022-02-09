@@ -1,4 +1,4 @@
-export interface ITranscriptItem {
+export interface ISrtTranscriptItem {
   endTime: string;
   endTimeSeconds?: number;
   id: string;
@@ -7,4 +7,16 @@ export interface ITranscriptItem {
   text: string;
 }
 
-export type TranscriptDocument = Array<ITranscriptItem>;
+export interface ITextTranscriptDocument {
+  text: string;
+}
+
+export type TranscriptDocument =
+  | {
+      content: Array<ISrtTranscriptItem>;
+      type: 'application/srt';
+    }
+  | {
+      content: ITextTranscriptDocument;
+      type: 'text/html';
+    };

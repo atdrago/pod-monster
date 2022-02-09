@@ -1,7 +1,8 @@
 import type { NextApiHandler } from 'next';
 import SrtParser from 'srt-parser-2';
 
-import type { ITranscriptItem, TranscriptDocument } from 'types';
+import { supportedTranscriptTypes } from 'rest/fetchPodcastEpisodeTranscript';
+import type { ISrtTranscriptItem } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { formattedTimeToSeconds } from 'utils/date';
 
@@ -17,11 +18,13 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(400).json(createApiErrorResponse('`type` is required'));
   }
 
-  if (type !== 'application/srt') {
+  if (!supportedTranscriptTypes.includes(type)) {
     return res
       .status(501)
       .json(
-        createApiErrorResponse('Only SRT transcripts are currently supported')
+        createApiErrorResponse(
+          `The transcript type "${type}" is not supported.`
+        )
       );
   }
 
@@ -36,28 +39,47 @@ const handler: NextApiHandler = async (req, res) => {
       );
     }
 
-    const transcriptFile = await transcriptResponse.text();
-    const srtParser = new SrtParser();
+    const transcriptResponseText = await transcriptResponse.text();
 
-    const transcriptDocument: TranscriptDocument = srtParser
-      .fromSrt(transcriptFile)
-      .map((item) => {
-        const transcriptItem: ITranscriptItem = {
-          ...item,
-          endTimeSeconds: formattedTimeToSeconds(item.endTime),
-          startTimeSeconds: formattedTimeToSeconds(item.startTime),
-        };
+    if (type === 'application/srt') {
+      const srtParser = new SrtParser();
 
-        return transcriptItem;
-      });
+      const transcriptSrtItems: Array<ISrtTranscriptItem> = srtParser
+        .fromSrt(transcriptResponseText)
+        .map((item) => {
+          const transcriptItem: ISrtTranscriptItem = {
+            ...item,
+            endTimeSeconds: formattedTimeToSeconds(item.endTime),
+            startTimeSeconds: formattedTimeToSeconds(item.startTime),
+          };
+
+          return transcriptItem;
+        });
+
+      return res
+        .setHeader(
+          'Cache-Control',
+          'public, s-maxage=60, stale-while-revalidate=3600'
+        )
+        .status(200)
+        .json({ content: transcriptSrtItems, type: 'application/srt' });
+    } else if (type === 'text/html') {
+      return res
+        .setHeader(
+          'Cache-Control',
+          'public, s-maxage=60, stale-while-revalidate=3600'
+        )
+        .status(200)
+        .json({ content: transcriptResponseText, type: 'text/html' });
+    }
 
     return res
-      .setHeader(
-        'Cache-Control',
-        'public, s-maxage=60, stale-while-revalidate=3600'
-      )
-      .status(200)
-      .json(transcriptDocument);
+      .status(501)
+      .json(
+        createApiErrorResponse(
+          `The transcript type "${type}" is not supported.`
+        )
+      );
   } catch (err) {
     return res.status(500).json(createApiErrorResponse(res));
   }

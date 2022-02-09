@@ -19,9 +19,9 @@ const handler: NextApiHandler = async (req, res) => {
       throw new Error(`Failed to get chapters: ${chaptersResponse.statusText}`);
     }
 
-    const chaptersFile = await chaptersResponse.json();
+    const chaptersResponseJson = await chaptersResponse.json();
 
-    const chaptersSorted = chaptersFile.chapters.sort(
+    const chaptersSorted = chaptersResponseJson.chapters.sort(
       (chapterA: IChapter, chapterB: IChapter) =>
         (chapterA?.startTime ?? 0) - (chapterB?.startTime ?? 0)
     );
