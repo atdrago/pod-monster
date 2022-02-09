@@ -196,6 +196,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
         <audio
           className={audioClassName}
           controls={true}
+          key={src}
           onLoadedData={handleLoadedData}
           onLoadedMetadata={handleLoadedMetaData}
           onSeeking={handleTimeUpdate}
