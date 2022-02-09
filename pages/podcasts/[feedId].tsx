@@ -2,6 +2,7 @@ import type { GetStaticPaths, NextPage } from 'next';
 
 import { episodesByFeedId, podcastsByFeedId } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
+import { Badge } from 'components/atoms/Badge';
 import { Details } from 'components/atoms/Details';
 import { Dot } from 'components/atoms/Dot';
 import { Head } from 'components/atoms/Head';
@@ -167,7 +168,15 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
             Episodes
           </Typography>
           {episodes.map(
-            ({ datePublished, duration, feedImage, id, image, title }) => {
+            ({
+              datePublished,
+              duration,
+              explicit,
+              feedImage,
+              id,
+              image,
+              title,
+            }) => {
               const proxyImage = new URL(
                 '/api/images/proxy',
                 process.env.NEXT_PUBLIC_BASE_URL
@@ -215,16 +224,22 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                       width={80}
                     />
                     <Stack
-                      space="small"
+                      space="xsmall"
                       style={{ overflowY: 'hidden', padding: '4px 0' }}
                     >
-                      <Typography
-                        as="h3"
-                        size="headingSmaller"
-                        whitespace="ellipsis"
-                      >
-                        {title}
-                      </Typography>
+                      <Stack kind="flexRow" space="xsmall" align="center">
+                        {explicit > 0 ? (
+                          <Badge label="Explicit">E</Badge>
+                        ) : null}
+                        <Typography
+                          as="h3"
+                          size="headingSmaller"
+                          shouldUseCapsize={false}
+                          whitespace="ellipsis"
+                        >
+                          {title}
+                        </Typography>
+                      </Stack>
                       <Progress
                         topLeftTitle={longDateTimeFormat.format(
                           new Date(datePublished * 1000)

@@ -1,3 +1,4 @@
+import { Badge } from 'components/atoms/Badge';
 import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Icon } from 'components/atoms/Icon';
 import { IconButton } from 'components/atoms/IconButton';
@@ -134,9 +135,14 @@ export const EpisodePlayButton = ({
             isLoading={isThisEpisodeLoadingAtCurrentTime}
           />
         </IconButton>
-        <Typography size="headingSmaller" as="h3" whitespace={2}>
-          {currentChapter?.title ?? episode?.title}
-        </Typography>
+        <Stack kind="flexRow" space="xsmall" align="center">
+          {episode && episode.explicit > 0 ? (
+            <Badge label="Explicit">E</Badge>
+          ) : null}
+          <Typography size="headingSmaller" as="h3" whitespace={2}>
+            {currentChapter?.title ?? episode?.title}
+          </Typography>
+        </Stack>
       </Stack>
       {currentChapter?.url && (
         <ExternalLink href={currentChapter.url}>
