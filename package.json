@@ -34,7 +34,7 @@
     "rehype-raw": "^6.1.1",
     "rehype-sanitize": "^5.0.1",
     "rehype-strip-html": "^0.1.1",
-    "sharp": "^0.30.0",
+    "sharp": "^0.30.1",
     "srt-parser-2": "^1.1.7",
     "unified": "^10.1.1",
     "use-debounce": "^7.0.1"
