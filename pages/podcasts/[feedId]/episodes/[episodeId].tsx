@@ -225,7 +225,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     for (let i = chapters.length - 1; i >= 0; i--) {
       const { startTime } = chapters[i];
 
-      if (startTime && interprettedCurrentTime > startTime) {
+      if (startTime && interprettedCurrentTime >= startTime) {
         return i;
       }
     }
