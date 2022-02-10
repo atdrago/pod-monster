@@ -1,6 +1,6 @@
 import type { GetStaticPaths, NextPage } from 'next';
 import probeImageSize from 'probe-image-size';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ReactDomServer from 'react-dom/server';
 import { useQuery } from 'react-query';
 import rehypeParse from 'rehype-parse';
@@ -22,6 +22,7 @@ import { TimedList } from 'components/molecules/TimedList';
 import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
+import { useChapterIndex } from 'hooks/useChapterIndex';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
@@ -196,7 +197,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   );
 
   const {
-    data: chapters,
+    data: chapters = [],
     error: chaptersError,
     isLoading: isChaptersLoading,
   } = useQuery<Array<IChapter>, Error>(
@@ -216,29 +217,26 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   );
 
   const hasChaptersUrl = !!(episode && episode?.chaptersUrl);
-  const hasChapters = chapters && chapters.length > 0;
-  const currentChapterIndex = (() => {
-    if (!hasChapters) {
-      return -1;
-    }
-
-    for (let i = chapters.length - 1; i >= 0; i--) {
-      const { startTime } = chapters[i];
-
-      if (startTime && interprettedCurrentTime >= startTime) {
-        return i;
-      }
-    }
-
-    return -1;
-  })();
+  const hasChapters = chapters.length > 0;
+  const nonTocChapters = useMemo(
+    () => chapters.filter(({ toc }) => toc !== false),
+    [chapters]
+  );
+  const currentChapterIndex = useChapterIndex({
+    chapters,
+    currentTime: interprettedCurrentTime,
+  });
+  const currentNonTocChapterIndex = useChapterIndex({
+    chapters: nonTocChapters,
+    currentTime: interprettedCurrentTime,
+  });
 
   const currentChapter =
     hasChapters && currentChapterIndex >= 0
       ? chapters[currentChapterIndex]
       : null;
 
-  const chaptersAsTimedList = chapters?.map(
+  const chaptersAsTimedList = nonTocChapters?.map(
     ({ startTime: chapterStartTime, title }) => ({
       startTimeSeconds: chapterStartTime ?? undefined,
       text: title ?? 'No title',
@@ -429,7 +427,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
             <TimedList
               error={chaptersError}
               hasError={!!chaptersError}
-              index={currentChapterIndex}
+              index={currentNonTocChapterIndex}
               isLoading={isChaptersLoading}
               list={chaptersAsTimedList ?? []}
               title="Chapters"
