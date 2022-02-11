@@ -13,6 +13,7 @@ import { episodeById, podcastsByFeedId } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
 import { Head } from 'components/atoms/Head';
+import { Icon } from 'components/atoms/Icon';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
@@ -24,6 +25,7 @@ import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useChapterIndex } from 'hooks/useChapterIndex';
+import TvIcon from 'icons/tv.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
@@ -37,6 +39,7 @@ import type {
 } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 import { getEpisodePath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
 
@@ -451,10 +454,17 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
         </Stack>
         <Funding funding={feedFunding} />
         {episode && (episode.season || episode.episode) ? (
-          <Typography as="p" size="paragraph">
-            {episode.season ? `Season ${episode.season}. ` : null}
-            {episode.episode ? `Episode ${episode.episode}. ` : null}
-          </Typography>
+          <Stack kind="flexRow" space="small">
+            <Icon as={TvIcon} size="xsmall" />
+            <Typography as="h4" size="headingSmaller">
+              {[
+                episode.season ? `Season ${episode.season}` : null,
+                episode.episode ? `Episode ${episode.episode}` : null,
+              ]
+                .filter(notNullOrUndefined)
+                .join(', ')}
+            </Typography>
+          </Stack>
         ) : null}
         <Typography as="p" size="paragraph">
           {episode
