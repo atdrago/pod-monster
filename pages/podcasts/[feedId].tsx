@@ -11,6 +11,7 @@ import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
+import { Funding } from 'components/molecules/Funding';
 import { Progress } from 'components/molecules/Progress';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
@@ -145,25 +146,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
             {feed.description}
           </Typography>
         </Details>
-        {feed.funding && (
-          <Stack space="small">
-            <Typography as="h4" size="headingSmaller">
-              Donations
-            </Typography>
-            <Typography as="p" size="paragraph">
-              <Link
-                anchorProps={{
-                  rel: 'noreferrer noopener',
-                  target: '_blank',
-                }}
-                className={headingLink}
-                href={feed.funding.url}
-              >
-                {feed.funding.message}
-              </Link>
-            </Typography>
-          </Stack>
-        )}
+        <Funding funding={feed.funding}></Funding>
         <Stack space="small">
           <Typography as="h4" size="headingSmaller">
             Episodes

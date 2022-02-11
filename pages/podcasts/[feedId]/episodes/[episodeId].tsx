@@ -17,6 +17,7 @@ import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
+import { Funding } from 'components/molecules/Funding';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { TimedList } from 'components/molecules/TimedList';
 import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
@@ -136,6 +137,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
     props: {
       episode,
       episodeImageDimensions,
+      feedFunding: feed.funding ?? null,
       feedLink: feed.link,
       feedType: feed.type === 0 ? 'rss' : 'atom',
       feedUrl: feed.url,
@@ -155,6 +157,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const EpisodePage: NextPage<IEpisodePageProps> = ({
   episode,
   episodeImageDimensions,
+  feedFunding,
   feedLink,
   feedType,
   feedUrl,
@@ -446,6 +449,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
             />
           </Details>
         </Stack>
+        <Funding funding={feedFunding} />
         {episode && (episode.season || episode.episode) ? (
           <Typography as="p" size="paragraph">
             {episode.season ? `Season ${episode.season}. ` : null}

@@ -1,5 +1,5 @@
 import type { GetStaticProps } from 'next';
-import type { ApiResponse } from 'podcastdx-client/src/types';
+import type { ApiResponse, PIApiPodcast } from 'podcastdx-client/src/types';
 
 import type { IImageDimensions } from 'types';
 
@@ -13,6 +13,7 @@ export type EpisodePageEpisode = ApiResponse.EpisodeById['episode'] & {
 export interface IEpisodePageProps {
   episode?: EpisodePageEpisode;
   episodeImageDimensions?: IImageDimensions;
+  feedFunding?: PIApiPodcast['funding'] | null;
   feedLink?: string;
   feedType?: 'rss' | 'atom';
   feedUrl?: string;
