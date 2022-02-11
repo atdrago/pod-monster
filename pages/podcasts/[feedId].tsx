@@ -2,10 +2,10 @@ import type { GetStaticPaths, NextPage } from 'next';
 
 import { episodesByFeedId, podcastsByFeedId } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
-import { Badge } from 'components/atoms/Badge';
 import { Details } from 'components/atoms/Details';
 import { Dot } from 'components/atoms/Dot';
 import { Head } from 'components/atoms/Head';
+import { Icon } from 'components/atoms/Icon';
 import { Label } from 'components/atoms/Label';
 import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
@@ -15,6 +15,7 @@ import { Progress } from 'components/molecules/Progress';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
+import ExplicitIcon from 'icons/explicit.svg';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import { headingLink, nonUnderlinedLink } from 'styles';
 import { episodeItemClassName } from 'styles/feed.css';
@@ -227,10 +228,14 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                       space="xsmall"
                       style={{ overflowY: 'hidden', padding: '4px 0' }}
                     >
-                      <Stack kind="flexRow" space="xsmall" align="center">
+                      <Stack kind="flexRow" space="xxsmall" align="center">
                         {explicit > 0 ? (
-                          <Badge label="Explicit">E</Badge>
-                        ) : null}
+                          <Icon
+                            style={{ verticalAlign: 'middle' }}
+                            as={ExplicitIcon}
+                            size="smallMedium"
+                          />
+                        ) : null}{' '}
                         <Typography
                           as="h3"
                           size="headingSmaller"

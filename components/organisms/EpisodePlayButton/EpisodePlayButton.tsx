@@ -1,4 +1,3 @@
-import { Badge } from 'components/atoms/Badge';
 import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Icon } from 'components/atoms/Icon';
 import { IconButton } from 'components/atoms/IconButton';
@@ -7,6 +6,7 @@ import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useMediaContext } from 'contexts/MediaContext';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
+import ExplicitIcon from 'icons/explicit.svg';
 import type { EpisodePageEpisode, IChapter, IImageDimensions } from 'types';
 
 interface IEpisodePlayButtonProps {
@@ -135,14 +135,16 @@ export const EpisodePlayButton = ({
             isLoading={isThisEpisodeLoadingAtCurrentTime}
           />
         </IconButton>
-        <Stack kind="flexRow" space="xsmall" align="center">
+        <Typography size="headingSmaller" as="h3" whitespace={2}>
           {episode && episode.explicit > 0 ? (
-            <Badge label="Explicit">E</Badge>
-          ) : null}
-          <Typography size="headingSmaller" as="h3" whitespace={2}>
-            {currentChapter?.title ?? episode?.title}
-          </Typography>
-        </Stack>
+            <Icon
+              style={{ verticalAlign: 'middle' }}
+              as={ExplicitIcon}
+              size="smallMedium"
+            />
+          ) : null}{' '}
+          {currentChapter?.title ?? episode?.title}
+        </Typography>
       </Stack>
       {currentChapter?.url && (
         <ExternalLink href={currentChapter.url}>

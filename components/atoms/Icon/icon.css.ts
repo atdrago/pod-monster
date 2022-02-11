@@ -24,6 +24,11 @@ export const iconSizeVariant = styleVariants({
     minHeight: '16px',
     minWidth: '16px',
   },
+  smallMedium: {
+    fontSize: '20px',
+    minHeight: '20px',
+    minWidth: '20px',
+  },
   xsmall: {
     fontSize: '12px',
     minHeight: '12px',
