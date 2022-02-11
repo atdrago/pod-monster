@@ -23,7 +23,7 @@ export const Funding = ({ funding }: IFundingProps) => {
       href={funding.url}
       kind="flexRow"
       space="small"
-      style={{ width: 'auto' }}
+      style={{ marginLeft: 0, marginRight: 'auto', width: 'auto' }}
     >
       <Icon as={FundingIcon} size="xsmall" />
       <Typography as="h4" size="headingSmaller">
