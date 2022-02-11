@@ -331,7 +331,42 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           episodeImageDimensions={episodeImageDimensions}
           isVideo={isVideo}
         />
-        <Stack space="large">
+        <Stack space="medium">
+          {episode && (episode.season || episode.episode) ? (
+            <Stack kind="flexRow" space="small">
+              <Icon as={TvIcon} size="xsmall" />
+              <Typography as="h4" size="headingSmaller">
+                {[
+                  episode.season ? `Season ${episode.season}` : null,
+                  episode.episode ? `Episode ${episode.episode}` : null,
+                ]
+                  .filter(notNullOrUndefined)
+                  .join(', ')}
+              </Typography>
+            </Stack>
+          ) : null}
+          <Details
+            summary={
+              <Typography as="h4" size="headingSmaller">
+                Description
+              </Typography>
+            }
+          >
+            <span
+              dangerouslySetInnerHTML={{ __html: episode?.description ?? '' }}
+            />
+          </Details>
+          {hasChaptersUrl && (
+            <TimedList
+              error={chaptersError}
+              hasError={!!chaptersError}
+              index={currentNonTocChapterIndex}
+              isLoading={isChaptersLoading}
+              list={chaptersAsTimedList ?? []}
+              title="Chapters"
+              onItemClick={handleTimedListItemClick}
+            />
+          )}
           {episode && episode.persons && episode.persons.length ? (
             <Details
               summary={
@@ -429,60 +464,27 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
               </Details>
             )
           ) : null}
-          {hasChaptersUrl && (
-            <TimedList
-              error={chaptersError}
-              hasError={!!chaptersError}
-              index={currentNonTocChapterIndex}
-              isLoading={isChaptersLoading}
-              list={chaptersAsTimedList ?? []}
-              title="Chapters"
-              onItemClick={handleTimedListItemClick}
+
+          <Funding funding={feedFunding} />
+
+          <Typography as="p" size="paragraph">
+            {episode
+              ? `Published on ${longDateTimeFormat.format(
+                  new Date(episode.datePublished * 1000)
+                )}.`
+              : null}
+          </Typography>
+          {episode && feedType && feedLink && feedUrl && (
+            <SubscribeButton
+              feedId={episode.feedId}
+              feedType={feedType}
+              htmlUrl={feedLink}
+              image={episode.feedImage}
+              title={episode.feedTitle}
+              xmlUrl={feedUrl}
             />
           )}
-          <Details
-            summary={
-              <Typography as="h4" size="headingSmaller">
-                Description
-              </Typography>
-            }
-          >
-            <span
-              dangerouslySetInnerHTML={{ __html: episode?.description ?? '' }}
-            />
-          </Details>
         </Stack>
-        <Funding funding={feedFunding} />
-        {episode && (episode.season || episode.episode) ? (
-          <Stack kind="flexRow" space="small">
-            <Icon as={TvIcon} size="xsmall" />
-            <Typography as="h4" size="headingSmaller">
-              {[
-                episode.season ? `Season ${episode.season}` : null,
-                episode.episode ? `Episode ${episode.episode}` : null,
-              ]
-                .filter(notNullOrUndefined)
-                .join(', ')}
-            </Typography>
-          </Stack>
-        ) : null}
-        <Typography as="p" size="paragraph">
-          {episode
-            ? `Published on ${longDateTimeFormat.format(
-                new Date(episode.datePublished * 1000)
-              )}.`
-            : null}
-        </Typography>
-        {episode && feedType && feedLink && feedUrl && (
-          <SubscribeButton
-            feedId={episode.feedId}
-            feedType={feedType}
-            htmlUrl={feedLink}
-            image={episode.feedImage}
-            title={episode.feedTitle}
-            xmlUrl={feedUrl}
-          />
-        )}
       </Stack>
     </>
   );
