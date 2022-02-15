@@ -3,6 +3,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 const withSvgr = require('next-plugin-svgr');
+const imageDomains = require('./utils/imageDomains');
 
 const withVanillaExtract = createVanillaExtractPlugin();
 
@@ -12,7 +13,7 @@ const nextConfig = {
     locales: ['en-US'],
   },
   images: {
-    domains: ['localhost', 'podcast.fish', 'pod.monster'],
+    domains: imageDomains,
     minimumCacheTTL: 31536000,
   },
   productionBrowserSourceMaps: true,

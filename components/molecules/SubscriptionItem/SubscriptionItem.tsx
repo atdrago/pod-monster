@@ -10,6 +10,7 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { fetchPodcastEpisodes } from 'rest/fetchPodcastEpisodes';
 import { nonUnderlinedLink } from 'styles';
+import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { getPodcastPath } from 'utils/paths';
 
 import { subscriptionItemClassName } from './subscriptionItem.css';
@@ -55,13 +56,6 @@ export const SubscriptionItem = ({
     );
   });
 
-  const proxyFeedImage = new URL(
-    '/api/images/proxy',
-    process.env.NEXT_PUBLIC_BASE_URL
-  );
-
-  proxyFeedImage.searchParams.set('url', image ?? '');
-
   return (
     <Stack
       align="center"
@@ -81,7 +75,7 @@ export const SubscriptionItem = ({
           alt=""
           width={80}
           height={80}
-          src={proxyFeedImage.toString()}
+          src={getProxyImageUrl(image)}
           shadow="medium"
         />
         <Typography as="h2" size="headingSmaller" whitespace={2}>

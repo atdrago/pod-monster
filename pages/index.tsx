@@ -22,6 +22,7 @@ import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { getPodcastPath } from 'utils/paths';
 
 export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
@@ -160,13 +161,6 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                   return null;
                 }
 
-                const proxyFeedImage = new URL(
-                  '/api/images/proxy',
-                  process.env.NEXT_PUBLIC_BASE_URL
-                );
-
-                proxyFeedImage.searchParams.set('url', feed.image ?? '');
-
                 return (
                   <Stack
                     as="li"
@@ -188,7 +182,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                         alt=""
                         width={80}
                         height={80}
-                        src={proxyFeedImage.toString()}
+                        src={getProxyImageUrl(feed.image)}
                         shadow="medium"
                         label={`${index + 1}.`}
                       />

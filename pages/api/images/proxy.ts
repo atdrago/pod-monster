@@ -1,6 +1,7 @@
 import type { NextApiHandler } from 'next';
 
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+import imageDomains from 'utils/imageDomains';
 import { logger } from 'utils/logger';
 
 const handler: NextApiHandler = async (req, res) => {
@@ -14,15 +15,17 @@ const handler: NextApiHandler = async (req, res) => {
     const imageResponse = await fetch(url);
 
     if (!imageResponse.ok) {
-      logger.error(`Could not fetch image: ${imageResponse.statusText}.`);
+      const errorMessage = `Could not fetch image from "${url}": ${imageResponse.statusText}.`;
 
-      return res
-        .status(400)
-        .send(
-          createApiErrorResponse(
-            `Could not fetch image: ${imageResponse.statusText}.`
-          )
-        );
+      logger.error(errorMessage);
+
+      return res.status(400).send(createApiErrorResponse(errorMessage));
+    }
+
+    const { hostname } = new URL(url);
+
+    if (!imageDomains.includes(hostname)) {
+      logger.info(`Unknown hostname encountered: "${hostname}"`);
     }
 
     return res

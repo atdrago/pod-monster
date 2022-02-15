@@ -28,6 +28,7 @@ import StopIcon from 'icons/stop.svg';
 import { underlinedLink } from 'styles';
 import type { PlaybackRate } from 'types';
 import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
+import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { getEpisodePath } from 'utils/paths';
 import { playbackRates } from 'utils/playbackRates';
 
@@ -133,14 +134,6 @@ export const MediaPlayer: FunctionComponent = () => {
   );
 
   const playerArtwork = currentChapter?.img || episodeImage || feedImage;
-  const playerArtworkProxyUrl = new URL(
-    '/api/images/proxy',
-    process.env.NEXT_PUBLIC_BASE_URL
-  );
-
-  if (playerArtwork) {
-    playerArtworkProxyUrl.searchParams.set('url', playerArtwork);
-  }
 
   const isMobileDevice = useIsMobileDevice();
 
@@ -340,7 +333,7 @@ export const MediaPlayer: FunctionComponent = () => {
                       alt=""
                       height={episodeImageDimensions?.height}
                       isSquare={!!episodeImageDimensions && !!hasChapters}
-                      src={playerArtworkProxyUrl.toString()}
+                      src={getProxyImageUrl(playerArtwork)}
                       width={episodeImageDimensions?.width}
                     />
                   ) : null}
@@ -374,7 +367,7 @@ export const MediaPlayer: FunctionComponent = () => {
                 );
               }}
               playbackRate={playbackRate}
-              poster={playerArtworkProxyUrl?.toString()}
+              poster={getProxyImageUrl(playerArtwork)}
               src={src}
               srcType={srcType ?? undefined}
               startTime={currentTime}

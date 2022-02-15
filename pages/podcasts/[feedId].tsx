@@ -23,6 +23,7 @@ import { episodeItemClassName } from 'styles/feed.css';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
 import { longDateTimeFormat, secondsToFormattedTime } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 
 export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
@@ -64,12 +65,6 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
   const baseClassName = useClassNames(nonUnderlinedLink);
 
   const subscribedAt = feedSettings[feed.id]?.subscribedAt;
-  const proxyFeedImage = new URL(
-    '/api/images/proxy',
-    process.env.NEXT_PUBLIC_BASE_URL
-  );
-
-  proxyFeedImage.searchParams.set('url', feed.image ?? '');
 
   return (
     <>
@@ -91,7 +86,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
               alt={`Podcast artwork for "${feed.title}"`}
               height={128}
               shadow="medium"
-              src={proxyFeedImage.toString()}
+              src={getProxyImageUrl(feed.image)}
               width={128}
             />
             <Stack space="small">
@@ -161,13 +156,6 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
               image,
               title,
             }) => {
-              const proxyImage = new URL(
-                '/api/images/proxy',
-                process.env.NEXT_PUBLIC_BASE_URL
-              );
-
-              proxyImage.searchParams.set('url', image || feedImage);
-
               const currentEpisodeSettings = episodeSettings[id];
               const isUnlistened =
                 !currentEpisodeSettings &&
@@ -204,7 +192,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                       alt=""
                       height={80}
                       shadow="medium"
-                      src={proxyImage.toString()}
+                      src={getProxyImageUrl(image || feedImage)}
                       width={80}
                     />
                     <Stack

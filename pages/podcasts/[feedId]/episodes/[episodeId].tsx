@@ -39,6 +39,7 @@ import type {
 } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
+import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 import { getEpisodePath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
@@ -95,14 +96,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
         };
 
         if (person.img) {
-          const proxyPersonImage = new URL(
-            '/api/images/proxy',
-            process.env.NEXT_PUBLIC_BASE_URL
-          );
-
-          proxyPersonImage.searchParams.set('url', person.img ?? '');
-
-          nextPerson.img = proxyPersonImage.toString();
+          nextPerson.img = getProxyImageUrl(person.img);
         }
 
         return nextPerson;
@@ -252,17 +246,6 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   const episodeArtwork =
     currentChapter?.img || episode?.image || episode?.feedImage;
 
-  let artworkProxyImage = null;
-
-  if (episodeArtwork) {
-    artworkProxyImage = new URL(
-      '/api/images/proxy',
-      process.env.NEXT_PUBLIC_BASE_URL
-    );
-
-    artworkProxyImage.searchParams.set('url', episodeArtwork);
-  }
-
   const currentTranscriptIndex =
     transcript &&
     Array.isArray(transcript.content) &&
@@ -321,7 +304,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           priority={true}
           shadow="medium"
           isSquare={episodeImageDimensions && !!hasChapters}
-          src={artworkProxyImage?.toString()}
+          src={getProxyImageUrl(episodeArtwork)}
           width={episodeImageDimensions?.width}
         />
         <EpisodePlayButton
