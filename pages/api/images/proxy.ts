@@ -1,28 +1,37 @@
 import type { NextApiHandler } from 'next';
 
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+import { logger } from 'utils/logger';
 
 const handler: NextApiHandler = async (req, res) => {
-  let image;
+  const url = typeof req.query.url === 'string' ? req.query.url : null;
+
+  if (!url) {
+    return res.status(400).json(createApiErrorResponse('`url` is required'));
+  }
 
   try {
-    if (typeof req.query.url === 'string') {
-      image = await fetch(req.query.url);
+    const imageResponse = await fetch(url);
+
+    if (!imageResponse.ok) {
+      logger.error(`Could not fetch image: ${imageResponse.statusText}.`);
+
+      return res
+        .status(400)
+        .send(
+          createApiErrorResponse(
+            `Could not fetch image: ${imageResponse.statusText}.`
+          )
+        );
     }
+
+    return res
+      .setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+      .status(200)
+      .send(imageResponse.body);
   } catch (err) {
     return res.status(400).send(createApiErrorResponse(err));
   }
-
-  if (!image || image?.status !== 200) {
-    return res
-      .status(400)
-      .send(createApiErrorResponse('Could not fetch image.'));
-  }
-
-  res
-    .setHeader('Cache-Control', 'public, max-age=31536000, immutable')
-    .status(200)
-    .send(image.body);
 };
 
 export default handler;
