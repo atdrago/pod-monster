@@ -1,30 +1,25 @@
+import type { DBSchema } from 'idb';
 import type { Dispatch, SetStateAction } from 'react';
 
 import type { PlaybackRate } from 'types';
 
-export type EpisodeSettings = Record<
-  string,
-  {
-    currentTime: number;
-    duration?: number;
-  }
->;
+export interface IEpisodeSettingsItem {
+  currentTime: number;
+  duration?: number;
+}
 
-export type FeedSettings = Record<
-  string,
-  {
-    htmlUrl?: string;
-    image: string;
-    /**
-     * @deprecated - use `subscribedAt` instead
-     */
-    isSubscribed?: boolean;
-    subscribedAt: string | null;
-    title: string;
-    type?: 'rss' | 'atom';
-    xmlUrl?: string;
-  }
->;
+export type EpisodeSettings = Record<string, IEpisodeSettingsItem>;
+
+export interface IFeedSettingsItem {
+  htmlUrl?: string;
+  image: string;
+  subscribedAt: string | null;
+  title: string;
+  type?: 'rss' | 'atom';
+  xmlUrl?: string;
+}
+
+export type FeedSettings = Record<string, IFeedSettingsItem>;
 
 export type MediaPlayerSettings = {
   chaptersUrl: string | null;
@@ -37,15 +32,7 @@ export type MediaPlayerSettings = {
   feedId: number | null;
   feedImage: string | null;
   feedTitle: string | null;
-  /**
-   * Should only be true for default values
-   */
-  isDefaults?: boolean;
   isMuted: boolean;
-  /**
-   * @deprecated - use `size` instead (true = 2, false = 1)
-   */
-  isPlayerOpen?: boolean;
   playbackRate: PlaybackRate;
   size: 1 | 2;
   src: string | null;
@@ -60,13 +47,35 @@ export type LocalStorageSettings = {
   feedSettings: FeedSettings;
 };
 
+export interface IPodMonsterDb extends DBSchema {
+  episodeSettings: {
+    /** episodeId */
+    key: string;
+    value: IEpisodeSettingsItem;
+  };
+  feedSettings: {
+    /** feedId */
+    key: string;
+    value: IFeedSettingsItem;
+  };
+  mediaPlayerSettings: {
+    key: 'mediaPlayerSettings';
+    value: MediaPlayerSettings;
+  };
+}
+
 export interface ISettingsContext {
   episodeSettings: EpisodeSettings;
   feedSettings: FeedSettings;
-  isDoneHydratingFromLocalStorage: boolean;
+  hydrationPromise: Promise<void> | null;
+  isDoneHydratingFromIdb: boolean;
   mediaPlayerSettings?: MediaPlayerSettings;
-  setEpisodeSettings: Dispatch<SetStateAction<EpisodeSettings>>;
-  setFeedSettings: Dispatch<SetStateAction<FeedSettings>>;
+  setAllFeedSettings: (feedSettings: FeedSettings) => Promise<void>;
+  setEpisodeSettingsItem: (
+    key: string,
+    value: IEpisodeSettingsItem
+  ) => Promise<void>;
+  setFeedSettingsItem: (key: string, value: IFeedSettingsItem) => Promise<void>;
   setMediaPlayerSettings: Dispatch<
     SetStateAction<MediaPlayerSettings | undefined>
   >;

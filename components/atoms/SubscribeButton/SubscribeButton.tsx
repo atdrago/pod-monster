@@ -20,29 +20,18 @@ export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
   title,
   xmlUrl,
 }) => {
-  const { feedSettings, setFeedSettings } = useSettingsContext();
+  const { feedSettings, setFeedSettingsItem } = useSettingsContext();
 
-  const handleSubscribeClick: ReactEventHandler<HTMLButtonElement> = (
-    event
-  ) => {
-    // Quick fix to prevent navigation to the episode when this button is used
-    // in search result items.
-    event.preventDefault();
-
-    setFeedSettings((prevFeedSettings) => ({
-      ...prevFeedSettings,
-      [id]: {
-        ...prevFeedSettings[id],
-        htmlUrl,
-        image,
-        subscribedAt: prevFeedSettings[id]?.subscribedAt
-          ? null
-          : new Date().toJSON(),
-        title,
-        type: feedType,
-        xmlUrl,
-      },
-    }));
+  const handleSubscribeClick: ReactEventHandler<HTMLButtonElement> = () => {
+    setFeedSettingsItem(`${id}`, {
+      ...feedSettings[id],
+      htmlUrl,
+      image,
+      subscribedAt: feedSettings[id]?.subscribedAt ? null : new Date().toJSON(),
+      title,
+      type: feedType,
+      xmlUrl,
+    });
   };
 
   return (

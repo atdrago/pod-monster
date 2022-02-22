@@ -1,39 +1,47 @@
+import { IDBPDatabase, openDB } from 'idb';
 import {
   FunctionComponent,
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
-import { fetchOpmlV3ToV4 } from 'rest/fetchOpmlV3ToV4';
 import type {
   EpisodeSettings,
   FeedSettings,
+  IEpisodeSettingsItem,
+  IFeedSettingsItem,
+  IPodMonsterDb,
   ISettingsContext,
   LocalStorageSettings,
   MediaPlayerSettings,
 } from 'types';
-import {
-  tryLocalStorageGetItem,
-  tryLocalStorageRemoveItem,
-  tryLocalStorageSetItem,
-} from 'utils/localStorage';
+import { tryLocalStorageGetItem } from 'utils/localStorage';
 import { logger } from 'utils/logger';
 
 const SettingsContext = createContext<ISettingsContext>({
   /* eslint-disable @typescript-eslint/no-empty-function */
   episodeSettings: {},
   feedSettings: {},
-  isDoneHydratingFromLocalStorage: false,
-  setEpisodeSettings: (_) => {},
-  setFeedSettings: (_) => {},
+  hydrationPromise: null,
+  isDoneHydratingFromIdb: false,
+  setAllFeedSettings: async (_) => {},
+  setEpisodeSettingsItem: async (_) => {},
+  setFeedSettingsItem: async (_) => {},
   setMediaPlayerSettings: (_) => {},
   /* eslint-enable @typescript-eslint/no-empty-function */
 });
 
 const SETTINGS_VERSION = 5;
+
+let hydrationPromiseResolver: (() => void) | null = null;
+const hydrationPromise = new Promise<void>((resolve) => {
+  hydrationPromiseResolver = resolve;
+});
 
 export const SettingsProvider: FunctionComponent<
   PropsWithChildren<unknown>
@@ -43,149 +51,207 @@ export const SettingsProvider: FunctionComponent<
   >();
   const [episodeSettings, setEpisodeSettings] = useState<EpisodeSettings>({});
   const [feedSettings, setFeedSettings] = useState<FeedSettings>({});
-  const [isDoneHydratingFromLocalStorage, setIsDoneHydratingFromLocalStorage] =
-    useState(false);
+  const [isDoneHydratingFromIdb, setIsDoneHydratingFromIdb] = useState(false);
+  const databaseRef = useRef<IDBPDatabase<IPodMonsterDb> | null>(null);
 
-  // Read from localStorage on mount
+  // Open the db
   useEffect(() => {
     (async () => {
-      const settingsFromLocalStorage = tryLocalStorageGetItem('pod2.settings');
+      let oldVersion: number | null = null;
 
-      let settings: LocalStorageSettings | null = null;
-
-      if (settingsFromLocalStorage) {
-        try {
-          settings = JSON.parse(
-            settingsFromLocalStorage
-          ) as LocalStorageSettings;
-        } catch (err) {
-          // TODO: Capture exception?
-        }
-      }
-
-      if (settings) {
-        if (settings._version === SETTINGS_VERSION) {
-          setMediaPlayerSettings(settings.audioPlayerSettings);
-          setEpisodeSettings(settings.episodeSettings);
-          setFeedSettings(settings.feedSettings);
-        } else if (SETTINGS_VERSION > settings._version) {
-          /**
-           * Settings versions migrations happen here. Always use the conditional
-           * ```
-           * if (settings._version < N && SETTINGS_VERSION >= N) {
-           * ```
-           * and make sure N is ordered from lowest to highest. This will make it
-           * so that future migrations always can rely on the previous version's
-           * configuration.
-           */
-
-          let tmpMediaPlayerSettings: MediaPlayerSettings | null = null;
-          // let tmpEpisodeSettings: EpisodeSettings | null = null;
-          let tmpFeedSettings: FeedSettings | null = null;
-
-          // In 2, at `feedSettings[i]`, `isSubscribed` became `subscribedAt`
-          if (settings._version < 2 && SETTINGS_VERSION >= 2) {
-            tmpFeedSettings = Object.fromEntries(
-              Object.entries(settings.feedSettings).map(
-                ([key, { isSubscribed, ...tmpFeedSetting }]) => {
-                  return [
-                    key,
-                    {
-                      ...tmpFeedSetting,
-                      subscribedAt: isSubscribed ? new Date().toJSON() : null,
-                    },
-                  ];
-                }
-              )
-            );
-          }
-
-          // In 3, `isPlayerOpen` changed to `size`. `true` was the equivalent of
-          // 2 and `false` was the equivalent
-          if (settings._version < 3 && SETTINGS_VERSION >= 3) {
-            const { isPlayerOpen, ...nextTmpMediaPlayerSettings } =
-              settings.audioPlayerSettings;
-
-            tmpMediaPlayerSettings = nextTmpMediaPlayerSettings;
-
-            tmpMediaPlayerSettings.size = isPlayerOpen ? 2 : 1;
-          }
-
-          // In 4, `htmlUrl`, `type`, and `xmlUrl` were added to feed settings in
-          // order to support OPML import / export
-          if (settings._version < 4 && SETTINGS_VERSION >= 4) {
-            try {
-              const ids = Object.keys(tmpFeedSettings || settings.feedSettings);
-              const data = await fetchOpmlV3ToV4(ids);
-
-              if (data && 'feedSettings' in data) {
-                tmpFeedSettings = data.feedSettings;
-              }
-            } catch (err) {
-              // Do nothing
+      databaseRef.current = await openDB<IPodMonsterDb>(
+        'pod.monster',
+        SETTINGS_VERSION,
+        {
+          upgrade: async (upgradeDb, upgradeOldVersion, upgradeNewVersion) => {
+            if (!upgradeNewVersion || upgradeNewVersion <= 5) {
+              upgradeDb.createObjectStore('episodeSettings');
+              upgradeDb.createObjectStore('feedSettings');
+              upgradeDb.createObjectStore('mediaPlayerSettings');
             }
+
+            oldVersion = upgradeOldVersion;
+          },
+        }
+      );
+
+      // Initial migration from localStorage to IndexedDB
+      if (oldVersion === 0 && databaseRef.current.version === 5) {
+        const settingsFromLocalStorage =
+          tryLocalStorageGetItem('pod2.settings');
+
+        let settings: LocalStorageSettings | null = null;
+
+        if (settingsFromLocalStorage) {
+          try {
+            settings = JSON.parse(
+              settingsFromLocalStorage
+            ) as LocalStorageSettings;
+          } catch (err) {
+            logger.error(err);
           }
+        }
 
-          // In 5, `playbackRate` was added to audio player settings
-          if (settings._version < 5 && SETTINGS_VERSION >= 5) {
-            tmpMediaPlayerSettings = {
-              ...settings.audioPlayerSettings,
-            };
+        if (settings?.episodeSettings) {
+          const episodeSettingsMigrationTransaction =
+            databaseRef.current.transaction('episodeSettings', 'readwrite');
 
-            tmpMediaPlayerSettings.playbackRate = 1;
-          }
+          await Promise.all([
+            ...Object.entries(settings?.episodeSettings ?? []).map(
+              ([episodeId, episodeSettingsItem]) =>
+                episodeSettingsMigrationTransaction.store.put(
+                  episodeSettingsItem,
+                  episodeId
+                )
+            ),
+            episodeSettingsMigrationTransaction.done,
+          ]);
+        }
 
-          if (
-            tmpFeedSettings ||
-            tmpMediaPlayerSettings /** || tmpEpisodeSettings */
-          ) {
-            // If any migrations were found, use them.
-            setMediaPlayerSettings(
-              tmpMediaPlayerSettings || settings.audioPlayerSettings
-            );
-            setEpisodeSettings(settings.episodeSettings);
-            setFeedSettings(tmpFeedSettings || settings.feedSettings);
+        if (settings?.feedSettings) {
+          const feedSettingsMigrationTransaction =
+            databaseRef.current.transaction('feedSettings', 'readwrite');
 
-            logger.info(
-              `Successfully migrated settings from ${settings._version} to ${SETTINGS_VERSION}.`
-            );
-          } else {
-            logger.error(
-              `Failed to migrate settings from ${settings._version} to ${SETTINGS_VERSION}.`
-            );
+          await Promise.all([
+            ...Object.entries(settings?.feedSettings ?? []).map(
+              ([feedId, feedSettingsItem]) =>
+                feedSettingsMigrationTransaction.store.put(
+                  feedSettingsItem,
+                  feedId
+                )
+            ),
+            feedSettingsMigrationTransaction.done,
+          ]);
+        }
 
-            // If no migrations were found, we have an incompatible version, so bail.
-            tryLocalStorageRemoveItem('pod2.settings');
-          }
+        if (settings?.audioPlayerSettings) {
+          const mediaPlayerSettingsMigrationTransaction =
+            databaseRef.current.transaction('mediaPlayerSettings', 'readwrite');
+
+          await Promise.all([
+            mediaPlayerSettingsMigrationTransaction.store.put(
+              settings.audioPlayerSettings,
+              'mediaPlayerSettings'
+            ),
+            mediaPlayerSettingsMigrationTransaction.done,
+          ]);
         }
       }
 
-      setIsDoneHydratingFromLocalStorage(true);
+      const mediaPlayerSettingsFromIdb = await databaseRef.current.get(
+        'mediaPlayerSettings',
+        'mediaPlayerSettings'
+      );
+      const nextEpisodeSettings: EpisodeSettings = {};
+      const nextFeedSettings: FeedSettings = {};
+
+      let episodeSettingsCursor = await databaseRef.current
+        .transaction('episodeSettings')
+        .store.openCursor();
+
+      while (episodeSettingsCursor) {
+        nextEpisodeSettings[episodeSettingsCursor.key] =
+          episodeSettingsCursor.value;
+
+        episodeSettingsCursor = await episodeSettingsCursor.continue();
+      }
+
+      let feedSettingsCursor = await databaseRef.current
+        .transaction('feedSettings')
+        .store.openCursor();
+
+      while (feedSettingsCursor) {
+        nextFeedSettings[feedSettingsCursor.key] = feedSettingsCursor.value;
+
+        feedSettingsCursor = await feedSettingsCursor.continue();
+      }
+
+      setEpisodeSettings(nextEpisodeSettings);
+      setFeedSettings(nextFeedSettings);
+      setMediaPlayerSettings(mediaPlayerSettingsFromIdb);
+      hydrationPromiseResolver && hydrationPromiseResolver();
+      setIsDoneHydratingFromIdb(true);
     })();
   }, []);
 
-  // Write to localStorage when any settings change
+  // Write mediaPlayerSettings when they change
   useEffect(() => {
-    tryLocalStorageSetItem(
-      'pod2.settings',
-      JSON.stringify({
-        _version: SETTINGS_VERSION,
-        audioPlayerSettings: mediaPlayerSettings,
-        episodeSettings,
-        feedSettings,
-      })
-    );
-  }, [mediaPlayerSettings, episodeSettings, feedSettings]);
+    if (isDoneHydratingFromIdb && databaseRef.current && mediaPlayerSettings) {
+      databaseRef.current.put(
+        'mediaPlayerSettings',
+        mediaPlayerSettings,
+        'mediaPlayerSettings'
+      );
+    }
+  }, [mediaPlayerSettings, isDoneHydratingFromIdb]);
+
+  const setEpisodeSettingsItem = useCallback(
+    async (key: string, value: IEpisodeSettingsItem) => {
+      if (!databaseRef.current) {
+        return;
+      }
+
+      await databaseRef.current.put('episodeSettings', value, key);
+
+      setEpisodeSettings((prevEpisodeSettings) => ({
+        ...prevEpisodeSettings,
+        [key]: value,
+      }));
+    },
+    []
+  );
+
+  const setFeedSettingsItem = useCallback(
+    async (key: string, value: IFeedSettingsItem) => {
+      if (!databaseRef.current) {
+        return;
+      }
+
+      await databaseRef.current?.put('feedSettings', value, key);
+
+      setFeedSettings((prevFeedSettings) => ({
+        ...prevFeedSettings,
+        [key]: value,
+      }));
+    },
+    []
+  );
+
+  const setAllFeedSettings = useCallback(
+    async (nextFeedSettings: FeedSettings) => {
+      if (databaseRef.current) {
+        const transaction = databaseRef.current.transaction(
+          'feedSettings',
+          'readwrite'
+        );
+
+        await transaction.store.clear();
+
+        await Promise.all([
+          ...Object.entries(nextFeedSettings ?? []).map(
+            ([feedId, feedSettingsItem]) =>
+              transaction.store.put(feedSettingsItem, feedId)
+          ),
+          transaction.done,
+        ]);
+
+        setFeedSettings(nextFeedSettings);
+      }
+    },
+    []
+  );
 
   return (
     <SettingsContext.Provider
       value={{
         episodeSettings,
         feedSettings,
-        isDoneHydratingFromLocalStorage,
+        hydrationPromise,
+        isDoneHydratingFromIdb,
         mediaPlayerSettings,
-        setEpisodeSettings,
-        setFeedSettings,
+        setAllFeedSettings,
+        setEpisodeSettingsItem,
+        setFeedSettingsItem,
         setMediaPlayerSettings,
       }}
     >
