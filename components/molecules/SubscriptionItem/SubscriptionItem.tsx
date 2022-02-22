@@ -67,8 +67,9 @@ export const SubscriptionItem = ({
       space="xxsmall"
     >
       <Dot
+        aria-hidden={!hasUnlistenedEpisodes}
         color={hasUnlistenedEpisodes ? 'blue' : 'transparent'}
-        label="New episodes"
+        label="New episodes."
       />
       <Stack align="center" space="small" kind="flexRow">
         <Artwork
