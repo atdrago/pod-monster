@@ -17,11 +17,10 @@ import type {
   IFeedSettingsItem,
   IPodMonsterDb,
   ISettingsContext,
-  LocalStorageSettings,
   MediaPlayerSettings,
 } from 'types';
-import { tryLocalStorageGetItem } from 'utils/localStorage';
-import { logger } from 'utils/logger';
+
+import { migrateFrom0To5 } from './migrations/migrateFrom0To5';
 
 const SettingsContext = createContext<ISettingsContext>({
   /* eslint-disable @typescript-eslint/no-empty-function */
@@ -54,7 +53,8 @@ export const SettingsProvider: FunctionComponent<
   const [isDoneHydratingFromIdb, setIsDoneHydratingFromIdb] = useState(false);
   const databaseRef = useRef<IDBPDatabase<IPodMonsterDb> | null>(null);
 
-  // Open the db
+  // Open the database, do any necessary migrations, and populate context state
+  // from IDB.
   useEffect(() => {
     (async () => {
       let oldVersion: number | null = null;
@@ -75,75 +75,19 @@ export const SettingsProvider: FunctionComponent<
         }
       );
 
-      // Initial migration from localStorage to IndexedDB
-      if (oldVersion === 0 && databaseRef.current.version === 5) {
-        const settingsFromLocalStorage =
-          tryLocalStorageGetItem('pod2.settings');
-
-        let settings: LocalStorageSettings | null = null;
-
-        if (settingsFromLocalStorage) {
-          try {
-            settings = JSON.parse(
-              settingsFromLocalStorage
-            ) as LocalStorageSettings;
-          } catch (err) {
-            logger.error(err);
-          }
-        }
-
-        if (settings?.episodeSettings) {
-          const episodeSettingsMigrationTransaction =
-            databaseRef.current.transaction('episodeSettings', 'readwrite');
-
-          await Promise.all([
-            ...Object.entries(settings?.episodeSettings ?? []).map(
-              ([episodeId, episodeSettingsItem]) =>
-                episodeSettingsMigrationTransaction.store.put(
-                  episodeSettingsItem,
-                  episodeId
-                )
-            ),
-            episodeSettingsMigrationTransaction.done,
-          ]);
-        }
-
-        if (settings?.feedSettings) {
-          const feedSettingsMigrationTransaction =
-            databaseRef.current.transaction('feedSettings', 'readwrite');
-
-          await Promise.all([
-            ...Object.entries(settings?.feedSettings ?? []).map(
-              ([feedId, feedSettingsItem]) =>
-                feedSettingsMigrationTransaction.store.put(
-                  feedSettingsItem,
-                  feedId
-                )
-            ),
-            feedSettingsMigrationTransaction.done,
-          ]);
-        }
-
-        if (settings?.audioPlayerSettings) {
-          const mediaPlayerSettingsMigrationTransaction =
-            databaseRef.current.transaction('mediaPlayerSettings', 'readwrite');
-
-          await Promise.all([
-            mediaPlayerSettingsMigrationTransaction.store.put(
-              settings.audioPlayerSettings,
-              'mediaPlayerSettings'
-            ),
-            mediaPlayerSettingsMigrationTransaction.done,
-          ]);
+      // Migrations
+      if (oldVersion !== SETTINGS_VERSION) {
+        if (oldVersion === 0 && SETTINGS_VERSION === 5) {
+          await migrateFrom0To5(databaseRef.current);
         }
       }
 
-      const mediaPlayerSettingsFromIdb = await databaseRef.current.get(
+      const nextEpisodeSettings: EpisodeSettings = {};
+      const nextFeedSettings: FeedSettings = {};
+      const nextMediaPlayerSettings = await databaseRef.current.get(
         'mediaPlayerSettings',
         'mediaPlayerSettings'
       );
-      const nextEpisodeSettings: EpisodeSettings = {};
-      const nextFeedSettings: FeedSettings = {};
 
       let episodeSettingsCursor = await databaseRef.current
         .transaction('episodeSettings')
@@ -168,7 +112,7 @@ export const SettingsProvider: FunctionComponent<
 
       setEpisodeSettings(nextEpisodeSettings);
       setFeedSettings(nextFeedSettings);
-      setMediaPlayerSettings(mediaPlayerSettingsFromIdb);
+      setMediaPlayerSettings(nextMediaPlayerSettings);
       hydrationPromiseResolver && hydrationPromiseResolver();
       setIsDoneHydratingFromIdb(true);
     })();
@@ -185,6 +129,9 @@ export const SettingsProvider: FunctionComponent<
     }
   }, [mediaPlayerSettings, isDoneHydratingFromIdb]);
 
+  /**
+   * Sets a single episode settings item
+   */
   const setEpisodeSettingsItem = useCallback(
     async (key: string, value: IEpisodeSettingsItem) => {
       if (!databaseRef.current) {
@@ -201,6 +148,9 @@ export const SettingsProvider: FunctionComponent<
     []
   );
 
+  /**
+   * Sets a single feed settings item
+   */
   const setFeedSettingsItem = useCallback(
     async (key: string, value: IFeedSettingsItem) => {
       if (!databaseRef.current) {
@@ -217,6 +167,9 @@ export const SettingsProvider: FunctionComponent<
     []
   );
 
+  /**
+   * Clears all feed settings and overwrites them with the passed feed settings
+   */
   const setAllFeedSettings = useCallback(
     async (nextFeedSettings: FeedSettings) => {
       if (databaseRef.current) {
