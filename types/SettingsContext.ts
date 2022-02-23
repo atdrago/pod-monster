@@ -67,7 +67,7 @@ export interface IPodMonsterDb extends DBSchema {
 export interface ISettingsContext {
   episodeSettings: EpisodeSettings;
   feedSettings: FeedSettings;
-  hydrationPromise: Promise<void> | null;
+  idbHydrationPromise: Promise<void> | null;
   isDoneHydratingFromIdb: boolean;
   mediaPlayerSettings?: MediaPlayerSettings;
   setAllFeedSettings: (feedSettings: FeedSettings) => Promise<void>;

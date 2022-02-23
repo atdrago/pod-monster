@@ -26,7 +26,7 @@ const SettingsContext = createContext<ISettingsContext>({
   /* eslint-disable @typescript-eslint/no-empty-function */
   episodeSettings: {},
   feedSettings: {},
-  hydrationPromise: null,
+  idbHydrationPromise: null,
   isDoneHydratingFromIdb: false,
   setAllFeedSettings: async (_) => {},
   setEpisodeSettingsItem: async (_) => {},
@@ -37,9 +37,9 @@ const SettingsContext = createContext<ISettingsContext>({
 
 const SETTINGS_VERSION = 5;
 
-let hydrationPromiseResolver: (() => void) | null = null;
-const hydrationPromise = new Promise<void>((resolve) => {
-  hydrationPromiseResolver = resolve;
+let idbHydrationPromiseResolver: (() => void) | null = null;
+const idbHydrationPromise = new Promise<void>((resolve) => {
+  idbHydrationPromiseResolver = resolve;
 });
 
 export const SettingsProvider: FunctionComponent<
@@ -113,7 +113,7 @@ export const SettingsProvider: FunctionComponent<
       setEpisodeSettings(nextEpisodeSettings);
       setFeedSettings(nextFeedSettings);
       setMediaPlayerSettings(nextMediaPlayerSettings);
-      hydrationPromiseResolver && hydrationPromiseResolver();
+      idbHydrationPromiseResolver && idbHydrationPromiseResolver();
       setIsDoneHydratingFromIdb(true);
     })();
   }, []);
@@ -199,7 +199,7 @@ export const SettingsProvider: FunctionComponent<
       value={{
         episodeSettings,
         feedSettings,
-        hydrationPromise,
+        idbHydrationPromise,
         isDoneHydratingFromIdb,
         mediaPlayerSettings,
         setAllFeedSettings,

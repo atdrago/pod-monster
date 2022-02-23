@@ -81,7 +81,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   children,
 }) => {
   const {
-    hydrationPromise,
+    idbHydrationPromise,
     isDoneHydratingFromIdb,
     mediaPlayerSettings,
     setEpisodeSettingsItem,
@@ -264,7 +264,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
   useEffect(() => {
     if (mediaPlayerSettings && !isDoneHydratingFromIdb) {
-      hydrationPromise?.then(() => {
+      idbHydrationPromise?.then(() => {
         setChaptersUrl(mediaPlayerSettings.chaptersUrl);
         setCurrentTime(mediaPlayerSettings.currentTime);
         setDateCrawled(mediaPlayerSettings.dateCrawled);
@@ -285,7 +285,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       });
     }
   }, [
-    hydrationPromise,
+    idbHydrationPromise,
     isDoneHydratingFromIdb,
     mediaPlayerSettings,
     setCurrentTime,
