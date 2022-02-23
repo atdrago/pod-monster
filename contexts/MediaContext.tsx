@@ -81,9 +81,10 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   children,
 }) => {
   const {
-    isDoneHydratingFromLocalStorage,
+    idbHydrationPromise,
+    isDoneHydratingFromIdb,
     mediaPlayerSettings,
-    setEpisodeSettings,
+    setEpisodeSettingsItem,
     setMediaPlayerSettings,
   } = useSettingsContext();
   const mediaPlayerSettingsRef = useRef(mediaPlayerSettings);
@@ -169,9 +170,9 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const isFirstRenderAfterHydration =
     mediaPlayerSettings &&
     !mediaPlayerSettingsRef.current &&
-    isDoneHydratingFromLocalStorage;
+    isDoneHydratingFromIdb;
 
-  const resetMediaContext = () => {
+  const resetMediaContext = useCallback(() => {
     audioRef.current?.pause();
     videoRef.current?.pause();
 
@@ -197,7 +198,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setSrc(mediaContextDefaults.src);
     setSrcType(mediaContextDefaults.srcType);
     setVolume(mediaContextDefaults.volume);
-  };
+  }, []);
 
   const seekBackward = useCallback(
     ({ seekOffset }) => {
@@ -217,7 +218,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     [mediaPlayerCurrentTime]
   );
 
-  const pause = () => {
+  const pause = useCallback(() => {
     setIsPaused(true);
 
     if (audioRef.current) {
@@ -227,7 +228,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     if (videoRef.current) {
       videoRef.current.pause();
     }
-  };
+  }, []);
 
   const playPause = useCallback(async () => {
     const nextIsPaused = !isPaused;
@@ -262,33 +263,33 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   }, [didError, isPaused]);
 
   useEffect(() => {
-    if (isFirstRenderAfterHydration) {
-      setChaptersUrl(mediaPlayerSettings.chaptersUrl);
-      setCurrentTime(mediaPlayerSettings.currentTime);
-      setDateCrawled(mediaPlayerSettings.dateCrawled);
-      setEpisodeId(mediaPlayerSettings.episodeId);
-      setEpisodeImage(mediaPlayerSettings.episodeImage);
-      setEpisodeImageDimensions(mediaPlayerSettings.episodeImageDimensions);
-      setEpisodeTitle(mediaPlayerSettings.episodeTitle);
-      setFeedId(mediaPlayerSettings.feedId);
-      setFeedImage(mediaPlayerSettings.feedImage);
-      setFeedTitle(mediaPlayerSettings.feedTitle);
-      setIsMuted(mediaPlayerSettings.isMuted);
-      setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
-      setPlaybackRate(mediaPlayerSettings.playbackRate);
-      setSize(mediaPlayerSettings.size);
-      setSrc(mediaPlayerSettings.src);
-      setSrcType(mediaPlayerSettings.srcType);
-      setVolume(mediaPlayerSettings.volume);
+    if (mediaPlayerSettings && !isDoneHydratingFromIdb) {
+      idbHydrationPromise?.then(() => {
+        setChaptersUrl(mediaPlayerSettings.chaptersUrl);
+        setCurrentTime(mediaPlayerSettings.currentTime);
+        setDateCrawled(mediaPlayerSettings.dateCrawled);
+        setEpisodeId(mediaPlayerSettings.episodeId);
+        setEpisodeImage(mediaPlayerSettings.episodeImage);
+        setEpisodeImageDimensions(mediaPlayerSettings.episodeImageDimensions);
+        setEpisodeTitle(mediaPlayerSettings.episodeTitle);
+        setFeedId(mediaPlayerSettings.feedId);
+        setFeedImage(mediaPlayerSettings.feedImage);
+        setFeedTitle(mediaPlayerSettings.feedTitle);
+        setIsMuted(mediaPlayerSettings.isMuted);
+        setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
+        setPlaybackRate(mediaPlayerSettings.playbackRate);
+        setSize(mediaPlayerSettings.size);
+        setSrc(mediaPlayerSettings.src);
+        setSrcType(mediaPlayerSettings.srcType);
+        setVolume(mediaPlayerSettings.volume);
+      });
     }
-
-    mediaPlayerSettingsRef.current = mediaPlayerSettings;
   }, [
+    idbHydrationPromise,
+    isDoneHydratingFromIdb,
     mediaPlayerSettings,
-    isDoneHydratingFromLocalStorage,
-    setMediaPlayerCurrentTime,
     setCurrentTime,
-    isFirstRenderAfterHydration,
+    setMediaPlayerCurrentTime,
   ]);
 
   /**
@@ -298,25 +299,22 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
    * but will never wait longer than 5 seconds to update the settings.
    */
   useEffect(() => {
-    if (episodeId && isDoneHydratingFromLocalStorage) {
-      setEpisodeSettings((prevEpisodeSettings) => ({
-        ...prevEpisodeSettings,
-        [episodeId]: {
-          currentTime: mediaPlayerCurrentTimeDebounced,
-          duration,
-        },
-      }));
+    if (episodeId && isDoneHydratingFromIdb) {
+      setEpisodeSettingsItem(`${episodeId}`, {
+        currentTime: mediaPlayerCurrentTimeDebounced,
+        duration,
+      });
     }
   }, [
     duration,
-    mediaPlayerCurrentTimeDebounced,
-    isDoneHydratingFromLocalStorage,
     episodeId,
-    setEpisodeSettings,
+    isDoneHydratingFromIdb,
+    mediaPlayerCurrentTimeDebounced,
+    setEpisodeSettingsItem,
   ]);
 
   useEffect(() => {
-    if (isDoneHydratingFromLocalStorage) {
+    if (isDoneHydratingFromIdb) {
       setMediaPlayerSettings({
         chaptersUrl,
         currentTime: mediaPlayerCurrentTimeDebounced,
@@ -346,7 +344,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     feedId,
     feedImage,
     feedTitle,
-    isDoneHydratingFromLocalStorage,
+    isDoneHydratingFromIdb,
     isFirstRenderAfterHydration,
     isMuted,
     mediaPlayerCurrentTimeDebounced,
@@ -417,7 +415,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         navigator.mediaSession.setActionHandler('nexttrack', null);
       }
     };
-  }, [playPause, seekBackward, seekForward]);
+  }, [pause, playPause, seekBackward, seekForward]);
 
   /**
    * Update `mediaPlayerCurrentTime` whenever `currentTime` changes (via calls

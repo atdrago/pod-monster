@@ -24,20 +24,20 @@ export const getStaticProps: GetStaticProps = () => {
 const SettingsPage: FunctionComponent = () => {
   const opmlFileUrl = useOpmlFileUrl();
   const [shouldMergeOpmlImport, setShouldMergeOpmlImport] = useState(true);
-  const { feedSettings, setFeedSettings } = useSettingsContext();
+  const { feedSettings, setAllFeedSettings } = useSettingsContext();
   const hasExistingSubscriptions = Object.keys(feedSettings).length > 0;
 
   const { data, error, isError, isLoading, isSuccess, mutate } = useMutation<
-    OpmlImportResponse | IApiErrorResponse,
+    OpmlImportResponse,
     IApiErrorResponse,
     { file: File }
   >(async ({ file }) => await fetchOpmlImport(file), {
     onSuccess: (successData) => {
-      if ('feedSettings' in successData && successData?.feedSettings) {
+      if (successData?.feedSettings) {
         if (!shouldMergeOpmlImport) {
-          setFeedSettings(successData.feedSettings);
+          setAllFeedSettings(successData.feedSettings);
         } else {
-          setFeedSettings({
+          setAllFeedSettings({
             ...feedSettings,
             ...successData.feedSettings,
           });

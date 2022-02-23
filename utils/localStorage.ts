@@ -30,39 +30,3 @@ export const tryLocalStorageGetItem: typeof window.localStorage.getItem = (
 
   return inMemoryLocalStorage[key] ?? null;
 };
-
-/**
- * Try to use `localStorage.setItem` if available, and fallback to using
- * in-memory storage if not.
- */
-export const tryLocalStorageSetItem: typeof window.localStorage.setItem = (
-  key,
-  value
-) => {
-  if (window.navigator.cookieEnabled) {
-    try {
-      window.localStorage.setItem(key, value);
-    } catch {
-      inMemoryLocalStorage[key] = value;
-    }
-  } else {
-    inMemoryLocalStorage[key] = value;
-  }
-};
-
-/**
- * Try to use `localStorage.removeItem` if available, and fallback to using
- * in-memory storage if not.
- */
-export const tryLocalStorageRemoveItem: typeof window.localStorage.removeItem =
-  (key) => {
-    if (window.navigator.cookieEnabled) {
-      try {
-        window.localStorage.removeItem(key);
-      } catch {
-        inMemoryLocalStorage[key] = null;
-      }
-    } else {
-      inMemoryLocalStorage[key] = null;
-    }
-  };
