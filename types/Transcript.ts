@@ -7,16 +7,12 @@ export interface ISrtTranscriptItem {
   text: string;
 }
 
-export interface ITextTranscriptDocument {
-  text: string;
-}
-
 export type TranscriptDocument =
   | {
       content: Array<ISrtTranscriptItem>;
       type: 'application/srt';
     }
   | {
-      content: ITextTranscriptDocument;
+      content: string;
       type: 'text/html';
     };

@@ -1,6 +1,10 @@
 import type { NextApiHandler } from 'next';
+import ReactDomServer from 'react-dom/server';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 import SrtParser from 'srt-parser-2';
 
+import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { supportedTranscriptTypes } from 'rest/fetchPodcastEpisodeTranscript';
 import type { ISrtTranscriptItem } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
@@ -70,7 +74,17 @@ const handler: NextApiHandler = async (req, res) => {
           'public, s-maxage=60, stale-while-revalidate=3600'
         )
         .status(200)
-        .json({ content: transcriptResponseText, type: 'text/html' });
+        .json({
+          content: ReactDomServer.renderToStaticMarkup(
+            <HtmlViewer
+              shouldUseCapsize={false}
+              rehypePlugins={[rehypeRaw, rehypeSanitize]}
+            >
+              {transcriptResponseText}
+            </HtmlViewer>
+          ),
+          type: 'text/html',
+        });
     }
 
     return res

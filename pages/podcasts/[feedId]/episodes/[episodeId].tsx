@@ -435,14 +435,22 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                   size="paragraph"
                   style={{
                     height: transcriptsError ? 'auto' : 48 * 5,
-                    overflow: 'auto',
+                    overflowY: 'auto',
                     padding: '4px 0',
                     whiteSpace: 'pre-wrap',
                   }}
                 >
-                  {transcriptsError
-                    ? transcriptsError.message
-                    : transcript?.content}
+                  {transcriptsError ? (
+                    transcriptsError.message
+                  ) : transcript?.type === 'text/html' ? (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: transcript?.content,
+                      }}
+                    ></span>
+                  ) : (
+                    'Transcript type not supported'
+                  )}
                 </Typography>
               </Details>
             )
