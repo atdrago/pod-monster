@@ -1,7 +1,7 @@
 import type { IPodcastIndexConfig } from '@atdrago/podcast-index';
 
 export const getPodcastIndexConfig = (
-  authTime: string,
+  authTime: number,
   authToken: string
 ): IPodcastIndexConfig => {
   return {

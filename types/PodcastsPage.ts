@@ -4,7 +4,7 @@ import { dehydrate } from 'react-query';
 export interface IPodcastsPageProps {
   dehydratedState: ReturnType<typeof dehydrate>;
   initialSearchTerm: string | null;
-  podcastIndexAuthTime: string;
+  podcastIndexAuthTime: number;
   podcastIndexAuthToken: string;
 }
 

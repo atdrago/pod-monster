@@ -46,7 +46,7 @@ const handler: NextApiHandler<OpmlImportResponse | IApiErrorResponse> = async (
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
   );
-  const config = getPodcastIndexConfig(`${authTime}`, authToken);
+  const config = getPodcastIndexConfig(authTime, authToken);
   const opmlRoot = await opmlToJSON(req.body);
 
   if (!opmlRoot.children) {

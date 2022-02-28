@@ -25,7 +25,7 @@ const handler: NextApiHandler = async (req, res) => {
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
   );
-  const config = getPodcastIndexConfig(`${authTime}`, authToken);
+  const config = getPodcastIndexConfig(authTime, authToken);
 
   try {
     const episodesResponse = await episodesByFeedId(feedId, { since }, config);
