@@ -40,19 +40,13 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
           getPodcastIndexConfig(authTime, authToken)
         )
     );
-
-    // If a search term is present, stay fresh for 60 seconds, stale for 1 hour
-    res.setHeader(
-      'Cache-Control',
-      'public, s-maxage=60, stale-while-revalidate=3600'
-    );
-  } else {
-    // If no search term, stay fresh for 24 hours, and stale for 30 days
-    res.setHeader(
-      'Cache-Control',
-      'public, s-maxage=86400, stale-while-revalidate=2592000'
-    );
   }
+
+  // Stay fresh for 24 hours, and stale for 30 days
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=86400, stale-while-revalidate=2592000'
+  );
 
   return {
     props: {
