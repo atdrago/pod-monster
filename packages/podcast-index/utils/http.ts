@@ -21,7 +21,7 @@ export async function http<TResponse>(
 
   if (!response.ok) {
     throw new NetworkError(
-      `Network response was not ok for "${url}"`,
+      `Unsuccessful response received from URL "${url}"`,
       response
     );
   }
