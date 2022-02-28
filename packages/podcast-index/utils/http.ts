@@ -26,7 +26,7 @@ export async function http<TResponse>(
     );
   }
 
-  const data = await response.json();
+  const data: TResponse = await response.json();
 
-  return data as TResponse;
+  return data;
 }
