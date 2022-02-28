@@ -1,13 +1,8 @@
 import { useRouter } from 'next/router';
-import {
-  ChangeEventHandler,
-  FunctionComponent,
-  useEffect,
-  useState,
-} from 'react';
+import { ChangeEventHandler, FunctionComponent, useState } from 'react';
 import { QueryClient, dehydrate, useQuery } from 'react-query';
 
-import { getAuthValues, searchByTerm, setConfig } from '@atdrago/podcast-index';
+import { getAuthValues, searchByTerm } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Checkbox } from 'components/atoms/Checkbox';
 import { Head } from 'components/atoms/Head';
@@ -84,19 +79,17 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
   const { data: searchResponse, isLoading } = useQuery(
     ['searchByTerm', searchTermDebounced],
-    async () => await searchByTerm(searchTermDebounced),
+    async () =>
+      await searchByTerm(
+        searchTermDebounced,
+        getPodcastIndexConfig(podcastIndexAuthTime, podcastIndexAuthToken)
+      ),
     {
       enabled: !!searchTermDebounced,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
     }
   );
-
-  useEffect(() => {
-    setConfig(
-      getPodcastIndexConfig(podcastIndexAuthTime, podcastIndexAuthToken)
-    );
-  }, [podcastIndexAuthTime, podcastIndexAuthToken]);
 
   const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setSearchTerm(event.currentTarget.value);

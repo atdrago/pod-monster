@@ -1,6 +1,5 @@
 import type { ApiResponse } from 'podcastdx-client/src/types';
 
-import { assertConfig, getConfig } from './config';
 import { BASE_API_URL, PATH_EPISODES_BY_FEED_ID } from './constants';
 import { getHeaders } from './getHeaders';
 import type { IPodcastIndexConfig } from './types';
@@ -15,10 +14,8 @@ export async function episodesByFeedId(
     max?: number;
     since?: number;
   } = {},
-  config: IPodcastIndexConfig | null = getConfig()
+  config: IPodcastIndexConfig
 ): Promise<ApiResponse.EpisodesByFeedId> {
-  assertConfig('episodesByFeedId', config);
-
   const url = new URL(PATH_EPISODES_BY_FEED_ID, BASE_API_URL);
   url.searchParams.set('id', id);
   url.searchParams.set('max', `${max}`);

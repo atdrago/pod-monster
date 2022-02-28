@@ -1,11 +1,8 @@
-import { assertConfig, getConfig } from './config';
 import type { IPodcastIndexConfig } from './types';
 
 export const getHeaders = (
-  config: IPodcastIndexConfig | null = getConfig()
+  config: IPodcastIndexConfig
 ): Record<string, string> => {
-  assertConfig('getHeaders', config);
-
   const { apiKey, authTime, authToken, userAgent } = config;
 
   return {
