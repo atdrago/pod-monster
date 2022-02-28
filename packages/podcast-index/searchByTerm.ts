@@ -3,7 +3,7 @@ import type { ApiResponse } from 'podcastdx-client/src/types';
 import { BASE_API_URL, PATH_SEARCH_BY_TERM } from './constants';
 import { getHeaders } from './getHeaders';
 import type { IPodcastIndexConfig } from './types';
-import { http } from './utils/http';
+import { request } from './utils/request';
 
 export async function searchByTerm(
   term: string,
@@ -17,5 +17,5 @@ export async function searchByTerm(
     method: 'get',
   };
 
-  return await http<ApiResponse.Search>(url.toString(), options);
+  return await request<ApiResponse.Search>(url.toString(), options);
 }

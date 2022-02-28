@@ -13,7 +13,7 @@ class NetworkError extends Error {
  * @param {[RequestInit]} config - request configuration
  * @link https://fetch.spec.whatwg.org/#fetch-method
  */
-export async function http<TResponse>(
+export async function request<TResponse>(
   url: string,
   config?: RequestInit
 ): Promise<TResponse> {

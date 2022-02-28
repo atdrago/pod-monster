@@ -3,7 +3,7 @@ import type { ApiResponse } from 'podcastdx-client/src/types';
 import { BASE_API_URL, PATH_EPISODES_BY_ID } from './constants';
 import { getHeaders } from './getHeaders';
 import type { IPodcastIndexConfig } from './types';
-import { http } from './utils/http';
+import { request } from './utils/request';
 
 export async function episodeById(
   id: string,
@@ -18,5 +18,5 @@ export async function episodeById(
     method: 'get',
   };
 
-  return await http<ApiResponse.EpisodeById>(url.toString(), httpOptions);
+  return await request<ApiResponse.EpisodeById>(url.toString(), httpOptions);
 }
