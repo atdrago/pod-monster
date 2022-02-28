@@ -1,6 +1,10 @@
 import type { GetStaticPaths, NextPage } from 'next';
 
-import { episodesByFeedId, podcastsByFeedId } from '@atdrago/podcast-index';
+import {
+  episodesByFeedId,
+  getAuthValues,
+  podcastsByFeedId,
+} from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
 import { Dot } from 'components/atoms/Dot';
@@ -17,7 +21,6 @@ import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
 import ExplicitIcon from 'icons/explicit.svg';
-import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import { headingLink, nonUnderlinedLink } from 'styles';
 import { episodeItemClassName } from 'styles/feed.css';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
@@ -33,7 +36,10 @@ export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
     return { notFound: true };
   }
 
-  const [authTime, authToken] = await fetchPodcastIndexAuth();
+  const [authTime, authToken] = getAuthValues(
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+  );
   const config = getPodcastIndexConfig(authTime, authToken);
 
   // -180 days (i.e., 6 months)

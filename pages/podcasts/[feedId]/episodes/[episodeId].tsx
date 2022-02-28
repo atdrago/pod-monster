@@ -9,7 +9,11 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeStripHtml from 'rehype-strip-html';
 import { unified } from 'unified';
 
-import { episodeById, podcastsByFeedId } from '@atdrago/podcast-index';
+import {
+  episodeById,
+  getAuthValues,
+  podcastsByFeedId,
+} from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
 import { Head } from 'components/atoms/Head';
@@ -28,7 +32,6 @@ import { useChapterIndex } from 'hooks/useChapterIndex';
 import TvIcon from 'icons/tv.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
-import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import type {
   EpisodePageEpisode,
   EpisodePageGetStaticProps,
@@ -53,7 +56,10 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
     return { notFound: true };
   }
 
-  const [authTime, authToken] = await fetchPodcastIndexAuth();
+  const [authTime, authToken] = getAuthValues(
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+  );
   const config = getPodcastIndexConfig(authTime, authToken);
 
   const { episode } = (await episodeById(episodeId, config)) as {

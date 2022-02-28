@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { QueryClient, dehydrate, useQuery } from 'react-query';
 
-import { searchByTerm, setConfig } from '@atdrago/podcast-index';
+import { getAuthValues, searchByTerm, setConfig } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Checkbox } from 'components/atoms/Checkbox';
 import { Head } from 'components/atoms/Head';
@@ -19,7 +19,6 @@ import { SearchField } from 'components/molecules/SearchField';
 import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
-import { fetchPodcastIndexAuth } from 'rest/fetchPodcastIndexAuth';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getProxyImageUrl } from 'utils/getProxyImageUrl';
@@ -30,7 +29,10 @@ export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
   res,
 }) => {
   const queryClient = new QueryClient();
-  const [authTime, authToken] = await fetchPodcastIndexAuth();
+  const [authTime, authToken] = getAuthValues(
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+  );
 
   const searchTerm = typeof query.term === 'string' ? query.term : null;
 
