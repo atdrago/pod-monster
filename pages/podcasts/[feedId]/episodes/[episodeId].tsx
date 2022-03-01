@@ -29,6 +29,7 @@ import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useChapterIndex } from 'hooks/useChapterIndex';
+import ExternalLinkIcon from 'icons/arrow-up-right2.svg';
 import TvIcon from 'icons/tv.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
@@ -391,7 +392,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                         shadow="medium"
                       />
                       <Stack
-                        space="small"
+                        space="xsmall"
                         style={{
                           flex: '0 1 auto',
                           overflow: 'hidden',
@@ -412,6 +413,9 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                           </Typography>
                         )}
                       </Stack>
+                      {person.href && (
+                        <Icon as={ExternalLinkIcon} size="small" />
+                      )}
                     </LinkStack>
                   );
                 })}
