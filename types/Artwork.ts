@@ -10,6 +10,7 @@ export type ArtworkComponent = PolymorphicComponent<
     label?: string;
     priority?: ImageProps['priority'];
     shadow?: keyof typeof shadowVariant;
+    subtitle?: React.ReactNode;
   },
   'img'
 >;

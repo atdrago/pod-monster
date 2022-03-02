@@ -33,6 +33,7 @@ export type MediaPlayerSettings = {
   feedImage: string | null;
   feedTitle: string | null;
   isMuted: boolean;
+  isTranscriptVisibleAsSubtitle: boolean;
   playbackRate: PlaybackRate;
   size: 1 | 2;
   src: string | null;

@@ -22,10 +22,7 @@ export interface IMediaContext {
   isLoadingAtCurrentTime: boolean;
   isMuted: boolean;
   isPaused: boolean;
-  /**
-   * @deprecated use size instead (true = 2, false = 1)
-   */
-  isPlayerOpen?: boolean;
+  isTranscriptVisibleAsSubtitle: boolean;
   mediaPlayerCurrentTime: number;
   mediaPlayerCurrentTimeDebounced: number;
   pause: () => void;
@@ -51,10 +48,7 @@ export interface IMediaContext {
   setFeedTitle: Dispatch<SetStateAction<string | null>>;
   setIsMuted: Dispatch<SetStateAction<boolean>>;
   setIsPaused: Dispatch<SetStateAction<boolean>>;
-  /**
-   * @deprecated use setSize instead (true = 2, false = 1)
-   */
-  setIsPlayerOpen?: Dispatch<SetStateAction<boolean>>;
+  setIsTranscriptVisibleAsSubtitle: Dispatch<SetStateAction<boolean>>;
   setMediaPlayerCurrentTime: Dispatch<SetStateAction<number>>;
   setPlaybackRate: Dispatch<SetStateAction<PlaybackRate>>;
   setProgressEventBufferedTuples: Dispatch<

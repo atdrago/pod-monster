@@ -27,6 +27,7 @@ export const shadowContainer = style({
   flex: '0 0 auto',
   lineHeight: 0,
   maxWidth: '100%',
+  position: 'relative',
 });
 
 export const shadowVariant = styleVariants({
@@ -60,4 +61,14 @@ export const squareInner = style({
   marginTop: '-100%',
   textAlign: 'center',
   width: '100%',
+});
+
+export const subtitleContainer = style({
+  background: vars.color.backgroundSubtitles,
+  bottom: 0,
+  left: 0,
+  margin: vars.spacing.s016,
+  padding: vars.spacing.s016,
+  position: 'absolute',
+  right: 0,
 });

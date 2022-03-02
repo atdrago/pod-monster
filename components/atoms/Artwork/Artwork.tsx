@@ -13,6 +13,7 @@ import {
   shadowVariant,
   square,
   squareInner,
+  subtitleContainer,
 } from './artwork.css';
 
 export const Artwork: ArtworkComponent = memo(
@@ -23,6 +24,7 @@ export const Artwork: ArtworkComponent = memo(
     label,
     shadow = 'none',
     src,
+    subtitle,
     width = 512,
     ...props
   }) {
@@ -70,6 +72,18 @@ export const Artwork: ArtworkComponent = memo(
         ) : (
           imageOrPlaceholder
         )}
+        {subtitle && (
+          <div
+            aria-label="Subtitles"
+            aria-live="polite"
+            className={subtitleContainer}
+            role="log"
+          >
+            <Typography as="span" size="paragraph">
+              {subtitle}
+            </Typography>
+          </div>
+        )}
       </div>
     );
   },
@@ -80,6 +94,7 @@ export const Artwork: ArtworkComponent = memo(
       prevProps.label === nextProps.label &&
       prevProps.shadow === nextProps.shadow &&
       prevProps.src === nextProps.src &&
+      prevProps.subtitle === nextProps.subtitle &&
       prevProps.width === nextProps.width
     );
   }

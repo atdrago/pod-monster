@@ -37,6 +37,7 @@ const mediaContextDefaults: IMediaContext = {
   isLoadingAtCurrentTime: false,
   isMuted: false,
   isPaused: true,
+  isTranscriptVisibleAsSubtitle: true,
   mediaPlayerCurrentTime: 0,
   mediaPlayerCurrentTimeDebounced: 0,
   pause: () => {},
@@ -60,6 +61,7 @@ const mediaContextDefaults: IMediaContext = {
   setFeedTitle: (_) => {},
   setIsMuted: (_) => {},
   setIsPaused: (_) => {},
+  setIsTranscriptVisibleAsSubtitle: (_) => {},
   setMediaPlayerCurrentTime: (_) => {},
   setPlaybackRate: (_) => {},
   setProgressEventBufferedTuples: (_) => {},
@@ -131,6 +133,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     mediaContextDefaults.isPaused
   );
   const [isLoadingAtCurrentTime, setIsLoadingAtCurrentTime] = useState(false);
+  const [isTranscriptVisibleAsSubtitle, setIsTranscriptVisibleAsSubtitle] =
+    useState(mediaContextDefaults.isTranscriptVisibleAsSubtitle);
   const [playbackRate, setPlaybackRate] = useState<PlaybackRate>(1);
   const [src, setSrc] = useState<string | null>(mediaContextDefaults.src);
   const [srcType, setSrcType] = useState<string | null>(
@@ -276,6 +280,9 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setFeedImage(mediaPlayerSettings.feedImage);
         setFeedTitle(mediaPlayerSettings.feedTitle);
         setIsMuted(mediaPlayerSettings.isMuted);
+        setIsTranscriptVisibleAsSubtitle(
+          mediaPlayerSettings.isTranscriptVisibleAsSubtitle
+        );
         setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
         setPlaybackRate(mediaPlayerSettings.playbackRate);
         setSize(mediaPlayerSettings.size);
@@ -327,6 +334,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedImage,
         feedTitle,
         isMuted,
+        isTranscriptVisibleAsSubtitle,
         playbackRate,
         size,
         src,
@@ -346,6 +354,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     feedTitle,
     isDoneHydratingFromIdb,
     isFirstRenderAfterHydration,
+    isTranscriptVisibleAsSubtitle,
     isMuted,
     mediaPlayerCurrentTimeDebounced,
     playbackRate,
@@ -486,6 +495,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         isLoadingAtCurrentTime,
         isMuted,
         isPaused,
+        isTranscriptVisibleAsSubtitle,
         mediaPlayerCurrentTime,
         mediaPlayerCurrentTimeDebounced,
         pause,
@@ -509,6 +519,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setFeedTitle,
         setIsMuted,
         setIsPaused,
+        setIsTranscriptVisibleAsSubtitle,
         setMediaPlayerCurrentTime,
         setPlaybackRate,
         setProgressEventBufferedTuples,

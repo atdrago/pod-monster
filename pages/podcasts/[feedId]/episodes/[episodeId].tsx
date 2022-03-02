@@ -172,9 +172,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   );
   const {
     episodeId,
+    isTranscriptVisibleAsSubtitle,
     mediaPlayerCurrentTime,
     mediaPlayerCurrentTimeDebounced,
     setCurrentTime,
+    setIsTranscriptVisibleAsSubtitle,
   } = useMediaContext();
 
   const isVideo = episode?.enclosureType.includes('video');
@@ -284,6 +286,14 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     }
   }, [mediaPlayerCurrentTimeDebounced, isThisEpisodeInThePlayer]);
 
+  const currentTranscriptItem = transcript?.content[currentTranscriptIndex];
+  const currentTranscriptItemText =
+    currentTranscriptItem && isTranscriptVisibleAsSubtitle
+      ? typeof currentTranscriptItem === 'string'
+        ? currentTranscriptItem
+        : currentTranscriptItem.text
+      : null;
+
   return (
     <>
       {episode && (
@@ -312,6 +322,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           shadow="medium"
           isSquare={episodeImageDimensions && !!hasChapters}
           src={getProxyImageUrl(episodeArtwork)}
+          subtitle={currentTranscriptItemText}
           width={episodeImageDimensions?.width}
         />
         <EpisodePlayButton
@@ -429,6 +440,8 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                 list={transcript.content ?? []}
                 title="Transcript"
                 onItemClick={handleTimedListItemClick}
+                isVisibleAsSubtitle={isTranscriptVisibleAsSubtitle}
+                onIsVisibleAsSubtitleChange={setIsTranscriptVisibleAsSubtitle}
               />
             ) : (
               <Details

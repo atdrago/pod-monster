@@ -8,6 +8,7 @@ import {
 import { Checkbox } from 'components/atoms/Checkbox';
 import { Details } from 'components/atoms/Details';
 import { Typography } from 'components/atoms/Typography';
+import { Stack } from 'components/layouts/Stack';
 import { useClassNames } from 'hooks/useClassNames';
 import type { ITimedListProps } from 'types';
 
@@ -49,8 +50,10 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
     error,
     index,
     isLoading,
+    isVisibleAsSubtitle,
     list,
     hasError,
+    onIsVisibleAsSubtitleChange,
     onItemClick = () => {
       // noop
     },
@@ -101,14 +104,26 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
         hasError={hasError}
         footer={
           list.length > 0 ? (
-            <Checkbox
-              checked={isScrollingLocked}
-              onChange={(event) => {
-                setIsScrollingLocked(event.currentTarget.checked);
-              }}
-            >
-              Lock scrolling
-            </Checkbox>
+            <Stack space="small">
+              <Checkbox
+                checked={isScrollingLocked}
+                onChange={(event) => {
+                  setIsScrollingLocked(event.currentTarget.checked);
+                }}
+              >
+                Lock scrolling
+              </Checkbox>
+              {onIsVisibleAsSubtitleChange ? (
+                <Checkbox
+                  checked={!!isVisibleAsSubtitle}
+                  onChange={(event) => {
+                    onIsVisibleAsSubtitleChange(event.currentTarget.checked);
+                  }}
+                >
+                  Show as subtitle
+                </Checkbox>
+              ) : null}
+            </Stack>
           ) : null
         }
         onToggle={() => {
