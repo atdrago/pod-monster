@@ -284,8 +284,10 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
           mediaPlayerSettings.isTranscriptVisibleAsSubtitle
         );
         setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
-        setPlaybackRate(mediaPlayerSettings.playbackRate);
-        setSize(mediaPlayerSettings.size);
+        setPlaybackRate(
+          mediaPlayerSettings.playbackRate ?? mediaContextDefaults.playbackRate
+        );
+        setSize(mediaPlayerSettings.size ?? mediaContextDefaults.size);
         setSrc(mediaPlayerSettings.src);
         setSrcType(mediaPlayerSettings.srcType);
         setVolume(mediaPlayerSettings.volume);
