@@ -1,6 +1,5 @@
 export interface ITimedListItem {
-  endTimeSeconds?: number;
-  startTimeSeconds?: number;
+  from: number;
   text: string;
 }
 

@@ -247,7 +247,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
 
   const chaptersAsTimedList = nonTocChapters?.map(
     ({ startTime: chapterStartTime, title }) => ({
-      startTimeSeconds: chapterStartTime ?? undefined,
+      from: chapterStartTime,
       text: title ?? 'No title',
     })
   );
@@ -259,23 +259,22 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     transcript &&
     Array.isArray(transcript.content) &&
     transcript.content.length > 0
-      ? transcript.content.findIndex(({ endTimeSeconds = 0 }) => {
+      ? transcript.content.findIndex(({ to = 0 }) => {
           // Restrictig this check also by startTimeSeconds in the future might
           // be good, but we need to handle moments where there is no speaking,
           // and currentTranscriptIndex is `-1`
-          const isCurrentTranscriptItem =
-            interprettedCurrentTime < endTimeSeconds;
+          const isCurrentTranscriptItem = interprettedCurrentTime < to;
 
           return isCurrentTranscriptItem;
         })
       : -1;
 
   const handleTimedListItemClick = (item: ITimedListItem) => {
-    if (item.startTimeSeconds) {
+    if (item.from) {
       if (isThisEpisodeInThePlayer) {
-        setCurrentTime(item.startTimeSeconds);
+        setCurrentTime(item.from);
       } else {
-        setEpisodeCurrentTime(item.startTimeSeconds);
+        setEpisodeCurrentTime(item.from);
       }
     }
   };
@@ -434,7 +433,8 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
             </Details>
           ) : null}
           {hasTranscripts ? (
-            transcript?.type === 'application/srt' ? (
+            transcript?.type === 'application/srt' ||
+            transcript?.type === 'text/vtt' ? (
               <TimedList
                 index={currentTranscriptIndex}
                 list={transcript.content ?? []}

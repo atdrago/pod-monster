@@ -1,7 +1,8 @@
 import type { NextApiHandler } from 'next';
 
-import type { IChapter } from 'types';
+import type { IChapter, IPodcastIndexChapterResponse } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
 const handler: NextApiHandler = async (req, res) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
@@ -19,12 +20,14 @@ const handler: NextApiHandler = async (req, res) => {
       throw new Error(`Failed to get chapters: ${chaptersResponse.statusText}`);
     }
 
-    const chaptersResponseJson = await chaptersResponse.json();
+    const { chapters }: IPodcastIndexChapterResponse =
+      await chaptersResponse.json();
 
-    const chaptersSorted = chaptersResponseJson.chapters.sort(
-      (chapterA: IChapter, chapterB: IChapter) =>
-        (chapterA?.startTime ?? 0) - (chapterB?.startTime ?? 0)
-    );
+    const chaptersSorted: Array<IChapter> = chapters
+      .filter((chapter): chapter is IChapter =>
+        notNullOrUndefined(chapter.startTime)
+      )
+      .sort((chapterA, chapterB) => chapterA.startTime - chapterB.startTime);
 
     return res
       .setHeader(

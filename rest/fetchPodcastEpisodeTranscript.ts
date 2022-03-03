@@ -1,14 +1,19 @@
 import type { PIApiEpisodeDetail } from 'podcastdx-client/src/types';
 
 import type { TranscriptDocument } from 'types';
+import { logger } from 'utils/logger';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 import { request } from 'utils/request';
 
 /**
  * Transcript types supported by the API. This list should be sorted from the
- * _most_ feature-rich transcript experience to the _least_.
+ * most feature-rich and most performant transcript experiences to the least.
  */
-export const supportedTranscriptTypes = ['application/srt', 'text/html'];
+export const supportedTranscriptTypes = [
+  'application/srt',
+  'text/vtt',
+  'text/html',
+];
 
 export const fetchPodcastEpisodeTranscript = async (
   transcripts: PIApiEpisodeDetail['transcripts']
@@ -30,9 +35,11 @@ export const fetchPodcastEpisodeTranscript = async (
       .map(({ type }) => `"${type}"`)
       .join(', ');
 
-    throw new Error(
-      `None of the requested transcript types are supported: ${requestedTranscriptTypes}`
-    );
+    const message = `None of the requested transcript types are supported: ${requestedTranscriptTypes}`;
+
+    logger.info(message);
+
+    throw new Error(message);
   }
 
   const transcriptProxyUrl = new URL(

@@ -1,14 +1,13 @@
+import { parse } from '@plussub/srt-vtt-parser';
 import type { NextApiHandler } from 'next';
 import ReactDomServer from 'react-dom/server';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
-import SrtParser from 'srt-parser-2';
 
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { supportedTranscriptTypes } from 'rest/fetchPodcastEpisodeTranscript';
-import type { ISrtTranscriptItem } from 'types';
+import type { ITranscriptItem } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
-import { formattedTimeToSeconds } from 'utils/date';
 
 const handler: NextApiHandler = async (req, res) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
@@ -39,61 +38,64 @@ const handler: NextApiHandler = async (req, res) => {
 
     if (!transcriptResponse.ok) {
       throw new Error(
-        `Failed to get transcript: ${transcriptResponse.statusText}`
+        `Failed to fetch transcript: ${transcriptResponse.statusText}`
       );
     }
 
     const transcriptResponseText = await transcriptResponse.text();
 
-    if (type === 'application/srt') {
-      const srtParser = new SrtParser();
+    switch (type) {
+      case 'application/srt':
+      case 'text/vtt': {
+        const entries: Array<ITranscriptItem> = parse(
+          transcriptResponseText
+        ).entries.map(({ from, to, ...entry }) => ({
+          ...entry,
+          // Convert from ms to seconds
+          from: from / 1000,
+          to: to / 1000,
+        }));
 
-      const transcriptSrtItems: Array<ISrtTranscriptItem> = srtParser
-        .fromSrt(transcriptResponseText)
-        .map((item) => {
-          const transcriptItem: ISrtTranscriptItem = {
-            ...item,
-            endTimeSeconds: formattedTimeToSeconds(item.endTime),
-            startTimeSeconds: formattedTimeToSeconds(item.startTime),
-          };
-
-          return transcriptItem;
-        });
-
-      return res
-        .setHeader(
-          'Cache-Control',
-          'public, s-maxage=60, stale-while-revalidate=3600'
-        )
-        .status(200)
-        .json({ content: transcriptSrtItems, type: 'application/srt' });
-    } else if (type === 'text/html') {
-      return res
-        .setHeader(
-          'Cache-Control',
-          'public, s-maxage=60, stale-while-revalidate=3600'
-        )
-        .status(200)
-        .json({
-          content: ReactDomServer.renderToStaticMarkup(
-            <HtmlViewer
-              shouldUseCapsize={false}
-              rehypePlugins={[rehypeRaw, rehypeSanitize]}
-            >
-              {transcriptResponseText}
-            </HtmlViewer>
-          ),
-          type: 'text/html',
-        });
+        return res
+          .setHeader(
+            'Cache-Control',
+            'public, s-maxage=60, stale-while-revalidate=3600'
+          )
+          .status(200)
+          .json({
+            content: entries,
+            type,
+          });
+      }
+      case 'text/html': {
+        return res
+          .setHeader(
+            'Cache-Control',
+            'public, s-maxage=60, stale-while-revalidate=3600'
+          )
+          .status(200)
+          .json({
+            content: ReactDomServer.renderToStaticMarkup(
+              <HtmlViewer
+                shouldUseCapsize={false}
+                rehypePlugins={[rehypeRaw, rehypeSanitize]}
+              >
+                {transcriptResponseText}
+              </HtmlViewer>
+            ),
+            type,
+          });
+      }
+      default: {
+        return res
+          .status(501)
+          .json(
+            createApiErrorResponse(
+              `The transcript type "${type}" is not supported.`
+            )
+          );
+      }
     }
-
-    return res
-      .status(501)
-      .json(
-        createApiErrorResponse(
-          `The transcript type "${type}" is not supported.`
-        )
-      );
   } catch (err) {
     return res.status(500).json(createApiErrorResponse(res));
   }
