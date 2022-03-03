@@ -145,6 +145,11 @@ module.exports = {
         next: 'continue',
         prev: '*',
       },
+      {
+        blankLine: 'never',
+        next: ['case', 'default'],
+        prev: 'case',
+      },
     ],
     'prefer-arrow-callback': [
       'warn',
