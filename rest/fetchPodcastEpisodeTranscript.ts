@@ -10,8 +10,8 @@ import { request } from 'utils/request';
  * most feature-rich and most performant transcript experiences to the least.
  */
 export const supportedTranscriptTypes = [
-  'application/srt',
   'text/vtt',
+  'application/srt',
   'text/html',
 ];
 
