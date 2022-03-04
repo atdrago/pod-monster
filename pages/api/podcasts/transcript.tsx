@@ -6,10 +6,17 @@ import rehypeSanitize from 'rehype-sanitize';
 
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { supportedTranscriptTypes } from 'rest/fetchPodcastEpisodeTranscript';
-import type { ITranscriptItem } from 'types';
+import type {
+  IApiErrorResponse,
+  ITranscriptItem,
+  TranscriptDocument,
+} from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
+  req,
+  res
+) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
   const type = typeof req.query.type === 'string' ? req.query.type : null;
 
@@ -47,14 +54,15 @@ const handler: NextApiHandler = async (req, res) => {
     switch (type) {
       case 'application/srt':
       case 'text/vtt': {
-        const entries: Array<ITranscriptItem> = parse(
-          transcriptResponseText
-        ).entries.map(({ from, to, ...entry }) => ({
-          ...entry,
-          // Convert from ms to seconds
-          from: from / 1000,
-          to: to / 1000,
-        }));
+        const entries = parse(transcriptResponseText).entries.map(
+          ({ from, id, text, to }): ITranscriptItem => ({
+            // Convert from ms to seconds
+            from: from / 1000,
+            id,
+            text,
+            to: to / 1000,
+          })
+        );
 
         return res
           .setHeader(
@@ -64,7 +72,6 @@ const handler: NextApiHandler = async (req, res) => {
           .status(200)
           .json({
             content: entries,
-            type,
           });
       }
       case 'text/html': {
@@ -83,7 +90,6 @@ const handler: NextApiHandler = async (req, res) => {
                 {transcriptResponseText}
               </HtmlViewer>
             ),
-            type,
           });
       }
       default: {

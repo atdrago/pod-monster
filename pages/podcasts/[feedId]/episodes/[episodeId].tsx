@@ -433,8 +433,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
             </Details>
           ) : null}
           {hasTranscripts ? (
-            transcript?.type === 'application/srt' ||
-            transcript?.type === 'text/vtt' ? (
+            transcript && Array.isArray(transcript?.content) ? (
               <TimedList
                 index={currentTranscriptIndex}
                 list={transcript.content ?? []}
@@ -465,7 +464,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                 >
                   {transcriptsError ? (
                     transcriptsError.message
-                  ) : transcript?.type === 'text/html' ? (
+                  ) : typeof transcript?.content === 'string' ? (
                     <span
                       dangerouslySetInnerHTML={{
                         __html: transcript?.content,
