@@ -1,10 +1,14 @@
 import type { NextApiHandler } from 'next';
+import { ApiResponse } from 'podcastdx-client/src/types';
 
 import { episodesByFeedId, getAuthValues } from '@atdrago/podcast-index';
+import { IApiErrorResponse } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler<
+  ApiResponse.Episodes | IApiErrorResponse
+> = async (req, res) => {
   const feedId = typeof req.query.feedId === 'string' ? req.query.feedId : null;
   const since =
     typeof req.query.since === 'string' ? parseInt(req.query.since) : null;

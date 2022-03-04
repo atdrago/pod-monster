@@ -1,10 +1,17 @@
 import type { NextApiHandler } from 'next';
 
-import type { IChapter, IPodcastIndexChapterResponse } from 'types';
+import type {
+  IApiErrorResponse,
+  IChapter,
+  IPodcastIndexChapterResponse,
+} from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler<Array<IChapter> | IApiErrorResponse> = async (
+  req,
+  res
+) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
 
   if (!url) {
