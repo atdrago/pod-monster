@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "analyze": "ANALYZE=true npm run build",
-    "dev": "rm -rf .next out && next dev",
     "build": "rm -rf .next out && next build",
+    "dev": "rm -rf .next out && next dev",
     "format": "npx prettier --write .",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint --fix .",
