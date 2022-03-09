@@ -6,11 +6,12 @@
     "analyze": "ANALYZE=true npm run build",
     "dev": "rm -rf .next out && next dev",
     "build": "rm -rf .next out && next build",
-    "start": "next start",
+    "format": "npx prettier --write .",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint --fix .",
-    "format": "npx prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "next start",
+    "test": "jest --watch"
   },
   "dependencies": {
     "@atdrago/pino-logflare": "^0.4.3",
@@ -42,12 +43,14 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.1.0",
+    "@types/jest": "^27.4.1",
     "@types/probe-image-size": "^7.0.1",
     "@types/react": "17.0.39",
     "@types/react-window": "^1.8.5",
     "@types/sharp": "^0.29.5",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
+    "babel-jest": "^27.5.1",
     "env-cmd": "^10.1.0",
     "eslint": "^8.10.0",
     "eslint-config-next": "12.1.0",
@@ -61,6 +64,7 @@
     "eslint-plugin-typescript-sort-keys": "^2.1.0",
     "husky": "^7.0.4",
     "import-sort-style-atdrago": "^0.1.7",
+    "jest": "^27.5.1",
     "lint-staged": "^12.3.4",
     "podcastdx-client": "^5.0.0",
     "prettier": "2.5.1",

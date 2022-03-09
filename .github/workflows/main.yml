@@ -29,3 +29,6 @@ jobs:
 
       - name: Run Prettier with `--check`
         run: npx prettier --check .
+
+      - name: Run Jest with `--ci`
+        run: npx jest --ci
