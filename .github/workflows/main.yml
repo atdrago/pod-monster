@@ -31,4 +31,4 @@ jobs:
         run: npx prettier --check .
 
       - name: Run Jest with `--ci`
-        run: npx jest --ci
+        run: NODE_OPTIONS=--experimental-vm-modules npx jest --ci
