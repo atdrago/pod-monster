@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint_and_prettier:
+  lint_prettier_and_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,3 +29,6 @@ jobs:
 
       - name: Run Prettier with `--check`
         run: npx prettier --check .
+
+      - name: Run Jest with `--ci`
+        run: npx jest --ci
