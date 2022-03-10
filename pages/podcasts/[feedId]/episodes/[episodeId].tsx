@@ -196,7 +196,10 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   } = useQuery<TranscriptDocument, Error>(
     ['transcript', episode?.transcripts?.length, episode?.dateCrawled],
     async () =>
-      await fetchPodcastEpisodeTranscript(episode?.transcripts ?? null),
+      await fetchPodcastEpisodeTranscript(
+        episode?.transcripts ?? null,
+        episode?.duration
+      ),
     {
       enabled: !!(hasTranscripts && typeof episode.dateCrawled === 'number'),
       refetchOnMount: false,
