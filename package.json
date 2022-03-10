@@ -11,7 +11,7 @@
     "lint:fix": "eslint --fix .",
     "prepare": "husky install",
     "start": "next start",
-    "test": "jest --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "dependencies": {
     "@atdrago/pino-logflare": "^0.4.3",
