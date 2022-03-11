@@ -54,7 +54,7 @@ export const fetchPodcastEpisodeTranscript = async (
 
   transcriptProxyUrl.searchParams.set('type', targetTranscript.type);
   transcriptProxyUrl.searchParams.set('url', targetTranscript.url);
-  transcriptProxyUrl.searchParams.set('duration', duration.toString());
+  transcriptProxyUrl.searchParams.set('duration', `${duration}`);
 
   return await request(transcriptProxyUrl.toString(), {
     method: 'GET',
