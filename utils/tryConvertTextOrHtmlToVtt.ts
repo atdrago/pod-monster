@@ -32,8 +32,7 @@ export async function tryConvertTextOrHtmlToVtt(
 
   for (let i = 0; i < timestampMatches.length; i++) {
     const timestampMatch = timestampMatches[i];
-    const nextTimestampMatch =
-      i + 1 < timestampMatches.length ? timestampMatches[i + 1] : undefined;
+    const nextTimestampMatch = timestampMatches[i + 1];
 
     const timestamp = rawText.substring(
       timestampMatch.start,
