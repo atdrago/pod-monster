@@ -16,10 +16,15 @@ export const supportedTranscriptTypes = [
 ];
 
 export const fetchPodcastEpisodeTranscript = async (
-  transcripts: PIApiEpisodeDetail['transcripts']
+  transcripts: PIApiEpisodeDetail['transcripts'],
+  duration?: number
 ): Promise<TranscriptDocument> => {
   if (!transcripts) {
     throw new Error('`transcripts` is required');
+  }
+
+  if (!duration) {
+    throw new Error('`duration` is required');
   }
 
   const sortedTranscripts = supportedTranscriptTypes
@@ -49,6 +54,7 @@ export const fetchPodcastEpisodeTranscript = async (
 
   transcriptProxyUrl.searchParams.set('type', targetTranscript.type);
   transcriptProxyUrl.searchParams.set('url', targetTranscript.url);
+  transcriptProxyUrl.searchParams.set('duration', `${duration}`);
 
   return await request(transcriptProxyUrl.toString(), {
     method: 'GET',

@@ -43,10 +43,10 @@ export const secondsToFormattedTime = (
       `${hours}`.padStart(2, '0'),
       `${minutes}`.padStart(2, '0'),
       `${second}`.padStart(2, '0'),
-      includeMilliseconds ? `${milliseconds}`.padStart(3, '0') : null,
     ]
       .filter(notNullOrUndefined)
-      .join(':')
+      .join(':') +
+    (includeMilliseconds ? '.' + `${milliseconds}`.padStart(3, '0') : '')
   );
 };
 

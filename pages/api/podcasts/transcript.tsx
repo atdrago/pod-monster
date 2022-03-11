@@ -12,13 +12,18 @@ import type {
   TranscriptDocument,
 } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+import { tryConvertTextOrHtmlToVtt } from 'utils/tryConvertTextOrHtmlToVtt';
 
 const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
   req,
   res
 ) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
-  const type = typeof req.query.type === 'string' ? req.query.type : null;
+  let type = typeof req.query.type === 'string' ? req.query.type : null;
+  const duration =
+    typeof req.query.duration === 'string'
+      ? parseInt(req.query.duration)
+      : null;
 
   if (!url) {
     return res.status(400).json(createApiErrorResponse('`url` is required'));
@@ -26,6 +31,12 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
 
   if (!type) {
     return res.status(400).json(createApiErrorResponse('`type` is required'));
+  }
+
+  if (!duration) {
+    return res
+      .status(400)
+      .json(createApiErrorResponse('`duration` is required'));
   }
 
   if (!supportedTranscriptTypes.includes(type)) {
@@ -49,7 +60,19 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
       );
     }
 
-    const transcriptResponseText = await transcriptResponse.text();
+    let transcriptResponseText = await transcriptResponse.text();
+
+    if (type === 'text/html') {
+      const vtt = await tryConvertTextOrHtmlToVtt(
+        transcriptResponseText,
+        duration
+      );
+
+      if (vtt) {
+        type = 'text/vtt';
+        transcriptResponseText = vtt;
+      }
+    }
 
     switch (type) {
       case 'application/srt':
