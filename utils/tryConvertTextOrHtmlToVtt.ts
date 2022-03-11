@@ -2,6 +2,8 @@ import rehypeParse from 'rehype-parse';
 import rehypeStripHtml from 'rehype-strip-html';
 import { unified } from 'unified';
 
+import { secondsToFormattedTime } from './date';
+
 export async function tryConvertTextOrHtmlToVtt(
   textOrHtml: string,
   podcastDurationSeconds: number
@@ -53,9 +55,11 @@ export async function tryConvertTextOrHtmlToVtt(
 
     cues.push({
       end: nextTimestamp
-        ? timestampToCueTiming(nextTimestamp)
-        : secondsToCueTiming(podcastDurationSeconds),
-      start: timestampToCueTiming(timestamp),
+        ? timestampToFormattedTime(nextTimestamp)
+        : secondsToFormattedTime(podcastDurationSeconds, {
+            includeMilliseconds: true,
+          }),
+      start: timestampToFormattedTime(timestamp),
       text,
     });
   }
@@ -70,7 +74,7 @@ export async function tryConvertTextOrHtmlToVtt(
   return vtt;
 }
 
-function timestampToCueTiming(timestamp: string): string {
+function timestampToFormattedTime(timestamp: string): string {
   // Remove brackets
   let cueTiming = timestamp.substring(1, timestamp.length - 1);
 
@@ -80,15 +84,4 @@ function timestampToCueTiming(timestamp: string): string {
   }
 
   return cueTiming;
-}
-
-function secondsToCueTiming(seconds: number): string {
-  // 00:00:00.000
-  const hr = Math.floor(seconds / 3600);
-  const min = Math.floor((seconds - hr * 3600) / 60);
-  const sec = seconds - hr * 3600 - min * 60;
-
-  return `${hr.toString().padStart(2, '0')}:${min
-    .toString()
-    .padStart(2, '0')}:${sec.toString().padStart(2, '0')}.000`;
 }
