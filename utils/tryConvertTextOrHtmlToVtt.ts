@@ -12,12 +12,15 @@ export async function tryConvertTextOrHtmlToVtt(
   );
 
   // Get start/end indexes of bracket-style timestamps (ex. [00:00:00] or [00:00:00.000])
-  const regExp = /\[\d{2}:\d{2}:\d{2}(.\d{3})?\]/gm;
+  const timestampRegExp = /\[\d{2}:\d{2}:\d{2}(.\d{3})?\]/gm;
   let match;
   const timestampMatches = [];
 
-  while ((match = regExp.exec(rawText)) !== null) {
-    timestampMatches.push({ end: regExp.lastIndex, start: match.index });
+  while ((match = timestampRegExp.exec(rawText)) !== null) {
+    timestampMatches.push({
+      end: timestampRegExp.lastIndex,
+      start: match.index,
+    });
   }
 
   if (timestampMatches.length === 0) {
