@@ -21,7 +21,9 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
   const url = typeof req.query.url === 'string' ? req.query.url : null;
   let type = typeof req.query.type === 'string' ? req.query.type : null;
   const duration =
-    typeof req.query.duration === 'string' ? Number(req.query.duration) : null;
+    typeof req.query.duration === 'string'
+      ? parseInt(req.query.duration)
+      : null;
 
   if (!url) {
     return res.status(400).json(createApiErrorResponse('`url` is required'));
