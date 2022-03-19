@@ -170,6 +170,10 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
     episode ? episodeSettings[episode.id]?.currentTime ?? 0 : 0
   );
+  const episodeDuration =
+    episode?.duration ||
+    (episode && episodeSettings[episode.id]?.duration) ||
+    0;
   const {
     episodeId,
     isTranscriptVisibleAsSubtitle,
@@ -194,11 +198,16 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     error: transcriptsError,
     isLoading: isTranscriptLoading,
   } = useQuery<TranscriptDocument, Error>(
-    ['transcript', episode?.transcripts?.length, episode?.dateCrawled],
+    [
+      'transcript',
+      episode?.transcripts?.length,
+      episode?.dateCrawled,
+      episodeDuration,
+    ],
     async () =>
       await fetchPodcastEpisodeTranscript(
         episode?.transcripts ?? null,
-        episode?.duration
+        episodeDuration
       ),
     {
       enabled: !!(hasTranscripts && typeof episode.dateCrawled === 'number'),

@@ -4,9 +4,21 @@ import { unified } from 'unified';
 
 import { secondsToFormattedTime } from './date';
 
+function timestampToFormattedTime(timestamp: string): string {
+  // Remove brackets
+  let cueTiming = timestamp.substring(1, timestamp.length - 1);
+
+  // Add milliseconds if necessary
+  if (!/\d{2}:\d{2}:\d{2}.\d{3}/.test(cueTiming)) {
+    cueTiming = `${cueTiming}.000`;
+  }
+
+  return cueTiming;
+}
+
 export async function tryConvertTextOrHtmlToVtt(
   textOrHtml: string,
-  podcastDurationSeconds: number
+  podcastDurationSeconds?: number | null
 ): Promise<string | undefined> {
   // Strip HTML
   const rawText = String(
@@ -44,24 +56,28 @@ export async function tryConvertTextOrHtmlToVtt(
       .substring(timestampMatch.end, nextTimestampMatch?.start)
       .trim();
 
-    // Don't add cue if no text
-    if (text === '') {
-      continue;
-    }
-
     const nextTimestamp = nextTimestampMatch
       ? rawText.substring(nextTimestampMatch.start, nextTimestampMatch.end)
       : undefined;
 
-    cues.push({
-      end: nextTimestamp
-        ? timestampToFormattedTime(nextTimestamp)
-        : secondsToFormattedTime(podcastDurationSeconds, {
-            includeMilliseconds: true,
-          }),
-      start: timestampToFormattedTime(timestamp),
-      text,
-    });
+    let end = null;
+
+    if (nextTimestamp) {
+      end = timestampToFormattedTime(nextTimestamp);
+    } else if (podcastDurationSeconds) {
+      end = secondsToFormattedTime(podcastDurationSeconds, {
+        includeMilliseconds: true,
+      });
+    }
+
+    // Exclude the cue if `text` is empty, or if `end` could not be calculated
+    if (text && end) {
+      cues.push({
+        end,
+        start: timestampToFormattedTime(timestamp),
+        text,
+      });
+    }
   }
 
   // Make VTT file
@@ -72,16 +88,4 @@ export async function tryConvertTextOrHtmlToVtt(
   ].join('\n\n');
 
   return vtt;
-}
-
-function timestampToFormattedTime(timestamp: string): string {
-  // Remove brackets
-  let cueTiming = timestamp.substring(1, timestamp.length - 1);
-
-  // Add milliseconds if necessary
-  if (!/\d{2}:\d{2}:\d{2}.\d{3}/.test(cueTiming)) {
-    cueTiming = `${cueTiming}.000`;
-  }
-
-  return cueTiming;
 }

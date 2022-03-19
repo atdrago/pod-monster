@@ -17,14 +17,10 @@ export const supportedTranscriptTypes = [
 
 export const fetchPodcastEpisodeTranscript = async (
   transcripts: PIApiEpisodeDetail['transcripts'],
-  duration?: number
+  duration: number
 ): Promise<TranscriptDocument> => {
   if (!transcripts) {
     throw new Error('`transcripts` is required');
-  }
-
-  if (!duration) {
-    throw new Error('`duration` is required');
   }
 
   const sortedTranscripts = supportedTranscriptTypes

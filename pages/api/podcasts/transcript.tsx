@@ -22,7 +22,7 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
   let type = typeof req.query.type === 'string' ? req.query.type : null;
   const duration =
     typeof req.query.duration === 'string'
-      ? parseInt(req.query.duration)
+      ? parseFloat(req.query.duration)
       : null;
 
   if (!url) {
@@ -31,12 +31,6 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
 
   if (!type) {
     return res.status(400).json(createApiErrorResponse('`type` is required'));
-  }
-
-  if (!duration) {
-    return res
-      .status(400)
-      .json(createApiErrorResponse('`duration` is required'));
   }
 
   if (!supportedTranscriptTypes.includes(type)) {

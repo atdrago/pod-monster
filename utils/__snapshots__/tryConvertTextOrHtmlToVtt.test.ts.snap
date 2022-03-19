@@ -59,3 +59,12 @@ are pretty straightforward, but in case people don't know what radical candor is
 
 "
 `;
+
+exports[`should exclude last transcript cue if duration is not specified 1`] = `
+"WEBVTT
+
+00:00:00.000 --> 00:00:08.000
+Welcome to Podland the last word in podcasting use. It's the 24th of February, 2022. I'm James. Cridlin the editor of pod news.net.
+
+"
+`;
