@@ -65,7 +65,7 @@
     "husky": "^7.0.4",
     "import-sort-style-atdrago": "^0.1.7",
     "jest": "^27.5.1",
-    "lint-staged": "^12.3.4",
+    "lint-staged": "^12.3.8",
     "podcastdx-client": "^5.0.0",
     "prettier": "2.5.1",
     "prettier-plugin-import-sort": "^0.0.7",
