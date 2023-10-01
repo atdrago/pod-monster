@@ -163,9 +163,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                       kind="flexRow"
                       space="small"
                       align="center"
-                      anchorProps={{
-                        style: { flex: '0 1 auto', minWidth: '0' },
-                      }}
+                      style={{ flex: '0 1 auto', minWidth: '0' }}
                     >
                       <Artwork
                         alt=""

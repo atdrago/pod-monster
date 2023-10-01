@@ -18,6 +18,7 @@ import {
 
 export const Artwork: ArtworkComponent = memo(
   function ArtworkComponentMemo({
+    alt,
     className,
     height = 512,
     isSquare = true,
@@ -26,7 +27,6 @@ export const Artwork: ArtworkComponent = memo(
     src,
     subtitle,
     width = 512,
-    ...props
   }) {
     const [failedToLoad, setFailedToLoad] = useState(false);
     const squareClassName = useClassNames(square, className);
@@ -46,12 +46,12 @@ export const Artwork: ArtworkComponent = memo(
     const imageOrPlaceholder = shouldShowImage ? (
       <Box
         as={Image}
+        alt={alt}
         className={artworkClassName}
         height={height}
         onError={handleError}
         src={src}
         width={width}
-        {...props}
       />
     ) : (
       <Typography

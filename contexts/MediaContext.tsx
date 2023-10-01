@@ -205,8 +205,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   }, []);
 
   const seekBackward = useCallback(
-    ({ seekOffset }) => {
-      const resultTime = mediaPlayerCurrentTime - seekOffset;
+    ({ seekOffset }: Partial<MediaSessionActionDetails>) => {
+      const resultTime = mediaPlayerCurrentTime - (seekOffset ?? 0);
 
       setCurrentTime(resultTime);
     },
@@ -214,8 +214,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   );
 
   const seekForward = useCallback(
-    ({ seekOffset }) => {
-      const resultTime = mediaPlayerCurrentTime + seekOffset;
+    ({ seekOffset }: Partial<MediaSessionActionDetails>) => {
+      const resultTime = mediaPlayerCurrentTime + (seekOffset ?? 0);
 
       setCurrentTime(resultTime);
     },

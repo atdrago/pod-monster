@@ -19,9 +19,6 @@ const nextConfig = {
   },
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
-  svgrOptions: {
-    icon: true,
-  },
 };
 
 module.exports = withSentryConfig(

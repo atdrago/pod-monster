@@ -1,13 +1,13 @@
+import Link, { LinkProps } from 'next/link';
 import type { FunctionComponent } from 'react';
 
-import { Link } from 'components/atoms/Link';
 import { Stack } from 'components/layouts/Stack';
 import { useClassNames } from 'hooks/useClassNames';
-import type { ILinkProps, StackProps } from 'types';
+import type { StackProps } from 'types';
 
 import { linkStackClassName } from './linkStack.css';
 
-type LinkStackProps = (StackProps & ILinkProps) | StackProps;
+type LinkStackProps = (StackProps & LinkProps) | StackProps;
 
 /**
  * Allows all properties of both `Link` and `Stack`. Helpful when showing

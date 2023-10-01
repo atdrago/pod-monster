@@ -1,8 +1,8 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { FunctionComponent } from 'react';
 
 import { Icon } from 'components/atoms/Icon';
-import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import LogoIcon from 'icons/logo.svg';
@@ -70,11 +70,12 @@ export const Header: FunctionComponent<IHeaderProps> = ({
         shouldUseCapsize={false}
       >
         <Link
-          anchorProps={{ 'aria-label': 'Pod Monster' }}
+          passHref={true}
+          aria-label="Pod Monster"
           href="/"
           className={homeLinkClassName}
         >
-          <Icon size="large">
+          <Icon size="large" aria-hidden="true">
             <LogoIcon className={homeIconClassName} />
           </Icon>
           {isAppNameHidden ? null : 'Pod Monster'}

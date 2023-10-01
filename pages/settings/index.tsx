@@ -1,10 +1,10 @@
 import type { GetStaticProps } from 'next';
+import Link from 'next/link';
 import { FunctionComponent, ReactEventHandler, useState } from 'react';
 import { useMutation } from 'react-query';
 
 import { Checkbox } from 'components/atoms/Checkbox';
 import { Head } from 'components/atoms/Head';
-import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { FileField } from 'components/molecules/FileField';

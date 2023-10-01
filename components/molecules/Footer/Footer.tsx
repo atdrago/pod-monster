@@ -1,5 +1,6 @@
+import Link from 'next/link';
+
 import { ExternalLink } from 'components/atoms/ExternalLink';
-import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 
