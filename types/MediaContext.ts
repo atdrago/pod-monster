@@ -30,8 +30,8 @@ export interface IMediaContext {
   playbackRate: PlaybackRate;
   progressEventBufferedTuples: Array<[number, number]>;
   resetMediaContext: () => void;
-  seekBackward: (details?: Partial<MediaSessionActionDetails>) => void;
-  seekForward: (details?: Partial<MediaSessionActionDetails>) => void;
+  seekBackward: (details: Partial<MediaSessionActionDetails>) => void;
+  seekForward: (details: Partial<MediaSessionActionDetails>) => void;
   setChaptersUrl: Dispatch<SetStateAction<string | null>>;
   setCurrentTime: Dispatch<SetStateAction<number>>;
   setDateCrawled: Dispatch<SetStateAction<number | null>>;
