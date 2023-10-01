@@ -11,10 +11,7 @@ module.exports = {
   // override them, we need to use overrides as well
   overrides: [
     {
-      extends: [
-        'plugin:@typescript-eslint/recommended',
-        'plugin:typescript-sort-keys/recommended',
-      ],
+      extends: ['plugin:typescript-sort-keys/recommended'],
       files: ['**/*.ts', '**/*.tsx'],
       parserOptions: {
         project: [
@@ -62,6 +59,11 @@ module.exports = {
             leadingUnderscore: 'allowSingleOrDouble',
             selector: 'property',
             trailingUnderscore: 'allow',
+          },
+          {
+            format: null,
+            modifiers: ['requiresQuotes'],
+            selector: 'objectLiteralProperty',
           },
           {
             format: ['StrictPascalCase'],
