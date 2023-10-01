@@ -39,7 +39,7 @@
     "rehype-sanitize": "^5.0.1",
     "rehype-strip-html": "^0.1.1",
     "sharp": "^0.30.2",
-    "unified": "^10.1.1",
+    "unified": "^10.1.2",
     "use-debounce": "^7.0.1"
   },
   "devDependencies": {
