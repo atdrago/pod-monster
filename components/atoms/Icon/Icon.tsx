@@ -2,17 +2,17 @@ import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
 import { vars } from 'styles';
-import type { IconComponent } from 'types';
+import type { IconComponentProps } from 'types';
 
 import { icon, iconOrientationVariant, iconSizeVariant } from './icon.css';
 
-export const Icon: IconComponent = ({
+export const Icon = ({
   className,
   color = 'foreground',
   orientation = 'default',
   size,
   ...spanProps
-}) => {
+}: IconComponentProps) => {
   const rootClassName = useClassNames(
     icon,
     iconSizeVariant[size],

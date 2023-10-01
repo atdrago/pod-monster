@@ -1,4 +1,4 @@
-import { PolymorphicComponent } from 'react-polymorphic-box';
+import { PolymorphicComponentProps } from 'react-polymorphic-box';
 
 import {
   sizeVariant,
@@ -6,7 +6,6 @@ import {
 } from 'components/atoms/Typography/typography.css';
 
 export interface ITypographyProps {
-  as?: React.ElementType;
   className?: string;
   shouldUseCapsize?: boolean;
   size: keyof typeof sizeVariant;
@@ -14,7 +13,7 @@ export interface ITypographyProps {
   whitespace?: 'ellipsis' | 'normal' | number;
 }
 
-export type TypographyComponent = PolymorphicComponent<
-  ITypographyProps,
-  'span'
+export type TypographyComponentProps = PolymorphicComponentProps<
+  React.ElementType<any>,
+  ITypographyProps
 >;

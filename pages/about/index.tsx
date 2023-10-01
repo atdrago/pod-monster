@@ -14,16 +14,15 @@ export const getStaticProps: GetStaticProps = () => {
   };
 };
 
-enum Heading {
-  'Mission',
-  'How it works',
-  'Releases',
-  'Principles',
-  'Known Issues',
-  'Technologies',
-}
+type Heading =
+  | 'Mission'
+  | 'How it works'
+  | 'Releases'
+  | 'Principles'
+  | 'Known Issues'
+  | 'Technologies';
 
-const HeadingAnchor = ({ label }: { label?: keyof typeof Heading }) => {
+const HeadingAnchor = ({ label }: { label?: Heading }) => {
   const slug = label?.replace(/\W+/g, '-').toLowerCase();
 
   // If the slug is empty or undefined, don't render an anchor. Instead, return
@@ -44,7 +43,7 @@ const HeadingAnchorLink = ({
   to,
 }: {
   children?: ReactNode;
-  to: keyof typeof Heading;
+  to: Heading;
 }) => {
   const slug = to?.replace(/\W+/g, '-').toLowerCase();
 

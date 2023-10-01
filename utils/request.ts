@@ -14,7 +14,8 @@ export async function request<TResponse = unknown>(
 
   const responseJson: IApiErrorResponse | TResponse = await response.json();
 
-  const isErrorResponse = 'error' in responseJson;
+  const isErrorResponse =
+    responseJson && typeof responseJson === 'object' && 'error' in responseJson;
 
   if (!response.ok || isErrorResponse) {
     if (isErrorResponse) {

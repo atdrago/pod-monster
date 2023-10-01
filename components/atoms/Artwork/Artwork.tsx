@@ -4,7 +4,7 @@ import { Box } from 'react-polymorphic-box';
 
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
-import type { ArtworkComponent } from 'types';
+import type { ArtworkComponentProps } from 'types';
 
 import {
   artwork,
@@ -16,7 +16,7 @@ import {
   subtitleContainer,
 } from './artwork.css';
 
-export const Artwork: ArtworkComponent = memo(
+export const Artwork = memo<ArtworkComponentProps>(
   function ArtworkComponentMemo({
     alt,
     className,
@@ -64,7 +64,7 @@ export const Artwork: ArtworkComponent = memo(
     );
 
     return (
-      <div className={shadowClassName} style={{ width: `${width}px` }}>
+      <Box className={shadowClassName} style={{ width: `${width}px` }}>
         {isSquare ? (
           <div className={squareClassName}>
             <div className={squareInner}>{imageOrPlaceholder}</div>
@@ -84,7 +84,7 @@ export const Artwork: ArtworkComponent = memo(
             </Typography>
           </div>
         )}
-      </div>
+      </Box>
     );
   },
   (prevProps, nextProps) => {
