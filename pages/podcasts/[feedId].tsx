@@ -1,4 +1,5 @@
 import type { GetStaticPaths, NextPage } from 'next';
+import Link from 'next/link';
 
 import {
   episodesByFeedId,
@@ -11,7 +12,6 @@ import { Dot } from 'components/atoms/Dot';
 import { Head } from 'components/atoms/Head';
 import { Icon } from 'components/atoms/Icon';
 import { Label } from 'components/atoms/Label';
-import { Link } from 'components/atoms/Link';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
@@ -102,10 +102,8 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
               {feed.link && (
                 <Typography as="p" size="paragraph">
                   <Link
-                    anchorProps={{
-                      rel: 'noreferrer noopener',
-                      target: '_blank',
-                    }}
+                    rel="noreferrer noopener"
+                    target="_blank"
                     className={headingLink}
                     href={feed.link}
                   >

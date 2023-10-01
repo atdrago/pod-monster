@@ -1,9 +1,9 @@
+import Link from 'next/link';
 import type { ApiResponse } from 'podcastdx-client/src/types';
 import { useQuery } from 'react-query';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Dot } from 'components/atoms/Dot';
-import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useSettingsContext } from 'contexts/SettingsContext';

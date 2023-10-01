@@ -1,9 +1,9 @@
 import type { GetStaticProps } from 'next';
+import Link from 'next/link';
 import type { FunctionComponent, ReactNode } from 'react';
 
 import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Head } from 'components/atoms/Head';
-import { Link } from 'components/atoms/Link';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { headingLink, listItem, listLayout, underlinedLink } from 'styles';

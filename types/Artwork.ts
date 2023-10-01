@@ -1,4 +1,4 @@
-import { ImageProps } from 'next/image';
+import Image, { ImageProps } from 'next/image';
 import type { PolymorphicComponent } from 'react-polymorphic-box';
 
 import { shadowVariant } from 'components/atoms/Artwork/artwork.css';
@@ -10,6 +10,7 @@ export type ArtworkComponent = PolymorphicComponent<
     label?: string;
     priority?: ImageProps['priority'];
     shadow?: keyof typeof shadowVariant;
+    src?: string;
     subtitle?: React.ReactNode;
   },
   'img'

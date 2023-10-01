@@ -1,4 +1,5 @@
 import { AnimatePresence, m } from 'framer-motion';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {
   FunctionComponent,
@@ -11,7 +12,6 @@ import {
 import { Artwork } from 'components/atoms/Artwork';
 import { Icon } from 'components/atoms/Icon';
 import { IconButton } from 'components/atoms/IconButton';
-import { Link } from 'components/atoms/Link';
 import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
@@ -292,10 +292,8 @@ export const MediaPlayer: FunctionComponent = () => {
                         <Link
                           className={underlinedLink}
                           href={getEpisodePath({ episodeId, feedId })}
-                          anchorProps={{
-                            onClick: () => {
-                              setSize(1);
-                            },
+                          onClick={() => {
+                            setSize(1);
                           }}
                         >
                           {episodeTitle}
@@ -314,10 +312,8 @@ export const MediaPlayer: FunctionComponent = () => {
                     >
                       {currentChapter?.url ? (
                         <Link
-                          anchorProps={{
-                            rel: 'noreferrer noopener',
-                            target: '_blank',
-                          }}
+                          rel="noreferrer noopener"
+                          target="_blank"
                           className={underlinedLink}
                           href={currentChapter?.url}
                         >

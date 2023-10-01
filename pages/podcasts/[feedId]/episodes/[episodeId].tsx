@@ -397,11 +397,9 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
                       key={index}
                       {...(person.href
                         ? {
-                            anchorProps: {
-                              rel: 'noreferrer noopener',
-                              target: '_blank',
-                            },
                             href: person.href,
+                            rel: 'noreferrer noopener',
+                            target: '_blank',
                           }
                         : undefined)}
                     >
