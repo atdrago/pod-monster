@@ -4,7 +4,7 @@
   "description": "TypeScript utility to interact with the Podcast Index",
   "main": "index.js",
   "devDependencies": {
-    "podcastdx-client": "^5.0.0"
+    "podcastdx-client": "^5.1.0"
   },
   "type": "module",
   "sideEffects": false,
