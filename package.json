@@ -71,7 +71,7 @@
     "prettier": "2.5.1",
     "prettier-plugin-import-sort": "^0.0.7",
     "typescript": "^5.2.2",
-    "webpack": "^5.70.0"
+    "webpack": "^5.89.0"
   },
   "importSort": {
     ".js, .jsx, .ts, .tsx": {
