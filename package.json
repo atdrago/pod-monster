@@ -68,7 +68,7 @@
     "jest": "^27.5.1",
     "lint-staged": "^14.0.1",
     "podcastdx-client": "^5.0.0",
-    "prettier": "2.5.1",
+    "prettier": "3.1.0",
     "prettier-plugin-import-sort": "^0.0.7",
     "typescript": "^5.2.2",
     "webpack": "^5.70.0"
