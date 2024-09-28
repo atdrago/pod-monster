@@ -21,7 +21,9 @@ export async function request<TResponse>(
 
   if (!response.ok) {
     throw new NetworkError(
-      `Unsuccessful response received from URL "${url}"`,
+      `(${response.status}) ${
+        response.statusText
+      }: Unsuccessful response received from URL "${url}". Error text: "${await response.text()}"`,
       response
     );
   }
