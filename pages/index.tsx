@@ -16,7 +16,6 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { getPodcastPath } from 'utils/paths';
 
 export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
@@ -169,7 +168,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
                         alt=""
                         width={80}
                         height={80}
-                        src={getProxyImageUrl(feed.image)}
+                        src={feed.image}
                         shadow="medium"
                         label={`${index + 1}.`}
                       />

@@ -26,7 +26,6 @@ import { episodeItemClassName } from 'styles/feed.css';
 import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
 import { longDateTimeFormat, secondsToFormattedTime } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 
 export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
@@ -92,7 +91,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
               alt={`Podcast artwork for "${feed.title}"`}
               height={128}
               shadow="medium"
-              src={getProxyImageUrl(feed.image)}
+              src={feed.image}
               width={128}
             />
             <Stack space="small">
@@ -196,7 +195,7 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                       alt=""
                       height={80}
                       shadow="medium"
-                      src={getProxyImageUrl(image || feedImage)}
+                      src={image || feedImage}
                       width={80}
                     />
                     <Stack

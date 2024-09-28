@@ -10,7 +10,6 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { fetchPodcastEpisodes } from 'rest/fetchPodcastEpisodes';
 import { nonUnderlinedLink } from 'styles';
-import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { getPodcastPath } from 'utils/paths';
 
 import { subscriptionItemClassName } from './subscriptionItem.css';
@@ -72,13 +71,7 @@ export const SubscriptionItem = ({
         label="New episodes."
       />
       <Stack align="center" space="small" kind="flexRow">
-        <Artwork
-          alt=""
-          width={80}
-          height={80}
-          src={getProxyImageUrl(image)}
-          shadow="medium"
-        />
+        <Artwork alt="" width={80} height={80} src={image} shadow="medium" />
         <Typography as="h2" size="headingSmaller" whitespace={2}>
           {title}
         </Typography>

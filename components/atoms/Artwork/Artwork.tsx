@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { ReactEventHandler, memo, useState } from 'react';
 import { Box } from 'react-polymorphic-box';
 
@@ -45,7 +44,7 @@ export const Artwork = memo<ArtworkComponentProps>(
 
     const imageOrPlaceholder = shouldShowImage ? (
       <Box
-        as={Image}
+        as={'img'}
         alt={alt}
         className={artworkClassName}
         height={height}

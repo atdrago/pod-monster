@@ -43,7 +43,6 @@ import type {
 } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { getProxyImageUrl } from 'utils/getProxyImageUrl';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 import { getEpisodePath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
@@ -103,7 +102,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
         };
 
         if (person.img) {
-          nextPerson.img = getProxyImageUrl(person.img);
+          nextPerson.img = person.img;
         }
 
         return nextPerson;
@@ -332,7 +331,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
           priority={true}
           shadow="medium"
           isSquare={episodeImageDimensions && !!hasChapters}
-          src={getProxyImageUrl(episodeArtwork)}
+          src={episodeArtwork}
           subtitle={currentTranscriptItemText}
           width={episodeImageDimensions?.width}
         />
