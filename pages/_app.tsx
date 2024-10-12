@@ -3,9 +3,10 @@ import 'styles/app.css';
 import { LazyMotion, domAnimation } from 'framer-motion';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 
+import { Analytics } from '@vercel/analytics/react';
 import { CenteredPageLayout } from 'components/layouts/CenteredPageLayout';
 import { Footer } from 'components/molecules/Footer';
 import { Header } from 'components/molecules/Header';
@@ -14,7 +15,6 @@ import { MediaProvider } from 'contexts/MediaContext';
 import { SettingsProvider } from 'contexts/SettingsContext';
 import { useGlobalVhCssVariable } from 'hooks/useGlobalVhCssVariable';
 import type { IEpisodePageProps, IPodcastPageProps } from 'types';
-import { logger } from 'utils/logger';
 
 const isEpisodePage = (props?: unknown): props is IEpisodePageProps => {
   if (typeof props !== 'object' || props === null) {
@@ -35,7 +35,7 @@ const isPodcastPage = (props?: unknown): props is IPodcastPageProps => {
 const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
   useGlobalVhCssVariable();
 
-  const { events: routerEvents, isFallback } = useRouter();
+  const { isFallback } = useRouter();
 
   const [queryClient] = useState(() => new QueryClient());
 
@@ -58,18 +58,6 @@ const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
     feedId = episode?.feedId;
   }
 
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      logger.info('pageview', url);
-    };
-
-    routerEvents.on('routeChangeComplete', handleRouteChange);
-
-    return () => {
-      routerEvents.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [routerEvents]);
-
   return (
     <SettingsProvider>
       <QueryClientProvider client={queryClient}>
@@ -85,6 +73,7 @@ const App: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
                   episodeTitle={episodeTitle}
                 />
                 <Component {...pageProps} />
+                <Analytics />
                 <MediaPlayer />
                 <Footer />
               </CenteredPageLayout>

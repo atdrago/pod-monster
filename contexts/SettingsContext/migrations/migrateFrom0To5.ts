@@ -1,8 +1,8 @@
+import { captureException } from '@sentry/nextjs';
 import { IDBPDatabase } from 'idb';
 
 import type { IPodMonsterDb, LocalStorageSettings } from 'types';
 import { tryLocalStorageGetItem } from 'utils/localStorage';
-import { logger } from 'utils/logger';
 
 /**
  * Initial migration from localStorage to IndexedDB
@@ -21,7 +21,7 @@ export const migrateFrom0To5 = async (
         settingsFromLocalStorage
       ) as LocalStorageSettings;
     } catch (err) {
-      logger.error(err);
+      captureException(err);
     }
   }
 

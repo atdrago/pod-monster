@@ -1,7 +1,7 @@
+import { captureMessage } from '@sentry/nextjs';
 import type { PIApiEpisodeDetail } from 'podcastdx-client/src/types';
 
 import type { TranscriptDocument } from 'types';
-import { logger } from 'utils/logger';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 import { request } from 'utils/request';
 
@@ -38,7 +38,7 @@ export const fetchPodcastEpisodeTranscript = async (
 
     const message = `None of the requested transcript types are supported: ${requestedTranscriptTypes}`;
 
-    logger.info(message);
+    captureMessage(message);
 
     throw new Error(message);
   }
