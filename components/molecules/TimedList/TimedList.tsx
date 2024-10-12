@@ -48,11 +48,11 @@ areEqual);
 export const TimedList: FunctionComponent<ITimedListProps> = memo(
   function TimedListMemo({
     error,
+    hasError,
     index,
     isLoading,
     isVisibleAsSubtitle,
     list,
-    hasError,
     onIsVisibleAsSubtitleChange,
     onItemClick = () => {
       // noop

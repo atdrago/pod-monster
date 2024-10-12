@@ -113,7 +113,11 @@ export const SettingsProvider: FunctionComponent<
       setEpisodeSettings(nextEpisodeSettings);
       setFeedSettings(nextFeedSettings);
       setMediaPlayerSettings(nextMediaPlayerSettings);
-      idbHydrationPromiseResolver && idbHydrationPromiseResolver();
+
+      if (idbHydrationPromiseResolver) {
+        idbHydrationPromiseResolver();
+      }
+
       setIsDoneHydratingFromIdb(true);
     })();
   }, []);

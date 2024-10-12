@@ -119,7 +119,7 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
           );
       }
     }
-  } catch (err) {
+  } catch {
     return res.status(500).json(createApiErrorResponse(res));
   }
 };

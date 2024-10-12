@@ -1,4 +1,4 @@
-import { FunctionComponent, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
@@ -13,10 +13,7 @@ import {
   stack,
 } from './stack.css';
 
-export const Stack: FunctionComponent<StackProps> = forwardRef<
-  HTMLElement,
-  StackProps
->(function StackRef(
+export const Stack = forwardRef<HTMLElement, StackProps>(function StackRef(
   {
     // `align` is not defaulted to anything because the meaning of `align-items`
     // changes based on the `display` property
@@ -28,7 +25,7 @@ export const Stack: FunctionComponent<StackProps> = forwardRef<
     maxWidth = 'none',
     space = 'medium',
     ...divProps
-  },
+  }: StackProps,
   ref
 ) {
   const rootClassName = useClassNames(

@@ -1,10 +1,18 @@
-import { Box } from 'react-polymorphic-box';
+import { Box, PolymorphicComponentProps } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
 import { vars } from 'styles';
-import type { IconComponentProps } from 'types';
 
 import { icon, iconOrientationVariant, iconSizeVariant } from './icon.css';
+
+type IconComponentProps = PolymorphicComponentProps<
+  React.ElementType,
+  {
+    color?: keyof typeof vars.color;
+    orientation?: keyof typeof iconOrientationVariant;
+    size: keyof typeof iconSizeVariant;
+  }
+>;
 
 export const Icon = ({
   className,

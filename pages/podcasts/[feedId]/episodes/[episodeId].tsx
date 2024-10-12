@@ -82,7 +82,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
       episodeImageDimensions.height = height;
       episodeImageDimensions.width = width;
     }
-  } catch (err) {
+  } catch {
     // Failing to get image dimensions. This is fine, so do nothing.
   }
 
@@ -92,7 +92,7 @@ export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
       .map((person) => {
         /**
          * If `role` is missing, "host" should be assumed, and if `group` is
-         * missing, "cast" shouold be assumed
+         * missing, "cast" should be assumed
          * @see https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#person
          */
         const nextPerson = {

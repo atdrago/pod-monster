@@ -1,7 +1,6 @@
 module.exports = {
   extends: [
     'eslint:recommended',
-    'react-app',
     'plugin:react/recommended',
     'plugin:prettier/recommended',
     'next',
@@ -11,8 +10,12 @@ module.exports = {
   // override them, we need to use overrides as well
   overrides: [
     {
-      extends: ['plugin:typescript-sort-keys/recommended'],
+      extends: [
+        'plugin:typescript-sort-keys/recommended',
+        'plugin:@typescript-eslint/recommended',
+      ],
       files: ['**/*.ts', '**/*.tsx'],
+      parser: '@typescript-eslint/parser',
       parserOptions: {
         project: [
           './tsconfig.json',
@@ -20,7 +23,7 @@ module.exports = {
         ],
         tsconfigRootDir: __dirname,
       },
-      plugins: ['typescript-sort-keys'],
+      plugins: ['typescript-sort-keys', '@typescript-eslint'],
       rules: {
         '@typescript-eslint/array-type': [
           'warn',
@@ -82,7 +85,7 @@ module.exports = {
             selector: 'interface',
           },
         ],
-        '@typescript-eslint/no-duplicate-imports': ['error'],
+        // '@typescript-eslint/no-duplicates': ['error'],
         '@typescript-eslint/no-empty-interface': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-extraneous-class': 'error',
@@ -95,7 +98,7 @@ module.exports = {
             varsIgnorePattern: '^_',
           },
         ],
-        'no-duplicate-imports': 'off',
+        // 'no-duplicate-imports': 'off',
         'no-shadow': 'off',
       },
     },
@@ -108,10 +111,10 @@ module.exports = {
     '@next/next/no-img-element': 'off',
     'default-case': 'warn',
     eqeqeq: ['error', 'always'],
+    'import/no-duplicates': 'warn',
     'linebreak-style': ['error', 'unix'],
     'no-console': 'warn',
     'no-debugger': 'warn',
-    'no-duplicate-imports': 'warn',
     'no-lonely-if': 'error',
     'no-shadow': 'error',
     // 'no-unexpected-multiline': 'off',
