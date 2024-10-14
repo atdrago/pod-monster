@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 import { IHeadProps } from 'types';
 
@@ -37,8 +37,8 @@ export async function createMetadata({
     twitter: {
       card: 'summary_large_image',
       description: truncatedDescription,
-      // domain: 'pod.monster',
-      image: ogMetadata?.image,
+      images: ogMetadata?.image,
+      site: 'pod.monster',
       title: truncatedTitle,
     },
   };
