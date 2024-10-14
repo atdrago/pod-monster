@@ -1,6 +1,8 @@
+'use client';
+
 import { AnimatePresence, m } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import {
   FunctionComponent,
   ReactEventHandler,
@@ -125,7 +127,7 @@ export const MediaPlayer: FunctionComponent = () => {
     volume,
   } = useMediaContext();
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
-  const { asPath } = useRouter();
+  const pathname = usePathname();
   const [isPinned, setIsPinned] = useState(false);
   const playerClassName = useClassNames(
     player,
@@ -221,7 +223,8 @@ export const MediaPlayer: FunctionComponent = () => {
   const isPlayingEpisodeOfCurrentPage =
     episodeId &&
     feedId &&
-    asPath.includes(getEpisodePath({ episodeId, feedId }));
+    // TODO: Check that this is the path name and not the route id
+    pathname?.includes(getEpisodePath({ episodeId, feedId }));
 
   const animationProperties = {
     animate: {

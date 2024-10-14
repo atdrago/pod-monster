@@ -1,3 +1,4 @@
+// TODO: Remove this file since we don't use next/image anymore
 const imageDomains = [
   'assets.blubrry.com',
   'assets.fireside.fm',

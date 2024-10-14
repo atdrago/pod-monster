@@ -1,6 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import type { ApiResponse } from 'podcastdx-client/src/types';
-import { useQuery } from 'react-query';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Dot } from 'components/atoms/Dot';
@@ -33,15 +33,13 @@ export const SubscriptionItem = ({
   // -30 days
   const since = -30 * 24 * 60 * 60;
 
-  const { data } = useQuery<ApiResponse.EpisodesByFeedId | null>(
-    [feedId],
-    async () => await fetchPodcastEpisodes(feedId, since),
-    {
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const { data } = useQuery<ApiResponse.EpisodesByFeedId | null>({
+    queryFn: async () => await fetchPodcastEpisodes(feedId, since),
+    queryKey: [feedId],
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
 
   const subscribedAt = feedSettings[feedId]?.subscribedAt;
 

@@ -1,5 +1,6 @@
-import type { GetStaticPaths, NextPage } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 import {
   episodesByFeedId,
@@ -8,31 +9,65 @@ import {
 } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
-import { Dot } from 'components/atoms/Dot';
-import { Head } from 'components/atoms/Head';
 import { Icon } from 'components/atoms/Icon';
 import { Label } from 'components/atoms/Label';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
+import { EpisodeProgress } from 'components/molecules/EpisodeProgress';
+import { EpisodeUnlistenedDot } from 'components/molecules/EpisodeUnlistenedDot';
 import { Funding } from 'components/molecules/Funding';
-import { Progress } from 'components/molecules/Progress';
-import { useMediaContext } from 'contexts/MediaContext';
-import { useSettingsContext } from 'contexts/SettingsContext';
-import { useClassNames } from 'hooks/useClassNames';
+import { Header } from 'components/molecules/Header';
 import ExplicitIcon from 'icons/explicit.svg';
 import { headingLink, nonUnderlinedLink } from 'styles';
-import { episodeItemClassName } from 'styles/feed.css';
-import type { IPodcastPageProps, PodcastPageGetStaticProps } from 'types';
-import { longDateTimeFormat, secondsToFormattedTime } from 'utils/date';
+import { createMetadata } from 'utils/createMetadata';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 
-export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
+/**
+ * @see .next/types/app/page
+ */
+interface IPageProps {
+  params?: { feedId: string };
+  searchParams?: unknown;
+}
+
+export async function generateMetadata({
+  params,
+}: IPageProps): Promise<Metadata> {
   const feedId = typeof params?.feedId === 'string' ? params.feedId : null;
 
   if (!feedId) {
-    return { notFound: true };
+    notFound();
+  }
+
+  const [authTime, authToken] = getAuthValues(
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+  );
+  const config = getPodcastIndexConfig(authTime, authToken);
+
+  const podcastsResponse = await podcastsByFeedId(feedId, config);
+  const feed = podcastsResponse.feed;
+
+  return createMetadata({
+    description: feed.description,
+    ogMetadata: {
+      description: feed.description,
+      image: feed.image,
+      title: feed.title,
+      type: 'website',
+      url: getPodcastPath({ id: feed.id }),
+    },
+    titles: [feed.title],
+  });
+}
+
+export default async function Page({ params }: IPageProps) {
+  const feedId = typeof params?.feedId === 'string' ? params.feedId : null;
+
+  if (!feedId) {
+    notFound();
   }
 
   const [authTime, authToken] = getAuthValues(
@@ -45,45 +80,12 @@ export const getStaticProps: PodcastPageGetStaticProps = async ({ params }) => {
   const since = -180 * 24 * 60 * 60;
   const podcastsResponse = await podcastsByFeedId(feedId, config);
   const episodesResponse = await episodesByFeedId(feedId, { since }, config);
-
-  return {
-    props: {
-      episodes: episodesResponse.items,
-      feed: podcastsResponse.feed,
-    },
-    // one hour, in seconds
-    revalidate: 3600,
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    fallback: 'blocking',
-    paths: [],
-  };
-};
-
-const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
-  const { episodeSettings, feedSettings } = useSettingsContext();
-  const { episodeId } = useMediaContext();
-
-  const baseClassName = useClassNames(nonUnderlinedLink);
-
-  const subscribedAt = feedSettings[feed.id]?.subscribedAt;
+  const episodes = episodesResponse.items;
+  const feed = podcastsResponse.feed;
 
   return (
     <>
-      <Head
-        titles={[feed.title]}
-        description={feed.description}
-        ogMetadata={{
-          description: feed.description,
-          image: feed.image,
-          title: feed.title,
-          type: 'website',
-          url: getPodcastPath({ id: feed.id }),
-        }}
-      />
+      <Header feedId={feedId} feedTitle={feed.title} />
       <Stack as="main" maxWidth="small">
         <Stack as="article" space="small">
           <Stack kind="flexRow" space="small" align="center">
@@ -159,22 +161,11 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
               image,
               title,
             }) => {
-              const currentEpisodeSettings = episodeSettings[id];
-              const isUnlistened =
-                !currentEpisodeSettings &&
-                new Date(datePublished * 1000) >
-                  new Date(subscribedAt ?? Infinity);
-
-              const currentEpisodeDuration =
-                currentEpisodeSettings?.duration ?? duration ?? 0;
-              const currentEpisodeTime =
-                currentEpisodeSettings?.currentTime ?? 0;
-
               return (
                 <Stack
                   align="center"
                   as={Link}
-                  className={baseClassName}
+                  className={nonUnderlinedLink}
                   href={getEpisodePath({
                     episodeId: id,
                     feedId: feed.id,
@@ -183,13 +174,11 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                   kind="flexRow"
                   space="xxsmall"
                 >
-                  {isUnlistened ? (
-                    <Dot
-                      color={'blue'}
-                      className={episodeItemClassName}
-                      label="New episodes"
-                    />
-                  ) : null}
+                  <EpisodeUnlistenedDot
+                    episodeDatePublished={datePublished}
+                    episodeId={id}
+                    feedId={feedId}
+                  />
                   <Stack align="center" space="small" kind="flexRow">
                     <Artwork
                       alt=""
@@ -219,31 +208,10 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
                           {title}
                         </Typography>
                       </Stack>
-                      <Progress
-                        topLeftTitle={longDateTimeFormat.format(
-                          new Date(datePublished * 1000)
-                        )}
-                        percent={
-                          currentEpisodeDuration > 0
-                            ? currentEpisodeTime / currentEpisodeDuration
-                            : undefined
-                        }
-                        bottomLeftTitle={
-                          currentEpisodeDuration > 0
-                            ? secondsToFormattedTime(currentEpisodeTime)
-                            : undefined
-                        }
-                        bottomRightTitle={
-                          currentEpisodeDuration > 0
-                            ? secondsToFormattedTime(
-                                Math.max(
-                                  currentEpisodeDuration,
-                                  currentEpisodeTime
-                                ) - currentEpisodeTime
-                              )
-                            : undefined
-                        }
-                        isHighlighted={episodeId === id}
+                      <EpisodeProgress
+                        episodeDatePublished={datePublished}
+                        episodeId={id}
+                        episodeDuration={duration}
                       />
                     </Stack>
                   </Stack>
@@ -255,6 +223,4 @@ const PodcastPage: NextPage<IPodcastPageProps> = ({ episodes, feed }) => {
       </Stack>
     </>
   );
-};
-
-export default PodcastPage;
+}

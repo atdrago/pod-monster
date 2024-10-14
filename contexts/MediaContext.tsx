@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import {
   FunctionComponent,
   PropsWithChildren,
@@ -8,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useQuery } from 'react-query';
 
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
@@ -146,19 +146,17 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const { data: chapters } = useQuery(
-    ['chapters', chaptersUrl, dateCrawled],
-    async () => await fetchPodcastEpisodeChapters(chaptersUrl),
-    {
-      enabled:
-        typeof dateCrawled === 'number' &&
-        typeof chaptersUrl === 'string' &&
-        chaptersUrl.length > 0,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const { data: chapters } = useQuery({
+    enabled:
+      typeof dateCrawled === 'number' &&
+      typeof chaptersUrl === 'string' &&
+      chaptersUrl.length > 0,
+    queryFn: async () => await fetchPodcastEpisodeChapters(chaptersUrl),
+    queryKey: ['chapters', chaptersUrl, dateCrawled],
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
 
   const hasChapters = chapters && chapters.length > 0;
   const currentChapterIndex = hasChapters

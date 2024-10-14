@@ -1,3 +1,5 @@
+'use client';
+
 import { FunctionComponent, useState } from 'react';
 
 import { Icon } from 'components/atoms/Icon';

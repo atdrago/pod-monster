@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactEventHandler, memo, useState } from 'react';
 import { Box } from 'react-polymorphic-box';
 

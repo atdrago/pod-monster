@@ -15,10 +15,21 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es5",
-    "incremental": true
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/imageDomains.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "utils/imageDomains.js",
+    ".next/types/**/*.ts"
+  ],
   "references": [
     {
       "path": "./packages/podcast-index/tsconfig.ref.json"

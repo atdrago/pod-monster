@@ -1,14 +1,20 @@
-import type { FunctionComponent } from 'react';
+import { Metadata } from 'next';
 
-import { Head } from 'components/atoms/Head';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { Header } from 'components/molecules/Header';
+import { createMetadata } from 'utils/createMetadata';
 
-const NotFound: FunctionComponent = () => {
+export function generateMetadata(): Promise<Metadata> {
+  return createMetadata({
+    description: '404 - Not found',
+    titles: ['404', 'Not found'],
+  });
+}
+
+export default function NotFound() {
   return (
     <>
-      <Head titles={['404', 'Not found']} description="404 - Not found" />
       <Header />
       <Stack as="main">
         <Typography as="h2" size="headingMedium">
@@ -24,6 +30,4 @@ const NotFound: FunctionComponent = () => {
       </Stack>
     </>
   );
-};
-
-export default NotFound;
+}

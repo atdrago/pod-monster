@@ -1,28 +1,20 @@
-import type { GetStaticPaths, NextPage } from 'next';
-import probeImageSize from 'probe-image-size';
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import type { ApiResponse, PIApiPodcast } from 'podcastdx-client/src/types';
 import { useEffect, useMemo, useState } from 'react';
-import ReactDomServer from 'react-dom/server';
-import { useQuery } from 'react-query';
-import rehypeParse from 'rehype-parse';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
-import rehypeStripHtml from 'rehype-strip-html';
-import { unified } from 'unified';
 
-import {
-  episodeById,
-  getAuthValues,
-  podcastsByFeedId,
-} from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
-import { Head } from 'components/atoms/Head';
 import { Icon } from 'components/atoms/Icon';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { Funding } from 'components/molecules/Funding';
+import { Header } from 'components/molecules/Header';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { TimedList } from 'components/molecules/TimedList';
 import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
@@ -34,137 +26,31 @@ import TvIcon from 'icons/tv.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import type {
-  EpisodePageEpisode,
-  EpisodePageGetStaticProps,
   IChapter,
-  IEpisodePageProps,
+  IImageDimensions,
   ITimedListItem,
   TranscriptDocument,
 } from 'types';
 import { longDateTimeFormat } from 'utils/date';
-import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
-import { getEpisodePath } from 'utils/paths';
-import { toTitleCase } from 'utils/toTitleCase';
 
-export const getStaticProps: EpisodePageGetStaticProps = async ({ params }) => {
-  const feedId = typeof params?.feedId === 'string' ? params.feedId : null;
-  const episodeId =
-    typeof params?.episodeId === 'string' ? params.episodeId : null;
+export interface IEpisodePageProps {
+  episode: ApiResponse.EpisodeById['episode'];
+  episodeImageDimensions?: IImageDimensions;
+  feedFunding?: PIApiPodcast['funding'] | null;
+  feedLink?: string;
+  feedType?: 'rss' | 'atom';
+  feedUrl?: string;
+}
 
-  if (!feedId || !episodeId) {
-    return { notFound: true };
-  }
-
-  const [authTime, authToken] = getAuthValues(
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
-  );
-  const config = getPodcastIndexConfig(authTime, authToken);
-
-  const { episode } = (await episodeById(episodeId, config)) as {
-    episode: EpisodePageEpisode;
-  };
-  const { feed } = await podcastsByFeedId(feedId, config);
-
-  const episodeImageDimensions = {
-    height: 512,
-    width: 512,
-  };
-
-  try {
-    const { height, width } = await probeImageSize(
-      episode.image || episode.feedImage
-    );
-
-    // If the image is a square, keep the dimensions at 512x512
-    if (height !== width) {
-      episodeImageDimensions.height = height;
-      episodeImageDimensions.width = width;
-    }
-  } catch {
-    // Failing to get image dimensions. This is fine, so do nothing.
-  }
-
-  // Setup person proxy image paths and sorting on the server
-  if (episode.persons && episode.persons.length > 0) {
-    episode.persons = episode.persons
-      .map((person) => {
-        /**
-         * If `role` is missing, "host" should be assumed, and if `group` is
-         * missing, "cast" should be assumed
-         * @see https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#person
-         */
-        const nextPerson = {
-          ...person,
-          group: toTitleCase(person.group || 'cast'),
-          role: toTitleCase(person.role || 'host'),
-        };
-
-        if (person.img) {
-          nextPerson.img = person.img;
-        }
-
-        return nextPerson;
-      })
-      .sort((personA, personB) => {
-        if (personA.role === personB.role) {
-          return personA.name < personB.name ? -1 : 1;
-        }
-
-        return personA.role === 'Host' ? -1 : 1;
-      });
-  }
-
-  if (episode.description) {
-    const descriptionRawFile = await unified()
-      .use(rehypeParse)
-      .use(rehypeStripHtml)
-      .process(episode.description);
-
-    if (descriptionRawFile) {
-      episode.descriptionRaw = String(descriptionRawFile).replace(/\s+/g, ' ');
-    }
-
-    episode.description = ReactDomServer.renderToStaticMarkup(
-      <HtmlViewer
-        shouldUseCapsize={false}
-        rehypePlugins={[rehypeRaw, rehypeSanitize]}
-      >
-        {episode.description}
-      </HtmlViewer>
-    );
-  }
-
-  return {
-    props: {
-      episode,
-      episodeImageDimensions,
-      feedFunding: feed.funding ?? null,
-      feedLink: feed.link,
-      feedType: feed.type === 0 ? 'rss' : 'atom',
-      feedUrl: feed.url,
-    },
-    // 12 hours, in seconds
-    revalidate: 3600 * 12,
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    fallback: true,
-    paths: [],
-  };
-};
-
-const EpisodePage: NextPage<IEpisodePageProps> = ({
+export const EpisodePage = ({
   episode,
   episodeImageDimensions,
   feedFunding,
   feedLink,
   feedType,
   feedUrl,
-}) => {
+}: IEpisodePageProps) => {
   const { episodeSettings } = useSettingsContext();
   const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
     episode ? episodeSettings[episode.id]?.currentTime ?? 0 : 0
@@ -185,7 +71,7 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   const isVideo = episode?.enclosureType.includes('video');
   const isThisEpisodeInThePlayer = episodeId === episode?.id;
 
-  const interprettedCurrentTime = isThisEpisodeInThePlayer
+  const interpretedCurrentTime = isThisEpisodeInThePlayer
     ? mediaPlayerCurrentTime
     : episodeCurrentTime;
 
@@ -196,45 +82,42 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     data: transcript,
     error: transcriptsError,
     isLoading: isTranscriptLoading,
-  } = useQuery<TranscriptDocument, Error>(
-    [
+  } = useQuery<TranscriptDocument, Error>({
+    enabled: !!(hasTranscripts && typeof episode.dateCrawled === 'number'),
+    queryFn: async () =>
+      await fetchPodcastEpisodeTranscript(
+        episode?.transcripts ?? null,
+        episodeDuration
+      ),
+    queryKey: [
       'transcript',
       episode?.transcripts?.length,
       episode?.dateCrawled,
       episodeDuration,
     ],
-    async () =>
-      await fetchPodcastEpisodeTranscript(
-        episode?.transcripts ?? null,
-        episodeDuration
-      ),
-    {
-      enabled: !!(hasTranscripts && typeof episode.dateCrawled === 'number'),
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
 
   const {
     data: chapters = [],
     error: chaptersError,
     isLoading: isChaptersLoading,
-  } = useQuery<Array<IChapter>, Error>(
-    ['chapters', episode?.chaptersUrl, episode?.dateCrawled],
-    async () => await fetchPodcastEpisodeChapters(episode?.chaptersUrl),
-    {
-      enabled: !!(
-        episode &&
-        typeof episode.dateCrawled === 'number' &&
-        typeof episode.chaptersUrl === 'string' &&
-        episode.chaptersUrl.length > 0
-      ),
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+  } = useQuery<Array<IChapter>, Error>({
+    enabled: !!(
+      episode &&
+      typeof episode.dateCrawled === 'number' &&
+      typeof episode.chaptersUrl === 'string' &&
+      episode.chaptersUrl.length > 0
+    ),
+    queryFn: async () =>
+      await fetchPodcastEpisodeChapters(episode?.chaptersUrl),
+    queryKey: ['chapters', episode?.chaptersUrl, episode?.dateCrawled],
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
 
   const hasChaptersUrl = !!(episode && episode?.chaptersUrl);
   const hasChapters = chapters.length > 0;
@@ -244,11 +127,11 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
   );
   const currentChapterIndex = useChapterIndex({
     chapters,
-    currentTime: interprettedCurrentTime,
+    currentTime: interpretedCurrentTime,
   });
   const currentNonTocChapterIndex = useChapterIndex({
     chapters: nonTocChapters,
-    currentTime: interprettedCurrentTime,
+    currentTime: interpretedCurrentTime,
   });
 
   const currentChapter =
@@ -271,10 +154,10 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     Array.isArray(transcript.content) &&
     transcript.content.length > 0
       ? transcript.content.findIndex(({ to = 0 }) => {
-          // Restrictig this check also by startTimeSeconds in the future might
+          // Restricting this check also by startTimeSeconds in the future might
           // be good, but we need to handle moments where there is no speaking,
           // and currentTranscriptIndex is `-1`
-          const isCurrentTranscriptItem = interprettedCurrentTime < to;
+          const isCurrentTranscriptItem = interpretedCurrentTime < to;
 
           return isCurrentTranscriptItem;
         })
@@ -306,24 +189,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
 
   return (
     <>
-      {episode && (
-        <Head
-          titles={[episode.title, episode.feedTitle]}
-          description={episode.descriptionRaw || episode.description}
-          ogMetadata={{
-            audio: isVideo ? undefined : episode.enclosureUrl,
-            description: episode.descriptionRaw,
-            image: episodeArtwork ?? '',
-            title: episode.title,
-            type: 'website',
-            url: getEpisodePath({
-              episodeId: episode.id,
-              feedId: episode.feedId,
-            }),
-            video: isVideo ? episode.enclosureUrl : undefined,
-          }}
-        />
-      )}
+      <Header
+        episodeId={episode.id}
+        feedId={episode.feedId}
+        episodeTitle={episode.title}
+        feedTitle={episode.feedTitle}
+      />
       <Stack as="main" maxWidth="small">
         <Artwork
           alt="Podcast episode or chapter artwork"
@@ -363,9 +234,12 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
               </Typography>
             }
           >
-            <span
-              dangerouslySetInnerHTML={{ __html: episode?.description ?? '' }}
-            />
+            <HtmlViewer
+              shouldUseCapsize={false}
+              rehypePlugins={[rehypeRaw, rehypeSanitize]}
+            >
+              {episode.description}
+            </HtmlViewer>
           </Details>
           {hasChaptersUrl && (
             <TimedList
@@ -511,5 +385,3 @@ const EpisodePage: NextPage<IEpisodePageProps> = ({
     </>
   );
 };
-
-export default EpisodePage;

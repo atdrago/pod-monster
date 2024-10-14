@@ -1,88 +1,53 @@
-import { useRouter } from 'next/router';
-import { ChangeEventHandler, FunctionComponent, useState } from 'react';
-import { QueryClient, dehydrate, useQuery } from 'react-query';
+'use client';
 
-import { getAuthValues, searchByTerm } from '@atdrago/podcast-index';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEventHandler, useState } from 'react';
+
+import { searchByTerm } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Checkbox } from 'components/atoms/Checkbox';
-import { Head } from 'components/atoms/Head';
 import { LinkStack } from 'components/atoms/LinkStack';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
+import { Header } from 'components/molecules/Header';
 import { SearchField } from 'components/molecules/SearchField';
 import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
-import type { IPodcastsPageProps, PodcastsPageGetServerSideProps } from 'types';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
 
-export const getServerSideProps: PodcastsPageGetServerSideProps = async ({
-  query,
-  res,
-}) => {
-  const queryClient = new QueryClient();
-  const [authTime, authToken] = getAuthValues(
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
-  );
+interface IHomePageProps {
+  podcastIndexAuthTime: number;
+  podcastIndexAuthToken: string;
+}
 
-  const searchTerm = typeof query.term === 'string' ? query.term : null;
-
-  if (searchTerm) {
-    await queryClient.prefetchQuery(
-      ['searchByTerm', searchTerm],
-      async () =>
-        await searchByTerm(
-          searchTerm,
-          getPodcastIndexConfig(authTime, authToken)
-        )
-    );
-  }
-
-  // Stay fresh for 24 hours, and stale for 30 days
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=86400, stale-while-revalidate=2592000'
-  );
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-      initialSearchTerm: searchTerm,
-      podcastIndexAuthTime: authTime,
-      podcastIndexAuthToken: authToken,
-    },
-  };
-};
-
-const HomePage: FunctionComponent<IPodcastsPageProps> = ({
-  initialSearchTerm,
+export function HomePage({
   podcastIndexAuthTime,
   podcastIndexAuthToken,
-}) => {
+}: IHomePageProps) {
   const router = useRouter();
   const { feedSettings } = useSettingsContext();
   const [shouldIncludeDeadFeeds, setShouldIncludeDeadFeeds] = useState(false);
+  const searchParams = useSearchParams();
   const [searchTerm, searchTermDebounced, setSearchTerm] = useStateWithDebounce(
-    initialSearchTerm ?? '',
+    searchParams?.get('term') ?? '',
     1000
   );
 
-  const { data: searchResponse, isLoading } = useQuery(
-    ['searchByTerm', searchTermDebounced],
-    async () =>
+  const { data: searchResponse, isLoading } = useQuery({
+    enabled: !!searchTermDebounced,
+    queryFn: async () =>
       await searchByTerm(
         searchTermDebounced,
         getPodcastIndexConfig(podcastIndexAuthTime, podcastIndexAuthToken)
       ),
-    {
-      enabled: !!searchTermDebounced,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+    queryKey: ['searchByTerm', searchTermDebounced],
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
   const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setSearchTerm(event.currentTarget.value);
@@ -116,10 +81,7 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
 
   return (
     <>
-      <Head
-        titles={['Podcasts']}
-        description="Search for and subscribe to podcasts"
-      />
+      <Header />
       <Stack as="main">
         <Stack maxWidth="small">
           <Stack space="small">
@@ -231,6 +193,4 @@ const HomePage: FunctionComponent<IPodcastsPageProps> = ({
       </Stack>
     </>
   );
-};
-
-export default HomePage;
+}
