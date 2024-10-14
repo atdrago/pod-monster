@@ -37,7 +37,7 @@ export async function createMetadata({
     twitter: {
       card: 'summary_large_image',
       description: truncatedDescription,
-      domain: 'pod.monster',
+      // domain: 'pod.monster',
       image: ogMetadata?.image,
       title: truncatedTitle,
     },
