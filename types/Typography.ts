@@ -5,7 +5,7 @@ import {
   textAlignVariant,
 } from 'components/atoms/Typography/typography.css';
 
-export interface ITypographyProps {
+export interface TypographyProps {
   className?: string;
   shouldUseCapsize?: boolean;
   size: keyof typeof sizeVariant;
@@ -15,5 +15,5 @@ export interface ITypographyProps {
 
 export type TypographyComponentProps = PolymorphicComponentProps<
   React.ElementType<any>,
-  ITypographyProps
+  TypographyProps
 >;

@@ -1,9 +1,9 @@
 import NextHead from 'next/head';
 
 import { vars } from 'styles';
-import type { IHeadProps } from 'types';
+import type { HeadProps } from 'types';
 
-export const Head = ({ description, ogMetadata, titles }: IHeadProps) => {
+export const Head = ({ description, ogMetadata, titles }: HeadProps) => {
   const titlesWithAppName = [...titles, 'Pod Monster'];
 
   // These truncation lengths were taken from https://www.opengraph.xyz/

@@ -14,17 +14,17 @@ import {
 
 import type {
   EpisodeSettings,
+  EpisodeSettingsItem,
   FeedSettings,
-  IEpisodeSettingsItem,
-  IFeedSettingsItem,
-  IPodMonsterDb,
-  ISettingsContext,
+  FeedSettingsItem,
   MediaPlayerSettings,
+  PodMonsterDb,
+  SettingsContext,
 } from 'types';
 
 import { migrateFrom0To5 } from './migrations/migrateFrom0To5';
 
-const SettingsContext = createContext<ISettingsContext>({
+const SettingsContext = createContext<SettingsContext>({
   /* eslint-disable @typescript-eslint/no-empty-function */
   episodeSettings: {},
   feedSettings: {},
@@ -53,7 +53,7 @@ export const SettingsProvider: FunctionComponent<
   const [episodeSettings, setEpisodeSettings] = useState<EpisodeSettings>({});
   const [feedSettings, setFeedSettings] = useState<FeedSettings>({});
   const [isDoneHydratingFromIdb, setIsDoneHydratingFromIdb] = useState(false);
-  const databaseRef = useRef<IDBPDatabase<IPodMonsterDb> | null>(null);
+  const databaseRef = useRef<IDBPDatabase<PodMonsterDb> | null>(null);
 
   // Open the database, do any necessary migrations, and populate context state
   // from IDB.
@@ -61,7 +61,7 @@ export const SettingsProvider: FunctionComponent<
     (async () => {
       let oldVersion: number | null = null;
 
-      databaseRef.current = await openDB<IPodMonsterDb>(
+      databaseRef.current = await openDB<PodMonsterDb>(
         'pod.monster',
         SETTINGS_VERSION,
         {
@@ -139,7 +139,7 @@ export const SettingsProvider: FunctionComponent<
    * Sets a single episode settings item
    */
   const setEpisodeSettingsItem = useCallback(
-    async (key: string, value: IEpisodeSettingsItem) => {
+    async (key: string, value: EpisodeSettingsItem) => {
       if (!databaseRef.current) {
         return;
       }
@@ -158,7 +158,7 @@ export const SettingsProvider: FunctionComponent<
    * Sets a single feed settings item
    */
   const setFeedSettingsItem = useCallback(
-    async (key: string, value: IFeedSettingsItem) => {
+    async (key: string, value: FeedSettingsItem) => {
       if (!databaseRef.current) {
         return;
       }
@@ -219,5 +219,5 @@ export const SettingsProvider: FunctionComponent<
   );
 };
 
-export const useSettingsContext = (): ISettingsContext =>
+export const useSettingsContext = (): SettingsContext =>
   useContext(SettingsContext);

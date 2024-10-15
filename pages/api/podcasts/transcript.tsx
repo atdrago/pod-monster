@@ -7,14 +7,14 @@ import rehypeSanitize from 'rehype-sanitize';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { supportedTranscriptTypes } from 'rest/fetchPodcastEpisodeTranscript';
 import type {
-  IApiErrorResponse,
-  ITranscriptItem,
+  ApiErrorResponse,
+  TranscriptItem,
   TranscriptDocument,
 } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { tryConvertTextOrHtmlToVtt } from 'utils/tryConvertTextOrHtmlToVtt';
 
-const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
+const handler: NextApiHandler<TranscriptDocument | ApiErrorResponse> = async (
   req,
   res,
 ) => {
@@ -72,7 +72,7 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
       case 'application/srt':
       case 'text/vtt': {
         const entries = parse(transcriptResponseText).entries.map(
-          ({ from, id, text, to }): ITranscriptItem => ({
+          ({ from, id, text, to }): TranscriptItem => ({
             // Convert from ms to seconds
             from: from / 1000,
             id,

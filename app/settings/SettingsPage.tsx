@@ -13,7 +13,7 @@ import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport } from 'rest/fetchOpmlImport';
 import { listItem, listLayout, underlinedLink } from 'styles';
-import type { IApiErrorResponse, OpmlImportResponse } from 'types';
+import type { ApiErrorResponse, OpmlImportResponse } from 'types';
 
 export function SettingsPage() {
   const opmlFileUrl = useOpmlFileUrl();
@@ -28,7 +28,7 @@ export function SettingsPage() {
     isPending: isLoading,
     isSuccess,
     mutate,
-  } = useMutation<OpmlImportResponse, IApiErrorResponse, { file: File }>({
+  } = useMutation<OpmlImportResponse, ApiErrorResponse, { file: File }>({
     mutationFn: async ({ file }) => await fetchOpmlImport(file),
     onSuccess: (successData) => {
       if (successData?.feedSettings) {

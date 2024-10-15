@@ -5,7 +5,7 @@ import type { FunctionComponent, ReactEventHandler } from 'react';
 import { Button } from 'components/atoms/Button';
 import { useSettingsContext } from 'contexts/SettingsContext';
 
-interface ISubscribeButtonProps {
+interface SubscribeButtonProps {
   feedId: number;
   feedType: 'rss' | 'atom';
   htmlUrl: string;
@@ -14,7 +14,7 @@ interface ISubscribeButtonProps {
   xmlUrl: string;
 }
 
-export const SubscribeButton: FunctionComponent<ISubscribeButtonProps> = ({
+export const SubscribeButton: FunctionComponent<SubscribeButtonProps> = ({
   feedId: id,
   feedType,
   htmlUrl,

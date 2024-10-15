@@ -1,11 +1,11 @@
 import type { PIApiEpisodeDetail } from 'podcastdx-client/src/types';
 
-import type { IChapter } from 'types';
+import type { Chapter } from 'types';
 import { request } from 'utils/request';
 
 export const fetchPodcastEpisodeChapters = async (
   chaptersUrl?: PIApiEpisodeDetail['chaptersUrl'],
-): Promise<Array<IChapter>> => {
+): Promise<Array<Chapter>> => {
   if (!chaptersUrl) {
     throw new Error('`chaptersUrl` is required');
   }
@@ -17,7 +17,7 @@ export const fetchPodcastEpisodeChapters = async (
 
   chaptersProxyUrl.searchParams.set('url', chaptersUrl);
 
-  return await request<Array<IChapter>>(chaptersProxyUrl.toString(), {
+  return await request<Array<Chapter>>(chaptersProxyUrl.toString(), {
     method: 'GET',
   });
 };

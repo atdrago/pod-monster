@@ -1,16 +1,16 @@
 import { useMemo } from 'react';
 
-import type { IChapter } from 'types';
+import type { Chapter } from 'types';
 
-interface IUseChapterIndexOptions {
-  chapters: Array<IChapter>;
+interface UseChapterIndexOptions {
+  chapters: Array<Chapter>;
   currentTime: number;
 }
 
 export const useChapterIndex = ({
   chapters,
   currentTime,
-}: IUseChapterIndexOptions): number => {
+}: UseChapterIndexOptions): number => {
   const index = useMemo(() => {
     const hasChapters = chapters && chapters.length > 0;
 

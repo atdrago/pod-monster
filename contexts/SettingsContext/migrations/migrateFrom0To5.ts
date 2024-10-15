@@ -1,16 +1,14 @@
 import { captureException } from '@sentry/nextjs';
 import { IDBPDatabase } from 'idb';
 
-import type { IPodMonsterDb, LocalStorageSettings } from 'types';
+import type { PodMonsterDb, LocalStorageSettings } from 'types';
 import { tryLocalStorageGetItem } from 'utils/localStorage';
 
 /**
  * Initial migration from localStorage to IndexedDB
  * @param database
  */
-export const migrateFrom0To5 = async (
-  database: IDBPDatabase<IPodMonsterDb>,
-) => {
+export const migrateFrom0To5 = async (database: IDBPDatabase<PodMonsterDb>) => {
   const settingsFromLocalStorage = tryLocalStorageGetItem('pod2.settings');
 
   let settingsJsonFromLocalStorage: LocalStorageSettings | null = null;

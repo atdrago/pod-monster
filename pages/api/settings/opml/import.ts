@@ -6,11 +6,7 @@ import {
 } from 'opml-to-json';
 
 import { getAuthValues, podcastsByFeedUrl } from '@atdrago/podcast-index';
-import type {
-  FeedSettings,
-  IApiErrorResponse,
-  OpmlImportResponse,
-} from 'types';
+import type { FeedSettings, ApiErrorResponse, OpmlImportResponse } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
@@ -30,7 +26,7 @@ const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
   return feeds;
 };
 
-const handler: NextApiHandler<OpmlImportResponse | IApiErrorResponse> = async (
+const handler: NextApiHandler<OpmlImportResponse | ApiErrorResponse> = async (
   req,
   res,
 ) => {

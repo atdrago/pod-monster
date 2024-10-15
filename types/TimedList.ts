@@ -1,10 +1,10 @@
-export interface ITimedListItem {
+export interface TimedListItem {
   from: number;
   text: string;
 }
 
-export interface ITimedListProps<
-  TListItem extends ITimedListItem = ITimedListItem,
+export interface TimedListProps<
+  TListItem extends TimedListItem = TimedListItem,
 > {
   error?: Error | null;
   hasError?: boolean;

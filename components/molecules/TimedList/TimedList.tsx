@@ -10,7 +10,7 @@ import { Details } from 'components/atoms/Details';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useClassNames } from 'hooks/useClassNames';
-import type { ITimedListProps } from 'types';
+import type { TimedListProps } from 'types';
 
 import {
   paragraph,
@@ -44,7 +44,7 @@ const ListItemComponent = memo(function Row({
   );
 }, areEqual);
 
-export const TimedList: FunctionComponent<ITimedListProps> = memo(
+export const TimedList: FunctionComponent<TimedListProps> = memo(
   function TimedListMemo({
     error,
     hasError,

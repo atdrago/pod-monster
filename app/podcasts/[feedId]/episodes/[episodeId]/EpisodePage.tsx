@@ -26,17 +26,17 @@ import TvIcon from 'icons/tv.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
 import type {
-  IChapter,
-  IImageDimensions,
-  ITimedListItem,
+  Chapter,
+  ImageDimensions,
+  TimedListItem,
   TranscriptDocument,
 } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
-export interface IEpisodePageProps {
+export interface EpisodePageProps {
   episode: ApiResponse.EpisodeById['episode'];
-  episodeImageDimensions?: IImageDimensions;
+  episodeImageDimensions?: ImageDimensions;
   feedFunding?: PIApiPodcast['funding'] | null;
   feedLink?: string;
   feedType?: 'rss' | 'atom';
@@ -50,7 +50,7 @@ export const EpisodePage = ({
   feedLink,
   feedType,
   feedUrl,
-}: IEpisodePageProps) => {
+}: EpisodePageProps) => {
   const { episodeSettings } = useSettingsContext();
   const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
     episode ? (episodeSettings[episode.id]?.currentTime ?? 0) : 0,
@@ -104,7 +104,7 @@ export const EpisodePage = ({
     data: chapters = [],
     error: chaptersError,
     isLoading: isChaptersLoading,
-  } = useQuery<Array<IChapter>, Error>({
+  } = useQuery<Array<Chapter>, Error>({
     enabled: !!(
       episode &&
       typeof episode.dateCrawled === 'number' &&
@@ -163,7 +163,7 @@ export const EpisodePage = ({
         })
       : -1;
 
-  const handleTimedListItemClick = (item: ITimedListItem) => {
+  const handleTimedListItemClick = (item: TimedListItem) => {
     if (item.from) {
       if (isThisEpisodeInThePlayer) {
         setCurrentTime(item.from);

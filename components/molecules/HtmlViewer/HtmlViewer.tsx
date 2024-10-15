@@ -5,7 +5,7 @@ import { Blockquote } from 'components/atoms/Blockquote';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
 import { listItem, underlinedLink } from 'styles';
-import type { IMarkdownViewerProps } from 'types';
+import type { MarkdownViewerProps } from 'types';
 
 import {
   htmlViewerContainer,
@@ -19,7 +19,7 @@ export const HtmlViewer = memo(
     className,
     shouldUseCapsize = true,
     ...reactMarkdownProps
-  }: IMarkdownViewerProps) {
+  }: MarkdownViewerProps) {
     const baseClassName = useClassNames(htmlViewerContainer, className);
 
     return (

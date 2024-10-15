@@ -21,14 +21,14 @@ import { EpisodePage } from './EpisodePage';
 /**
  * @see .next/types/app/page
  */
-interface IPageProps {
+interface PageProps {
   params?: { episodeId: string; feedId: string };
   searchParams?: unknown;
 }
 
 export async function generateMetadata({
   params,
-}: IPageProps): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const feedId = typeof params?.feedId === 'string' ? params.feedId : null;
   const episodeId =
     typeof params?.episodeId === 'string' ? params.episodeId : null;
@@ -73,7 +73,7 @@ export async function generateMetadata({
   });
 }
 
-export default async function Page({ params }: IPageProps) {
+export default async function Page({ params }: PageProps) {
   const feedId = typeof params?.feedId === 'string' ? params.feedId : null;
   const episodeId =
     typeof params?.episodeId === 'string' ? params.episodeId : null;

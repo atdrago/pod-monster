@@ -3,7 +3,7 @@ import { useClassNames } from 'hooks/useClassNames';
 
 import { labelClassName, selectClassName } from './selectField.css';
 
-interface ISelectFieldOptionProps {
+interface SelectFieldOptionProps {
   label: string;
   value: string | number;
 }
@@ -36,10 +36,7 @@ export const SelectField = ({
   );
 };
 
-export const SelectFieldOption = ({
-  label,
-  value,
-}: ISelectFieldOptionProps) => {
+export const SelectFieldOption = ({ label, value }: SelectFieldOptionProps) => {
   return (
     <option key={value} value={value}>
       {label}

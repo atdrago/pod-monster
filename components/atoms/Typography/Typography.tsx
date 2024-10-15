@@ -1,7 +1,7 @@
 import { Box } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import type { ITypographyProps, TypographyComponentProps } from 'types';
+import type { TypographyProps, TypographyComponentProps } from 'types';
 
 import {
   ellipsisContainer,
@@ -18,7 +18,7 @@ export const useTypography = ({
   size = 'headingLarge',
   textAlign = 'left',
   whitespace = 'normal',
-}: ITypographyProps) => {
+}: TypographyProps) => {
   return useClassNames(
     typography,
     shouldUseCapsize ? sizeVariant[size] : sizeVariantNoCapsize[size],

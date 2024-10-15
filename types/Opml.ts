@@ -1,4 +1,4 @@
-export interface IOpmlOutline {
+export interface OpmlOutline {
   htmlUrl: string;
   text: string;
   title: string;
@@ -6,7 +6,7 @@ export interface IOpmlOutline {
   xmlUrl: string;
 }
 
-export interface IOpmlFile {
-  children: Array<IOpmlOutline>;
+export interface OpmlFile {
+  children: Array<OpmlOutline>;
   title: string;
 }

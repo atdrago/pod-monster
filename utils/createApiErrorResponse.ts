@@ -1,4 +1,4 @@
-import type { IApiErrorResponse } from 'types';
+import type { ApiErrorResponse } from 'types';
 
 /**
  * Takes an error parameter and returns an object with `message`, `name`, and
@@ -9,8 +9,8 @@ import type { IApiErrorResponse } from 'types';
  */
 export const createApiErrorResponse = (
   error: unknown | string | Error,
-): IApiErrorResponse => {
-  const errorResponse: IApiErrorResponse = {
+): ApiErrorResponse => {
+  const errorResponse: ApiErrorResponse = {
     error: {
       message: 'Unknown error occurred.',
       name: null,

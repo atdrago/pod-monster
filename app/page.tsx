@@ -18,12 +18,12 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * @see .next/types/app/page
  */
-interface IPageProps {
+interface PageProps {
   params?: unknown;
   searchParams?: { term?: string };
 }
 
-export default function Page({ searchParams }: IPageProps) {
+export default function Page({ searchParams }: PageProps) {
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,

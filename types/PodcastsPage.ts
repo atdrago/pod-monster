@@ -1,7 +1,7 @@
 import { dehydrate } from '@tanstack/react-query';
 import type { GetServerSideProps } from 'next';
 
-export interface IPodcastsPageProps {
+export interface PodcastsPageProps {
   dehydratedState: ReturnType<typeof dehydrate>;
   initialSearchTerm: string | null;
   podcastIndexAuthTime: number;
@@ -9,6 +9,6 @@ export interface IPodcastsPageProps {
 }
 
 export type PodcastsPageGetServerSideProps = GetServerSideProps<
-  IPodcastsPageProps,
+  PodcastsPageProps,
   { term: string }
 >;

@@ -5,7 +5,7 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 
 import { dotClassName } from './episodeUnlistenedDot.css';
 
-interface IEpisodeUUnlistedDotProps {
+interface EpisodeUnlistedDotProps {
   episodeDatePublished: number;
   episodeId: number;
   feedId: number | string;
@@ -15,7 +15,7 @@ export const EpisodeUnlistenedDot = ({
   episodeDatePublished,
   episodeId,
   feedId,
-}: IEpisodeUUnlistedDotProps) => {
+}: EpisodeUnlistedDotProps) => {
   const { episodeSettings, feedSettings } = useSettingsContext();
   const subscribedAt = feedSettings[feedId]?.subscribedAt;
   const currentEpisodeSettings = episodeSettings[episodeId];

@@ -24,4 +24,3 @@ export * from './Stack';
 export * from './TimedList';
 export * from './Transcript';
 export * from './Typography';
-export * from './VolumeIcon';

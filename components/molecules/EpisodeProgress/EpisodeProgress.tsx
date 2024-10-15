@@ -5,7 +5,7 @@ import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { longDateTimeFormat, secondsToFormattedTime } from 'utils/date';
 
-interface IEpisodeProgressProps {
+interface EpisodeProgressProps {
   episodeDatePublished: number;
   episodeDuration?: number;
   episodeId: number;
@@ -15,7 +15,7 @@ export const EpisodeProgress = ({
   episodeDatePublished,
   episodeDuration,
   episodeId,
-}: IEpisodeProgressProps) => {
+}: EpisodeProgressProps) => {
   const { episodeId: mediaContextEpisodeId } = useMediaContext();
   const { episodeSettings } = useSettingsContext();
   const currentEpisodeSettings = episodeSettings[episodeId];

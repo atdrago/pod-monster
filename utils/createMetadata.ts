@@ -2,13 +2,13 @@ import 'server-only';
 
 import type { Metadata } from 'next';
 
-import { IHeadProps } from 'types';
+import { HeadProps } from 'types';
 
 export async function createMetadata({
   description,
   ogMetadata,
   titles,
-}: IHeadProps): Promise<Metadata> {
+}: HeadProps): Promise<Metadata> {
   const titlesWithAppName = [...titles, 'Pod Monster'];
 
   // These truncation lengths were taken from https://www.opengraph.xyz/

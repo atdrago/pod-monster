@@ -1,4 +1,4 @@
-interface IOgMetadata {
+interface OgMetadata {
   /**
    * A URL to an audio file to accompany this object.
    */
@@ -50,8 +50,8 @@ interface IOgMetadata {
   video?: string;
 }
 
-export interface IHeadProps {
+export interface HeadProps {
   description: string;
-  ogMetadata?: IOgMetadata;
+  ogMetadata?: OgMetadata;
   titles: Array<string>;
 }

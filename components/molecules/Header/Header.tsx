@@ -18,7 +18,7 @@ import {
   homeLinkClassName,
 } from './header.css';
 
-interface IHeaderProps {
+interface HeaderProps {
   episodeId?: number | string;
   episodeTitle?: string;
   feedId?: number | string;
@@ -26,7 +26,7 @@ interface IHeaderProps {
   isLoading?: boolean;
 }
 
-export const Header: FunctionComponent<IHeaderProps> = ({
+export const Header: FunctionComponent<HeaderProps> = ({
   episodeId,
   episodeTitle,
   feedId,

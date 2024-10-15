@@ -8,7 +8,7 @@ import {
   meterClassName,
 } from './sizeField.css';
 
-interface ISizeFieldProps {
+interface SizeFieldProps {
   label: string;
   max: number;
   min: number;
@@ -24,7 +24,7 @@ export const SizeField = ({
   onChange,
   step,
   value,
-}: ISizeFieldProps) => {
+}: SizeFieldProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {

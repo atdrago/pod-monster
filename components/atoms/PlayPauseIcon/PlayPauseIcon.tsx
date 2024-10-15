@@ -5,9 +5,9 @@ import PauseIcon from 'icons/pause2.svg';
 import PlayIcon from 'icons/play3.svg';
 import SpinnerIcon from 'icons/spinner8.svg';
 import { spinnerClassName } from 'styles';
-import type { IPlayPauseIconProps } from 'types';
+import type { PlayPauseIconProps } from 'types';
 
-export const PlayPauseIcon: FunctionComponent<IPlayPauseIconProps> = ({
+export const PlayPauseIcon: FunctionComponent<PlayPauseIconProps> = ({
   isLoading,
   isPaused,
   size = 'small',

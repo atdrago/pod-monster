@@ -14,7 +14,7 @@ import { getPodcastPath } from 'utils/paths';
 
 import { subscriptionItemClassName } from './subscriptionItem.css';
 
-interface ISubscriptionItemProps {
+interface SubscriptionItemProps {
   feedId: string;
   image: string;
   title: string;
@@ -24,7 +24,7 @@ export const SubscriptionItem = ({
   feedId,
   image,
   title,
-}: ISubscriptionItemProps) => {
+}: SubscriptionItemProps) => {
   const baseClassName = useClassNames(
     subscriptionItemClassName,
     nonUnderlinedLink,

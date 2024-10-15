@@ -8,7 +8,7 @@ import UploadIcon8 from 'icons/upload2.svg';
 
 import { buttonClassName, inputClassName } from './fileField.css';
 
-interface IFileFieldProps {
+interface FileFieldProps {
   accept?: string;
   isLoading?: boolean;
   label: string;
@@ -22,7 +22,7 @@ export const FileField = ({
   label,
   loadingLabel = 'Loading...',
   onChange,
-}: IFileFieldProps) => {
+}: FileFieldProps) => {
   return (
     <Button as="label" className={buttonClassName} role="button">
       <input

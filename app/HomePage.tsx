@@ -19,7 +19,7 @@ import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
 
-interface IHomePageProps {
+interface HomePageProps {
   podcastIndexAuthTime: number;
   podcastIndexAuthToken: string;
 }
@@ -27,7 +27,7 @@ interface IHomePageProps {
 export function HomePage({
   podcastIndexAuthTime,
   podcastIndexAuthToken,
-}: IHomePageProps) {
+}: HomePageProps) {
   const router = useRouter();
   const { feedSettings } = useSettingsContext();
   const [shouldIncludeDeadFeeds, setShouldIncludeDeadFeeds] = useState(false);

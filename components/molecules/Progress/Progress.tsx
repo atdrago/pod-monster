@@ -10,7 +10,7 @@ import {
   progressBarHighlightVariant,
 } from './progress.css';
 
-interface IProgressProps {
+interface ProgressProps {
   bottomLeftTitle?: string;
   bottomRightTitle?: string;
   isHighlighted?: boolean;
@@ -30,7 +30,7 @@ export const Progress = ({
   percent,
   topLeftTitle,
   topRightTitle,
-}: IProgressProps) => {
+}: ProgressProps) => {
   const progressBarClassName = useClassNames(
     progressBar,
     progressBarHighlightVariant[`${isHighlighted}`],

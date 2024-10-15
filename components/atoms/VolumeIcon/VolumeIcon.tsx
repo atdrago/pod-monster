@@ -6,9 +6,13 @@ import VolumeLowIcon from 'icons/volume-low.svg';
 import VolumeMediumIcon from 'icons/volume-medium.svg';
 import VolumeZeroIcon from 'icons/volume-mute.svg';
 import VolumeMuteIcon from 'icons/volume-mute2.svg';
-import type { IVolumeIconProps } from 'types';
 
-export const VolumeIcon: FunctionComponent<IVolumeIconProps> = ({
+export interface VolumeIconProps {
+  isMuted: boolean;
+  volume: number;
+}
+
+export const VolumeIcon: FunctionComponent<VolumeIconProps> = ({
   isMuted,
   volume,
 }) => (

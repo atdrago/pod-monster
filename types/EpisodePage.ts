@@ -1,7 +1,7 @@
 import type { GetStaticProps } from 'next';
 import type { ApiResponse, PIApiPodcast } from 'podcastdx-client/src/types';
 
-import type { IImageDimensions } from 'types';
+import type { ImageDimensions } from 'types';
 
 export type EpisodePageEpisode = ApiResponse.EpisodeById['episode'] & {
   descriptionRaw?: string;
@@ -10,13 +10,13 @@ export type EpisodePageEpisode = ApiResponse.EpisodeById['episode'] & {
 /**
  * All props must be optional because the episode page is using `fallback: true`
  */
-export interface IEpisodePageProps {
+export interface EpisodePageProps {
   episode?: EpisodePageEpisode;
-  episodeImageDimensions?: IImageDimensions;
+  episodeImageDimensions?: ImageDimensions;
   feedFunding?: PIApiPodcast['funding'] | null;
   feedLink?: string;
   feedType?: 'rss' | 'atom';
   feedUrl?: string;
 }
 
-export type EpisodePageGetStaticProps = GetStaticProps<IEpisodePageProps>;
+export type EpisodePageGetStaticProps = GetStaticProps<EpisodePageProps>;

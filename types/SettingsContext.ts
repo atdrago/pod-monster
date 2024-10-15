@@ -3,14 +3,14 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import type { PlaybackRate } from 'types';
 
-export interface IEpisodeSettingsItem {
+export interface EpisodeSettingsItem {
   currentTime: number;
   duration?: number;
 }
 
-export type EpisodeSettings = Record<string, IEpisodeSettingsItem>;
+export type EpisodeSettings = Record<string, EpisodeSettingsItem>;
 
-export interface IFeedSettingsItem {
+export interface FeedSettingsItem {
   htmlUrl?: string;
   image: string;
   subscribedAt: string | null;
@@ -19,7 +19,7 @@ export interface IFeedSettingsItem {
   xmlUrl?: string;
 }
 
-export type FeedSettings = Record<string, IFeedSettingsItem>;
+export type FeedSettings = Record<string, FeedSettingsItem>;
 
 export type MediaPlayerSettings = {
   chaptersUrl: string | null;
@@ -48,16 +48,16 @@ export type LocalStorageSettings = {
   feedSettings: FeedSettings;
 };
 
-export interface IPodMonsterDb extends DBSchema {
+export interface PodMonsterDb extends DBSchema {
   episodeSettings: {
     /** episodeId */
     key: string;
-    value: IEpisodeSettingsItem;
+    value: EpisodeSettingsItem;
   };
   feedSettings: {
     /** feedId */
     key: string;
-    value: IFeedSettingsItem;
+    value: FeedSettingsItem;
   };
   mediaPlayerSettings: {
     key: 'mediaPlayerSettings';
@@ -65,7 +65,7 @@ export interface IPodMonsterDb extends DBSchema {
   };
 }
 
-export interface ISettingsContext {
+export interface SettingsContext {
   episodeSettings: EpisodeSettings;
   feedSettings: FeedSettings;
   idbHydrationPromise: Promise<void> | null;
@@ -74,9 +74,9 @@ export interface ISettingsContext {
   setAllFeedSettings: (feedSettings: FeedSettings) => Promise<void>;
   setEpisodeSettingsItem: (
     key: string,
-    value: IEpisodeSettingsItem,
+    value: EpisodeSettingsItem,
   ) => Promise<void>;
-  setFeedSettingsItem: (key: string, value: IFeedSettingsItem) => Promise<void>;
+  setFeedSettingsItem: (key: string, value: FeedSettingsItem) => Promise<void>;
   setMediaPlayerSettings: Dispatch<
     SetStateAction<MediaPlayerSettings | undefined>
   >;

@@ -1,14 +1,14 @@
 import type { NextApiHandler } from 'next';
 
 import type {
-  IApiErrorResponse,
-  IChapter,
-  IPodcastIndexChapterResponse,
+  ApiErrorResponse,
+  Chapter,
+  PodcastIndexChapterResponse,
 } from 'types';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
-const handler: NextApiHandler<Array<IChapter> | IApiErrorResponse> = async (
+const handler: NextApiHandler<Array<Chapter> | ApiErrorResponse> = async (
   req,
   res,
 ) => {
@@ -27,11 +27,11 @@ const handler: NextApiHandler<Array<IChapter> | IApiErrorResponse> = async (
       throw new Error(`Failed to get chapters: ${chaptersResponse.statusText}`);
     }
 
-    const { chapters }: IPodcastIndexChapterResponse =
+    const { chapters }: PodcastIndexChapterResponse =
       await chaptersResponse.json();
 
-    const chaptersSorted: Array<IChapter> = chapters
-      .filter((chapter): chapter is IChapter =>
+    const chaptersSorted: Array<Chapter> = chapters
+      .filter((chapter): chapter is Chapter =>
         notNullOrUndefined(chapter.startTime),
       )
       .sort((chapterA, chapterB) => chapterA.startTime - chapterB.startTime);

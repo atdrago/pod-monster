@@ -1,4 +1,4 @@
-export interface ITranscriptItem {
+export interface TranscriptItem {
   from: number;
   id: string;
   text: string;
@@ -6,5 +6,5 @@ export interface ITranscriptItem {
 }
 
 export type TranscriptDocument = {
-  content: Array<ITranscriptItem> | string;
+  content: Array<TranscriptItem> | string;
 };

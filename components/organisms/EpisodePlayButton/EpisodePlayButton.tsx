@@ -7,13 +7,13 @@ import { Stack } from 'components/layouts/Stack';
 import { useMediaContext } from 'contexts/MediaContext';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import ExplicitIcon from 'icons/explicit.svg';
-import type { EpisodePageEpisode, IChapter, IImageDimensions } from 'types';
+import type { EpisodePageEpisode, Chapter, ImageDimensions } from 'types';
 
-interface IEpisodePlayButtonProps {
-  currentChapter: IChapter | null;
+interface EpisodePlayButtonProps {
+  currentChapter: Chapter | null;
   episode?: EpisodePageEpisode;
   episodeCurrentTime: number;
-  episodeImageDimensions?: IImageDimensions;
+  episodeImageDimensions?: ImageDimensions;
   isVideo?: boolean;
 }
 
@@ -23,7 +23,7 @@ export const EpisodePlayButton = ({
   episodeCurrentTime,
   episodeImageDimensions,
   isVideo,
-}: IEpisodePlayButtonProps) => {
+}: EpisodePlayButtonProps) => {
   const {
     audioRef,
     didError,

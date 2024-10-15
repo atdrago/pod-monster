@@ -1,8 +1,8 @@
-export interface IPodcastIndexChapterResponse {
-  chapters: Array<IPodcastIndexChapter>;
+export interface PodcastIndexChapterResponse {
+  chapters: Array<PodcastIndexChapter>;
 }
 
-export interface IPodcastIndexChapter {
+export interface PodcastIndexChapter {
   img?: string | null;
   startTime?: number | null;
   title?: string | null;
@@ -10,7 +10,7 @@ export interface IPodcastIndexChapter {
   url?: string | null;
 }
 
-export interface IChapter {
+export interface Chapter {
   img?: string | null;
   startTime: number;
   title?: string | null;

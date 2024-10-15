@@ -5,14 +5,14 @@ import { Stack } from 'components/layouts/Stack';
 import FundingIcon from 'icons/aid-kit.svg';
 import ExternalLinkIcon from 'icons/arrow-up-right2.svg';
 
-interface IFundingProps {
+interface FundingProps {
   funding?: {
     message: string;
     url: string;
   } | null;
 }
 
-export const Funding = ({ funding }: IFundingProps) => {
+export const Funding = ({ funding }: FundingProps) => {
   if (!funding) {
     return null;
   }

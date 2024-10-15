@@ -1,12 +1,12 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 
-import type { IChapter, PlaybackRate } from 'types';
+import type { Chapter, PlaybackRate } from 'types';
 
-export interface IMediaContext {
+export interface MediaContext {
   audioRef: MutableRefObject<HTMLAudioElement | null>;
-  chapters: Array<IChapter> | null | undefined;
+  chapters: Array<Chapter> | null | undefined;
   chaptersUrl: string | null;
-  currentChapter: IChapter | null;
+  currentChapter: Chapter | null;
   currentChapterIndex: number;
   currentTime: number;
   dateCrawled: number | null;

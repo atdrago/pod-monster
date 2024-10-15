@@ -13,10 +13,10 @@ import {
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
-import type { IMediaContext, PlaybackRate } from 'types';
+import type { MediaContext, PlaybackRate } from 'types';
 import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 
-const mediaContextDefaults: IMediaContext = {
+const mediaContextDefaults: MediaContext = {
   /* eslint-disable @typescript-eslint/no-empty-function */
   audioRef: { current: null },
   chapters: null,
@@ -77,7 +77,7 @@ const mediaContextDefaults: IMediaContext = {
   /* eslint-enable @typescript-eslint/no-empty-function */
 };
 
-const MediaContext = createContext<IMediaContext | undefined>(undefined);
+const MediaContext = createContext<MediaContext | undefined>(undefined);
 
 export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   children,
@@ -539,5 +539,5 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   );
 };
 
-export const useMediaContext = (): IMediaContext =>
+export const useMediaContext = (): MediaContext =>
   useContext(MediaContext) || mediaContextDefaults;

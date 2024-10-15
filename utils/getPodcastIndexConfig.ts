@@ -1,9 +1,9 @@
-import type { IPodcastIndexConfig } from '@atdrago/podcast-index';
+import type { PodcastIndexConfig } from '@atdrago/podcast-index';
 
 export const getPodcastIndexConfig = (
   authTime: number,
   authToken: string,
-): IPodcastIndexConfig => {
+): PodcastIndexConfig => {
   return {
     apiKey: process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
     authTime,

@@ -1,4 +1,4 @@
-import type { IApiErrorResponse } from 'types';
+import type { ApiErrorResponse } from 'types';
 
 /**
  * Generic method that handles errors from the API and properly throws them.
@@ -12,7 +12,7 @@ export async function request<TResponse = unknown>(
 ): Promise<TResponse> {
   const response = await fetch(input, init);
 
-  const responseJson: IApiErrorResponse | TResponse = await response.json();
+  const responseJson: ApiErrorResponse | TResponse = await response.json();
 
   const isErrorResponse =
     responseJson && typeof responseJson === 'object' && 'error' in responseJson;

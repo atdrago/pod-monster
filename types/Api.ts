@@ -1,11 +1,11 @@
 type Nullable<T> = T | null;
 
-interface IApiError {
+interface ApiError {
   message: string;
   name: Nullable<string>;
   stack: Nullable<string>;
 }
 
-export interface IApiErrorResponse {
-  error: IApiError;
+export interface ApiErrorResponse {
+  error: ApiError;
 }

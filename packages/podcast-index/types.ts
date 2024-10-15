@@ -1,4 +1,4 @@
-export interface IPodcastIndexConfig {
+export interface PodcastIndexConfig {
   apiKey: string;
   authTime: number;
   authToken: string;
