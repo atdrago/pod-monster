@@ -26,7 +26,7 @@ export const Stack = forwardRef<HTMLElement, StackProps>(function StackRef(
     space = 'medium',
     ...divProps
   }: StackProps,
-  ref
+  ref,
 ) {
   const rootClassName = useClassNames(
     stack,
@@ -35,7 +35,7 @@ export const Stack = forwardRef<HTMLElement, StackProps>(function StackRef(
     kindVariant[kind],
     align && alignVariant[align],
     justify && justifyVariant[justify],
-    className
+    className,
   );
 
   return <Box as={as} className={rootClassName} ref={ref} {...divProps} />;

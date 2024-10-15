@@ -27,7 +27,7 @@ export const SubscriptionItem = ({
 }: ISubscriptionItemProps) => {
   const baseClassName = useClassNames(
     subscriptionItemClassName,
-    nonUnderlinedLink
+    nonUnderlinedLink,
   );
   const { episodeSettings, feedSettings } = useSettingsContext();
   // -30 days

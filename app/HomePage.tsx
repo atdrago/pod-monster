@@ -34,7 +34,7 @@ export function HomePage({
   const searchParams = useSearchParams();
   const [searchTerm, searchTermDebounced, setSearchTerm] = useStateWithDebounce(
     searchParams?.get('term') ?? '',
-    1000
+    1000,
   );
 
   const { data: searchResponse, isLoading } = useQuery({
@@ -42,7 +42,7 @@ export function HomePage({
     queryFn: async () =>
       await searchByTerm(
         searchTermDebounced,
-        getPodcastIndexConfig(podcastIndexAuthTime, podcastIndexAuthToken)
+        getPodcastIndexConfig(podcastIndexAuthTime, podcastIndexAuthToken),
       ),
     queryKey: ['searchByTerm', searchTermDebounced],
     refetchOnMount: false,
@@ -62,7 +62,7 @@ export function HomePage({
   const feedSettingsEntries = Object.entries(feedSettings).filter(
     ([_, { subscribedAt }]) => {
       return !!subscribedAt;
-    }
+    },
   );
 
   let searchFeedback =

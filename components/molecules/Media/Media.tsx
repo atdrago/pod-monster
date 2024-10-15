@@ -100,7 +100,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
   };
 
   const handleMediaRangeChange: ReactEventHandler<HTMLInputElement> = (
-    event
+    event,
   ) => {
     if (audioRef.current) {
       audioRef.current.currentTime = event.currentTarget.valueAsNumber;
@@ -125,7 +125,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
     if (nextDuration) {
       // Sometimes it's NaN...
       setDuration(
-        isNaN(nextDuration) || nextDuration === Infinity ? 0 : nextDuration
+        isNaN(nextDuration) || nextDuration === Infinity ? 0 : nextDuration,
       );
     }
   }, [
@@ -237,7 +237,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
             {duration === 0
               ? '...'
               : secondsToFormattedTime(
-                  Math.floor(duration) - Math.floor(currentTime)
+                  Math.floor(duration) - Math.floor(currentTime),
                 )}
           </Typography>
         </label>

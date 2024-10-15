@@ -15,7 +15,7 @@ export const useStateWithDebounce = <TValue>(
     leading?: boolean | undefined;
     maxWait?: number | undefined;
     trailing?: boolean | undefined;
-  }
+  },
 ): [TValue, TValue, Dispatch<SetStateAction<TValue>>] => {
   const [value, setValue] = useState(initialState);
   const [valueDebounced] = useDebounce(value, delay, options);

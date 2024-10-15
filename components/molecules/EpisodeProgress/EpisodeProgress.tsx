@@ -27,7 +27,7 @@ export const EpisodeProgress = ({
   return (
     <Progress
       topLeftTitle={longDateTimeFormat.format(
-        new Date(episodeDatePublished * 1000)
+        new Date(episodeDatePublished * 1000),
       )}
       percent={
         currentEpisodeDuration > 0
@@ -43,7 +43,7 @@ export const EpisodeProgress = ({
         currentEpisodeDuration > 0
           ? secondsToFormattedTime(
               Math.max(currentEpisodeDuration, currentEpisodeTime) -
-                currentEpisodeTime
+                currentEpisodeTime,
             )
           : undefined
       }

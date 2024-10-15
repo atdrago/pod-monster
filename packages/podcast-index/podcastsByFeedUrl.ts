@@ -7,7 +7,7 @@ import { request } from './utils/request';
 
 export async function podcastsByFeedUrl(
   feedUrl: string,
-  config: IPodcastIndexConfig
+  config: IPodcastIndexConfig,
 ): Promise<ApiResponse.PodcastById> {
   const url = new URL(PATH_PODCASTS_BY_FEED_URL, BASE_API_URL);
   url.searchParams.set('url', feedUrl);

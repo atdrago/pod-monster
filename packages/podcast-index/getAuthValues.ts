@@ -15,7 +15,7 @@ import crypto from 'crypto';
  */
 export const getAuthValues = (
   apiKey: string,
-  apiSecret: string
+  apiSecret: string,
 ): [number, string] => {
   const podcastIndexAuthTime = Math.floor(Date.now() / 1000);
   const podcastIndexAuthToken = crypto

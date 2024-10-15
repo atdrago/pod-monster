@@ -17,7 +17,7 @@ export const supportedTranscriptTypes = [
 
 export const fetchPodcastEpisodeTranscript = async (
   transcripts: PIApiEpisodeDetail['transcripts'],
-  duration: number
+  duration: number,
 ): Promise<TranscriptDocument> => {
   if (!transcripts) {
     throw new Error('`transcripts` is required');
@@ -25,7 +25,7 @@ export const fetchPodcastEpisodeTranscript = async (
 
   const sortedTranscripts = supportedTranscriptTypes
     .map((supportedType) =>
-      transcripts.find(({ type }) => type === supportedType)
+      transcripts.find(({ type }) => type === supportedType),
     )
     .filter(notNullOrUndefined);
 
@@ -45,7 +45,7 @@ export const fetchPodcastEpisodeTranscript = async (
 
   const transcriptProxyUrl = new URL(
     '/api/podcasts/transcript',
-    process.env.NEXT_PUBLIC_BASE_URL
+    process.env.NEXT_PUBLIC_BASE_URL,
   );
 
   transcriptProxyUrl.searchParams.set('type', targetTranscript.type);

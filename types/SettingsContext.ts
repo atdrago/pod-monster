@@ -74,7 +74,7 @@ export interface ISettingsContext {
   setAllFeedSettings: (feedSettings: FeedSettings) => Promise<void>;
   setEpisodeSettingsItem: (
     key: string,
-    value: IEpisodeSettingsItem
+    value: IEpisodeSettingsItem,
   ) => Promise<void>;
   setFeedSettingsItem: (key: string, value: IFeedSettingsItem) => Promise<void>;
   setMediaPlayerSettings: Dispatch<

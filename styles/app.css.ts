@@ -60,7 +60,7 @@ globalStyle(
     margin: 0,
     padding: 0,
     verticalAlign: 'baseline',
-  }
+  },
 );
 
 // HTML5 display-role reset for older browsers
@@ -71,7 +71,7 @@ globalStyle(
   `,
   {
     display: 'block',
-  }
+  },
 );
 
 globalStyle('blockquote, q', {

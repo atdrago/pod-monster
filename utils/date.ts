@@ -10,7 +10,7 @@ export const longDateTimeFormat = new Intl.DateTimeFormat('default', {
 
 export const secondsToFormattedTime = (
   seconds: number,
-  { includeMilliseconds = false }: { includeMilliseconds?: boolean } = {}
+  { includeMilliseconds = false }: { includeMilliseconds?: boolean } = {},
 ): string => {
   if (seconds === 0) {
     return '00:00:00';

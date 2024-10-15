@@ -45,7 +45,7 @@ export function SettingsPage() {
   });
 
   const handleFileChange: ReactEventHandler<HTMLInputElement> = async (
-    event
+    event,
   ) => {
     const file = event.currentTarget.files?.[0];
 
@@ -54,7 +54,7 @@ export function SettingsPage() {
         hasExistingSubscriptions &&
         !shouldMergeOpmlImport &&
         !window.confirm(
-          'Are you sure you want to remove your existing Pod Monster subscriptions and subscribe to the podcasts in this OPML file instead?'
+          'Are you sure you want to remove your existing Pod Monster subscriptions and subscribe to the podcasts in this OPML file instead?',
         )
       ) {
         return;

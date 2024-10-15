@@ -53,7 +53,7 @@ export const EpisodePage = ({
 }: IEpisodePageProps) => {
   const { episodeSettings } = useSettingsContext();
   const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
-    episode ? episodeSettings[episode.id]?.currentTime ?? 0 : 0
+    episode ? (episodeSettings[episode.id]?.currentTime ?? 0) : 0,
   );
   const episodeDuration =
     episode?.duration ||
@@ -87,7 +87,7 @@ export const EpisodePage = ({
     queryFn: async () =>
       await fetchPodcastEpisodeTranscript(
         episode?.transcripts ?? null,
-        episodeDuration
+        episodeDuration,
       ),
     queryKey: [
       'transcript',
@@ -123,7 +123,7 @@ export const EpisodePage = ({
   const hasChapters = chapters.length > 0;
   const nonTocChapters = useMemo(
     () => chapters.filter(({ toc }) => toc !== false),
-    [chapters]
+    [chapters],
   );
   const currentChapterIndex = useChapterIndex({
     chapters,
@@ -143,7 +143,7 @@ export const EpisodePage = ({
     ({ startTime: chapterStartTime, title }) => ({
       from: chapterStartTime,
       text: title ?? 'No title',
-    })
+    }),
   );
 
   const episodeArtwork =
@@ -366,7 +366,7 @@ export const EpisodePage = ({
           <Typography as="p" size="paragraph">
             {episode
               ? `Published on ${longDateTimeFormat.format(
-                  new Date(episode.datePublished * 1000)
+                  new Date(episode.datePublished * 1000),
                 )}.`
               : null}
           </Typography>

@@ -2,7 +2,7 @@ import type { MutableRefObject } from 'react';
 
 import { playbackRates } from 'utils/playbackRates';
 
-export type PlaybackRate = typeof playbackRates[number];
+export type PlaybackRate = (typeof playbackRates)[number];
 
 export type MediaProps = JSX.IntrinsicElements['audio'] &
   Pick<JSX.IntrinsicElements['video'], 'poster'> & {

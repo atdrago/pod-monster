@@ -11,7 +11,7 @@ export const Dot = ({ className, color, label, ...spanProps }: DotProps) => {
   const baseClassName = useClassNames(
     dotClassName,
     backgroundVariants[color],
-    className
+    className,
   );
 
   return (

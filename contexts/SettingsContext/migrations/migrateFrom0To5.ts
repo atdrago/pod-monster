@@ -9,7 +9,7 @@ import { tryLocalStorageGetItem } from 'utils/localStorage';
  * @param database
  */
 export const migrateFrom0To5 = async (
-  database: IDBPDatabase<IPodMonsterDb>
+  database: IDBPDatabase<IPodMonsterDb>,
 ) => {
   const settingsFromLocalStorage = tryLocalStorageGetItem('pod2.settings');
 
@@ -18,7 +18,7 @@ export const migrateFrom0To5 = async (
   if (settingsFromLocalStorage) {
     try {
       settingsJsonFromLocalStorage = JSON.parse(
-        settingsFromLocalStorage
+        settingsFromLocalStorage,
       ) as LocalStorageSettings;
     } catch (err) {
       captureException(err);
@@ -28,17 +28,17 @@ export const migrateFrom0To5 = async (
   if (settingsJsonFromLocalStorage?.episodeSettings) {
     const episodeSettingsMigrationTransaction = database.transaction(
       'episodeSettings',
-      'readwrite'
+      'readwrite',
     );
 
     await Promise.all([
       ...Object.entries(
-        settingsJsonFromLocalStorage?.episodeSettings ?? []
+        settingsJsonFromLocalStorage?.episodeSettings ?? [],
       ).map(([episodeId, episodeSettingsItem]) =>
         episodeSettingsMigrationTransaction.store.put(
           episodeSettingsItem,
-          episodeId
-        )
+          episodeId,
+        ),
       ),
       episodeSettingsMigrationTransaction.done,
     ]);
@@ -47,13 +47,13 @@ export const migrateFrom0To5 = async (
   if (settingsJsonFromLocalStorage?.feedSettings) {
     const feedSettingsMigrationTransaction = database.transaction(
       'feedSettings',
-      'readwrite'
+      'readwrite',
     );
 
     await Promise.all([
       ...Object.entries(settingsJsonFromLocalStorage?.feedSettings ?? []).map(
         ([feedId, feedSettingsItem]) =>
-          feedSettingsMigrationTransaction.store.put(feedSettingsItem, feedId)
+          feedSettingsMigrationTransaction.store.put(feedSettingsItem, feedId),
       ),
       feedSettingsMigrationTransaction.done,
     ]);
@@ -62,13 +62,13 @@ export const migrateFrom0To5 = async (
   if (settingsJsonFromLocalStorage?.audioPlayerSettings) {
     const mediaPlayerSettingsMigrationTransaction = database.transaction(
       'mediaPlayerSettings',
-      'readwrite'
+      'readwrite',
     );
 
     await Promise.all([
       mediaPlayerSettingsMigrationTransaction.store.put(
         settingsJsonFromLocalStorage.audioPlayerSettings,
-        'mediaPlayerSettings'
+        'mediaPlayerSettings',
       ),
       mediaPlayerSettingsMigrationTransaction.done,
     ]);

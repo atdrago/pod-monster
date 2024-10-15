@@ -33,11 +33,11 @@ export const Progress = ({
 }: IProgressProps) => {
   const progressBarClassName = useClassNames(
     progressBar,
-    progressBarHighlightVariant[`${isHighlighted}`]
+    progressBarHighlightVariant[`${isHighlighted}`],
   );
   const width = useMemo(
     () => (typeof percent === 'number' ? Math.round(percent * 10000) / 100 : 0),
-    [percent]
+    [percent],
   );
 
   return (

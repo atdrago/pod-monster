@@ -131,7 +131,7 @@ export const MediaPlayer: FunctionComponent = () => {
   const [isPinned, setIsPinned] = useState(false);
   const playerClassName = useClassNames(
     player,
-    playerElevatedVariant[isPinned ? 'elevated' : 'inset']
+    playerElevatedVariant[isPinned ? 'elevated' : 'inset'],
   );
 
   const playerArtwork = currentChapter?.img || episodeImage || feedImage;
@@ -144,7 +144,7 @@ export const MediaPlayer: FunctionComponent = () => {
   };
 
   const handleLoadedData: ReactEventHandler<HTMLMediaElement> = async (
-    event
+    event,
   ) => {
     if (audioRef.current) {
       if (audioRef.current.paused && !isPaused) {
@@ -167,7 +167,7 @@ export const MediaPlayer: FunctionComponent = () => {
   };
 
   const handleVolumeRangeChange: ReactEventHandler<HTMLInputElement> = (
-    event
+    event,
   ) => {
     if (audioRef.current) {
       audioRef.current.volume = event.currentTarget.valueAsNumber;
@@ -206,7 +206,7 @@ export const MediaPlayer: FunctionComponent = () => {
       ([entry]) => {
         setIsPinned(entry.intersectionRatio < 1);
       },
-      { threshold: [1] }
+      { threshold: [1] },
     );
 
     if (ref) {
@@ -361,7 +361,7 @@ export const MediaPlayer: FunctionComponent = () => {
               onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
               onProgress={(event) => {
                 setProgressEventBufferedTuples(
-                  bufferedTimeRangesToTuples(event.currentTarget.buffered)
+                  bufferedTimeRangesToTuples(event.currentTarget.buffered),
                 );
               }}
               playbackRate={playbackRate}
@@ -372,7 +372,7 @@ export const MediaPlayer: FunctionComponent = () => {
               title={
                 didError
                   ? '⚠️ Failed to load episode. Press play to retry.'
-                  : feedTitle ?? ''
+                  : (feedTitle ?? '')
               }
               videoRef={videoRef}
             />
@@ -455,7 +455,7 @@ export const MediaPlayer: FunctionComponent = () => {
                   label={`${rateDecimalToFraction(playbackRate)}x`}
                   onChange={(event) => {
                     const nextPlaybackRate = fractionToPlaybackRate(
-                      event.currentTarget.value
+                      event.currentTarget.value,
                     );
 
                     if (nextPlaybackRate) {

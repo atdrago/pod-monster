@@ -8,6 +8,6 @@ export const useClassNames = (
   return useMemo(
     () => classNames.filter(notNullOrUndefined).join(' '),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [...classNames]
+    [...classNames],
   );
 };

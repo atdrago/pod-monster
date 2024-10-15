@@ -8,7 +8,7 @@ import type { IApiErrorResponse } from 'types';
  */
 export async function request<TResponse = unknown>(
   input: RequestInfo,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<TResponse> {
   const response = await fetch(input, init);
 

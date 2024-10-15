@@ -39,7 +39,7 @@ export async function generateMetadata({
 
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,
   );
   const config = getPodcastIndexConfig(authTime, authToken);
 
@@ -84,7 +84,7 @@ export default async function Page({ params }: IPageProps) {
 
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,
   );
   const config = getPodcastIndexConfig(authTime, authToken);
 
@@ -100,7 +100,7 @@ export default async function Page({ params }: IPageProps) {
 
   try {
     const { height, width } = await probeImageSize(
-      episode.image || episode.feedImage
+      episode.image || episode.feedImage,
     );
 
     // If the image is a square, keep the dimensions at 512x512

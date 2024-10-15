@@ -190,5 +190,5 @@ export const HtmlViewer = memo(
       prevProps.className === nextProps.className &&
       prevProps.shouldUseCapsize === nextProps.shouldUseCapsize
     );
-  }
+  },
 );

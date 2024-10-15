@@ -26,7 +26,7 @@ export const useTypography = ({
     whitespace === 'ellipsis' && !shouldUseCapsize
       ? ellipsisContainer
       : undefined,
-    className
+    className,
   );
 };
 
