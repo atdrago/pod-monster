@@ -44,7 +44,7 @@
     "use-debounce": "^7.0.1"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.1.0",
+    "@next/bundle-analyzer": "^14.2.15",
     "@types/jest": "^27.4.1",
     "@types/probe-image-size": "^7.0.1",
     "@types/react": "^18.3.11",
