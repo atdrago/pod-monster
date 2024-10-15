@@ -1,5 +1,7 @@
+'use client';
+
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import type { FunctionComponent } from 'react';
 
 import { Icon } from 'components/atoms/Icon';
@@ -31,7 +33,7 @@ export const Header: FunctionComponent<IHeaderProps> = ({
   feedTitle,
   isLoading = false,
 }) => {
-  const { pathname } = useRouter();
+  const pathname = usePathname() ?? '';
 
   const isStaticPage = ['/about', '/settings'].includes(pathname);
 

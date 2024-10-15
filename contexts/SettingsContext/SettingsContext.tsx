@@ -1,3 +1,5 @@
+'use client';
+
 import { IDBPDatabase, openDB } from 'idb';
 import {
   FunctionComponent,

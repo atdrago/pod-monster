@@ -79,6 +79,7 @@ module.exports = {
             // "typeParameter" is another word for "generic"
             selector: 'typeParameter',
           },
+          // TODO: Remove this I-prefix rule
           {
             format: ['PascalCase'],
             prefix: ['I'],

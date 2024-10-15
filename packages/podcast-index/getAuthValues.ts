@@ -1,3 +1,6 @@
+// TODO: Uncomment the following line when we're fully migrated to the app router
+// import 'server-only';
+
 import crypto from 'crypto';
 
 /**

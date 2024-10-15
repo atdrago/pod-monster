@@ -1,3 +1,5 @@
+'use client';
+
 import type { FunctionComponent, ReactEventHandler } from 'react';
 
 import { Button } from 'components/atoms/Button';
