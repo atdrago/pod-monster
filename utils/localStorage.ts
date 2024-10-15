@@ -18,7 +18,7 @@ const inMemoryLocalStorage: Record<string, string | null> = {};
  * in-memory storage if not.
  */
 export const tryLocalStorageGetItem: typeof window.localStorage.getItem = (
-  key
+  key,
 ) => {
   if (window.navigator.cookieEnabled) {
     try {

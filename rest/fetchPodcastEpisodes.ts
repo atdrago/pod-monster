@@ -4,7 +4,7 @@ import { request } from 'utils/request';
 
 export const fetchPodcastEpisodes = async (
   feedId: string,
-  since: number
+  since: number,
 ): Promise<ApiResponse.EpisodesByFeedId> => {
   if (!feedId) {
     throw new Error('`feedId` is required');
@@ -16,7 +16,7 @@ export const fetchPodcastEpisodes = async (
 
   const episodesProxyUrl = new URL(
     '/api/podcasts/episodes',
-    process.env.NEXT_PUBLIC_BASE_URL
+    process.env.NEXT_PUBLIC_BASE_URL,
   );
 
   episodesProxyUrl.searchParams.set('feedId', feedId);
@@ -26,6 +26,6 @@ export const fetchPodcastEpisodes = async (
     episodesProxyUrl.toString(),
     {
       method: 'GET',
-    }
+    },
   );
 };

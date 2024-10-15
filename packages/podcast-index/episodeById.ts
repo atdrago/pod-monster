@@ -7,7 +7,7 @@ import { request } from './utils/request';
 
 export async function episodeById(
   id: string,
-  config: IPodcastIndexConfig
+  config: IPodcastIndexConfig,
 ): Promise<ApiResponse.EpisodeById> {
   const url = new URL(PATH_EPISODES_BY_ID, BASE_API_URL);
   url.searchParams.set('id', id);

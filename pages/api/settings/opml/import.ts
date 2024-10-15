@@ -32,7 +32,7 @@ const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
 
 const handler: NextApiHandler<OpmlImportResponse | IApiErrorResponse> = async (
   req,
-  res
+  res,
 ) => {
   if (req.method?.toLowerCase() !== 'post') {
     return res.status(400).json(createApiErrorResponse('Method must be POST'));
@@ -44,7 +44,7 @@ const handler: NextApiHandler<OpmlImportResponse | IApiErrorResponse> = async (
 
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,
   );
   const config = getPodcastIndexConfig(authTime, authToken);
   const opmlRoot = await opmlToJSON(req.body);
@@ -62,7 +62,7 @@ const handler: NextApiHandler<OpmlImportResponse | IApiErrorResponse> = async (
       }
 
       return null;
-    })
+    }),
   );
 
   const feedSettings: FeedSettings = {};

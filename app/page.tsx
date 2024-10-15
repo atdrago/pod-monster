@@ -26,7 +26,7 @@ interface IPageProps {
 export default function Page({ searchParams }: IPageProps) {
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,
   );
   const queryClient = getQueryClient();
 
@@ -38,7 +38,7 @@ export default function Page({ searchParams }: IPageProps) {
       queryFn: async () =>
         await searchByTerm(
           searchTerm,
-          getPodcastIndexConfig(authTime, authToken)
+          getPodcastIndexConfig(authTime, authToken),
         ),
       queryKey: ['searchByTerm', searchTerm],
     });

@@ -1,7 +1,10 @@
 class NetworkError extends Error {
   name = 'NetworkError';
 
-  constructor(message: string, public response: Response) {
+  constructor(
+    message: string,
+    public response: Response,
+  ) {
     super(message);
   }
 }
@@ -15,7 +18,7 @@ class NetworkError extends Error {
  */
 export async function request<TResponse>(
   url: string,
-  config?: RequestInit
+  config?: RequestInit,
 ): Promise<TResponse> {
   const response = await fetch(url, config);
 
@@ -24,7 +27,7 @@ export async function request<TResponse>(
       `(${response.status}) ${
         response.statusText
       }: Unsuccessful response received from URL "${url}". Error text: "${await response.text()}"`,
-      response
+      response,
     );
   }
 

@@ -92,7 +92,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const mediaPlayerSettingsRef = useRef(mediaPlayerSettings);
 
   const [chaptersUrl, setChaptersUrl] = useState<string | null>(
-    mediaContextDefaults.chaptersUrl
+    mediaContextDefaults.chaptersUrl,
   );
   const [
     mediaPlayerCurrentTime,
@@ -104,33 +104,33 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [progressEventBufferedTuples, setProgressEventBufferedTuples] =
     useState(mediaContextDefaults.progressEventBufferedTuples);
   const [currentTime, setCurrentTime] = useState(
-    mediaContextDefaults.currentTime
+    mediaContextDefaults.currentTime,
   );
   const [dateCrawled, setDateCrawled] = useState<number | null>(
-    mediaContextDefaults.dateCrawled
+    mediaContextDefaults.dateCrawled,
   );
   const [duration, setDuration] = useState<number>(
-    mediaContextDefaults.duration
+    mediaContextDefaults.duration,
   );
   const [didError, setDidError] = useState(false);
   const [episodeId, setEpisodeId] = useState<number | null>(
-    mediaContextDefaults.episodeId
+    mediaContextDefaults.episodeId,
   );
   const [episodeImage, setEpisodeImage] = useState(
-    mediaContextDefaults.episodeImage
+    mediaContextDefaults.episodeImage,
   );
   const [episodeImageDimensions, setEpisodeImageDimensions] = useState(
-    mediaContextDefaults.episodeImageDimensions
+    mediaContextDefaults.episodeImageDimensions,
   );
   const [episodeTitle, setEpisodeTitle] = useState(
-    mediaContextDefaults.episodeTitle
+    mediaContextDefaults.episodeTitle,
   );
   const [feedId, setFeedId] = useState(mediaContextDefaults.feedId);
   const [feedImage, setFeedImage] = useState(mediaContextDefaults.feedImage);
   const [feedTitle, setFeedTitle] = useState(mediaContextDefaults.feedTitle);
   const [isMuted, setIsMuted] = useState<boolean>(mediaContextDefaults.isMuted);
   const [isPaused, setIsPaused] = useState<boolean>(
-    mediaContextDefaults.isPaused
+    mediaContextDefaults.isPaused,
   );
   const [isLoadingAtCurrentTime, setIsLoadingAtCurrentTime] = useState(false);
   const [isTranscriptVisibleAsSubtitle, setIsTranscriptVisibleAsSubtitle] =
@@ -138,7 +138,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [playbackRate, setPlaybackRate] = useState<PlaybackRate>(1);
   const [src, setSrc] = useState<string | null>(mediaContextDefaults.src);
   const [srcType, setSrcType] = useState<string | null>(
-    mediaContextDefaults.srcType
+    mediaContextDefaults.srcType,
   );
   const [size, setSize] = useState<1 | 2>(mediaContextDefaults.size);
   const [volume, setVolume] = useState<number>(mediaContextDefaults.volume);
@@ -208,7 +208,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
       setCurrentTime(resultTime);
     },
-    [mediaPlayerCurrentTime]
+    [mediaPlayerCurrentTime],
   );
 
   const seekForward = useCallback(
@@ -217,7 +217,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
       setCurrentTime(resultTime);
     },
-    [mediaPlayerCurrentTime]
+    [mediaPlayerCurrentTime],
   );
 
   const pause = useCallback(() => {
@@ -279,11 +279,11 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setFeedTitle(mediaPlayerSettings.feedTitle);
         setIsMuted(mediaPlayerSettings.isMuted);
         setIsTranscriptVisibleAsSubtitle(
-          mediaPlayerSettings.isTranscriptVisibleAsSubtitle
+          mediaPlayerSettings.isTranscriptVisibleAsSubtitle,
         );
         setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
         setPlaybackRate(
-          mediaPlayerSettings.playbackRate ?? mediaContextDefaults.playbackRate
+          mediaPlayerSettings.playbackRate ?? mediaContextDefaults.playbackRate,
         );
         setSize(mediaPlayerSettings.size ?? mediaContextDefaults.size);
         setSrc(mediaPlayerSettings.src);
@@ -449,7 +449,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
    */
   useEffect(() => {
     const elementBufferedTuples = bufferedTimeRangesToTuples(
-      videoRef.current?.buffered ?? audioRef.current?.buffered
+      videoRef.current?.buffered ?? audioRef.current?.buffered,
     );
 
     const isCurrentTimeInTuple = ([begin, end]: [number, number]) => {

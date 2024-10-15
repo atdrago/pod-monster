@@ -25,7 +25,7 @@ globalStyle(
 `,
   {
     marginBottom: vars.spacing.s032,
-  }
+  },
 );
 
 globalStyle(
@@ -35,7 +35,7 @@ globalStyle(
   {
     marginBottom: vars.spacing.s008,
     marginTop: vars.spacing.s008,
-  }
+  },
 );
 
 globalStyle(
@@ -48,5 +48,5 @@ globalStyle(
 `,
   {
     marginBottom: 0,
-  }
+  },
 );

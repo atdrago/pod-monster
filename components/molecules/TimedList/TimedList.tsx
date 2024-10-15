@@ -28,7 +28,7 @@ const ListItemComponent = memo(function Row({
   const isCurrentTranscriptItem = data.index === listItemIndex;
   const outerClassName = useClassNames(
     transcriptItemOuter,
-    isCurrentTranscriptItem ? transcriptItemHighlight : undefined
+    isCurrentTranscriptItem ? transcriptItemHighlight : undefined,
   );
 
   return (
@@ -42,8 +42,7 @@ const ListItemComponent = memo(function Row({
       <span className={transcriptItem}>{text}</span>
     </span>
   );
-},
-areEqual);
+}, areEqual);
 
 export const TimedList: FunctionComponent<ITimedListProps> = memo(
   function TimedListMemo({
@@ -83,7 +82,7 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
 
     const indexDelta = Math.abs(index - indexRef.current);
     const indexUpdatedAtDelta = Math.abs(
-      Date.now() - indexUpdatedAtRef.current
+      Date.now() - indexUpdatedAtRef.current,
     );
     /**
      * Only smooth scroll if it's a short distance to transition, and if the
@@ -164,5 +163,5 @@ export const TimedList: FunctionComponent<ITimedListProps> = memo(
         </Typography>
       </Details>
     );
-  }
+  },
 );

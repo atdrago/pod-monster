@@ -18,11 +18,11 @@ function timestampToFormattedTime(timestamp: string): string {
 
 export async function tryConvertTextOrHtmlToVtt(
   textOrHtml: string,
-  podcastDurationSeconds?: number | null
+  podcastDurationSeconds?: number | null,
 ): Promise<string | undefined> {
   // Strip HTML
   const rawText = String(
-    await unified().use(rehypeParse).use(rehypeStripHtml).process(textOrHtml)
+    await unified().use(rehypeParse).use(rehypeStripHtml).process(textOrHtml),
   );
 
   // Get start/end indexes of bracket-style timestamps (ex. [00:00:00] or [00:00:00.000])
@@ -50,7 +50,7 @@ export async function tryConvertTextOrHtmlToVtt(
 
     const timestamp = rawText.substring(
       timestampMatch.start,
-      timestampMatch.end
+      timestampMatch.end,
     );
     const text = rawText
       .substring(timestampMatch.end, nextTimestampMatch?.start)

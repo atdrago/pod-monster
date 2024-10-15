@@ -16,7 +16,7 @@ import { tryConvertTextOrHtmlToVtt } from 'utils/tryConvertTextOrHtmlToVtt';
 
 const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
   req,
-  res
+  res,
 ) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
   let type = typeof req.query.type === 'string' ? req.query.type : null;
@@ -38,8 +38,8 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
       .status(501)
       .json(
         createApiErrorResponse(
-          `The transcript type "${type}" is not supported.`
-        )
+          `The transcript type "${type}" is not supported.`,
+        ),
       );
   }
 
@@ -50,7 +50,7 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
 
     if (!transcriptResponse.ok) {
       throw new Error(
-        `Failed to fetch transcript: ${transcriptResponse.statusText}`
+        `Failed to fetch transcript: ${transcriptResponse.statusText}`,
       );
     }
 
@@ -59,7 +59,7 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
     if (type === 'text/html') {
       const vtt = await tryConvertTextOrHtmlToVtt(
         transcriptResponseText,
-        duration
+        duration,
       );
 
       if (vtt) {
@@ -78,13 +78,13 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
             id,
             text,
             to: to / 1000,
-          })
+          }),
         );
 
         return res
           .setHeader(
             'Cache-Control',
-            'public, s-maxage=60, stale-while-revalidate=3600'
+            'public, s-maxage=60, stale-while-revalidate=3600',
           )
           .status(200)
           .json({
@@ -95,7 +95,7 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
         return res
           .setHeader(
             'Cache-Control',
-            'public, s-maxage=60, stale-while-revalidate=3600'
+            'public, s-maxage=60, stale-while-revalidate=3600',
           )
           .status(200)
           .json({
@@ -105,7 +105,7 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
               >
                 {transcriptResponseText}
-              </HtmlViewer>
+              </HtmlViewer>,
             ),
           });
       }
@@ -114,8 +114,8 @@ const handler: NextApiHandler<TranscriptDocument | IApiErrorResponse> = async (
           .status(501)
           .json(
             createApiErrorResponse(
-              `The transcript type "${type}" is not supported.`
-            )
+              `The transcript type "${type}" is not supported.`,
+            ),
           );
       }
     }

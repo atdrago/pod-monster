@@ -35,7 +35,7 @@ export const Artwork = memo<ArtworkComponentProps>(
     const artworkFallbackClassName = useClassNames(artworkFallback, className);
     const shadowClassName = useClassNames(
       shadowContainer,
-      shadowVariant[shadow]
+      shadowVariant[shadow],
     );
 
     const shouldShowImage = src && !failedToLoad;
@@ -98,5 +98,5 @@ export const Artwork = memo<ArtworkComponentProps>(
       prevProps.subtitle === nextProps.subtitle &&
       prevProps.width === nextProps.width
     );
-  }
+  },
 );

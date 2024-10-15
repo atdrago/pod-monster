@@ -4,7 +4,7 @@ export interface ITimedListItem {
 }
 
 export interface ITimedListProps<
-  TListItem extends ITimedListItem = ITimedListItem
+  TListItem extends ITimedListItem = ITimedListItem,
 > {
   error?: Error | null;
   hasError?: boolean;

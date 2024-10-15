@@ -8,7 +8,7 @@ export const useOpmlFileUrl = () => {
 
   useEffect(() => {
     const feedEntries = Object.entries(feedSettings).filter(
-      ([_, { subscribedAt }]) => subscribedAt !== null
+      ([_, { subscribedAt }]) => subscribedAt !== null,
     );
 
     if (feedEntries.length === 0) {

@@ -1,5 +1,5 @@
 export const bufferedTimeRangesToTuples = (
-  buffered?: TimeRanges
+  buffered?: TimeRanges,
 ): Array<[number, number]> => {
   if (!buffered) {
     return [];

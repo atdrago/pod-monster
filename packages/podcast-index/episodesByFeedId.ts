@@ -14,7 +14,7 @@ export async function episodesByFeedId(
     max?: number;
     since?: number;
   } = {},
-  config: IPodcastIndexConfig
+  config: IPodcastIndexConfig,
 ): Promise<ApiResponse.EpisodesByFeedId> {
   const url = new URL(PATH_EPISODES_BY_FEED_ID, BASE_API_URL);
   url.searchParams.set('id', id);
@@ -31,6 +31,6 @@ export async function episodesByFeedId(
 
   return await request<ApiResponse.EpisodesByFeedId>(
     url.toString(),
-    httpOptions
+    httpOptions,
   );
 }

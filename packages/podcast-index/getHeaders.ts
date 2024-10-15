@@ -1,7 +1,7 @@
 import type { IPodcastIndexConfig } from './types';
 
 export const getHeaders = (
-  config: IPodcastIndexConfig
+  config: IPodcastIndexConfig,
 ): Record<string, string> => {
   const { apiKey, authTime, authToken, userAgent } = config;
 

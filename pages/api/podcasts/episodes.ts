@@ -21,13 +21,15 @@ const handler: NextApiHandler<
     return res
       .status(400)
       .json(
-        createApiErrorResponse('`since` is required and must be a valid number')
+        createApiErrorResponse(
+          '`since` is required and must be a valid number',
+        ),
       );
   }
 
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
-    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET
+    process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,
   );
   const config = getPodcastIndexConfig(authTime, authToken);
 
@@ -38,7 +40,7 @@ const handler: NextApiHandler<
     return res
       .setHeader(
         'Cache-Control',
-        'public, s-maxage=3600, stale-while-revalidate=43200'
+        'public, s-maxage=3600, stale-while-revalidate=43200',
       )
       .status(200)
       .json(episodesResponse);

@@ -25,7 +25,7 @@ export const Icon = ({
     icon,
     iconSizeVariant[size],
     iconOrientationVariant[orientation],
-    className
+    className,
   );
 
   return (

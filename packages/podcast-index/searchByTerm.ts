@@ -7,7 +7,7 @@ import { request } from './utils/request';
 
 export async function searchByTerm(
   term: string,
-  config: IPodcastIndexConfig
+  config: IPodcastIndexConfig,
 ): Promise<ApiResponse.Search> {
   const url = new URL(PATH_SEARCH_BY_TERM, BASE_API_URL);
   url.searchParams.set('q', term);

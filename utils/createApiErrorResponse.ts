@@ -8,7 +8,7 @@ import type { IApiErrorResponse } from 'types';
  * instances
  */
 export const createApiErrorResponse = (
-  error: unknown | string | Error
+  error: unknown | string | Error,
 ): IApiErrorResponse => {
   const errorResponse: IApiErrorResponse = {
     error: {

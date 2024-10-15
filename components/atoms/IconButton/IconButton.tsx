@@ -18,7 +18,7 @@ export const IconButton: IconButtonComponent = ({
     iconButton,
     backgroundVariant[background],
     sizeVariant[size],
-    className
+    className,
   );
 
   const buttonProps =

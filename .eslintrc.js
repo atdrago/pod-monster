@@ -2,9 +2,9 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
-    'plugin:prettier/recommended',
     'next',
     'next/core-web-vitals',
+    'prettier',
   ],
   // eslint-plugin-react-app adds their rules to overrides, so in order to
   // override them, we need to use overrides as well

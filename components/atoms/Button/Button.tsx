@@ -17,7 +17,7 @@ export const Button: FunctionComponent<ButtonProps> = ({
     button,
     buttonVariant[variant],
     sizeVariant[size],
-    className
+    className,
   );
 
   return <Box as={as} className={rootClassName} type="button" {...rest} />;

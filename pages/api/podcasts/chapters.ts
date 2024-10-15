@@ -10,7 +10,7 @@ import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
 const handler: NextApiHandler<Array<IChapter> | IApiErrorResponse> = async (
   req,
-  res
+  res,
 ) => {
   const url = typeof req.query.url === 'string' ? req.query.url : null;
 
@@ -32,14 +32,14 @@ const handler: NextApiHandler<Array<IChapter> | IApiErrorResponse> = async (
 
     const chaptersSorted: Array<IChapter> = chapters
       .filter((chapter): chapter is IChapter =>
-        notNullOrUndefined(chapter.startTime)
+        notNullOrUndefined(chapter.startTime),
       )
       .sort((chapterA, chapterB) => chapterA.startTime - chapterB.startTime);
 
     return res
       .setHeader(
         'Cache-Control',
-        'public, s-maxage=60, stale-while-revalidate=3600'
+        'public, s-maxage=60, stale-while-revalidate=3600',
       )
       .status(200)
       .json(chaptersSorted);

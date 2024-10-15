@@ -74,7 +74,7 @@ export const SettingsProvider: FunctionComponent<
 
             oldVersion = upgradeOldVersion;
           },
-        }
+        },
       );
 
       // Migrations
@@ -88,7 +88,7 @@ export const SettingsProvider: FunctionComponent<
       const nextFeedSettings: FeedSettings = {};
       const nextMediaPlayerSettings = await databaseRef.current.get(
         'mediaPlayerSettings',
-        'mediaPlayerSettings'
+        'mediaPlayerSettings',
       );
 
       let episodeSettingsCursor = await databaseRef.current
@@ -130,7 +130,7 @@ export const SettingsProvider: FunctionComponent<
       databaseRef.current.put(
         'mediaPlayerSettings',
         mediaPlayerSettings,
-        'mediaPlayerSettings'
+        'mediaPlayerSettings',
       );
     }
   }, [mediaPlayerSettings, isDoneHydratingFromIdb]);
@@ -151,7 +151,7 @@ export const SettingsProvider: FunctionComponent<
         [key]: value,
       }));
     },
-    []
+    [],
   );
 
   /**
@@ -170,7 +170,7 @@ export const SettingsProvider: FunctionComponent<
         [key]: value,
       }));
     },
-    []
+    [],
   );
 
   /**
@@ -181,7 +181,7 @@ export const SettingsProvider: FunctionComponent<
       if (databaseRef.current) {
         const transaction = databaseRef.current.transaction(
           'feedSettings',
-          'readwrite'
+          'readwrite',
         );
 
         await transaction.store.clear();
@@ -189,7 +189,7 @@ export const SettingsProvider: FunctionComponent<
         await Promise.all([
           ...Object.entries(nextFeedSettings ?? []).map(
             ([feedId, feedSettingsItem]) =>
-              transaction.store.put(feedSettingsItem, feedId)
+              transaction.store.put(feedSettingsItem, feedId),
           ),
           transaction.done,
         ]);
@@ -197,7 +197,7 @@ export const SettingsProvider: FunctionComponent<
         setFeedSettings(nextFeedSettings);
       }
     },
-    []
+    [],
   );
 
   return (

@@ -69,7 +69,7 @@ export const SearchField: FunctionComponent<SearchFieldProps> = ({
 
               Object.getOwnPropertyDescriptor(
                 window.HTMLInputElement.prototype,
-                'value'
+                'value',
               )?.set?.call(inputRef.current, '');
 
               inputRef.current.dispatchEvent(event);

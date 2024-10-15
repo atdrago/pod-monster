@@ -59,7 +59,7 @@ const logoAnimation = keyframes(
       ...acc,
       [`${percent}%`]: { transform },
     };
-  }, {})
+  }, {}),
 );
 
 export const homeIconClassName = style({
