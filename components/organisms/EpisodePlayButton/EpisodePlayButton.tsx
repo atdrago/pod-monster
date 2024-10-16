@@ -7,7 +7,12 @@ import { Stack } from 'components/layouts/Stack';
 import { useMediaContext } from 'contexts/MediaContext';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import ExplicitIcon from 'icons/explicit.svg';
-import type { EpisodePageEpisode, Chapter, ImageDimensions } from 'types';
+import type { Chapter, ImageDimensions } from 'types';
+import type { ApiResponse } from 'podcastdx-client/src/types';
+
+type EpisodePageEpisode = ApiResponse.EpisodeById['episode'] & {
+  descriptionRaw?: string;
+};
 
 interface EpisodePlayButtonProps {
   currentChapter: Chapter | null;
