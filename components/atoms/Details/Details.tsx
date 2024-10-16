@@ -1,13 +1,12 @@
 'use client';
 
-import { FunctionComponent, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { Icon } from 'components/atoms/Icon';
 import { Stack } from 'components/layouts/Stack';
 import PlayIcon from 'icons/play3.svg';
 import SpinnerIcon from 'icons/spinner8.svg';
 import WarningIcon from 'icons/warning.svg';
-import type { DetailsProps } from 'types';
 
 import {
   articleClassName,
@@ -15,14 +14,21 @@ import {
   summaryClassName,
 } from './details.css';
 
-export const Details: FunctionComponent<DetailsProps> = ({
+type DetailsProps = JSX.IntrinsicElements['details'] & {
+  footer?: ReactNode;
+  hasError?: boolean;
+  isLoading?: boolean;
+  summary: ReactNode;
+};
+
+export const Details = ({
   children,
   footer,
   hasError,
   isLoading,
   summary,
   ...detailsProps
-}) => {
+}: DetailsProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
