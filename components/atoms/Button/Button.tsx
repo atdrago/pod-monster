@@ -1,18 +1,25 @@
-import type { FunctionComponent } from 'react';
-import { Box } from 'react-polymorphic-box';
+import type { ElementType } from 'react';
+import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import type { ButtonProps } from 'types';
 
 import { button, buttonVariant, sizeVariant } from './button.css';
 
-export const Button: FunctionComponent<ButtonProps> = ({
+type ButtonProps = PolymorphicComponentProps<
+  ElementType,
+  {
+    size?: keyof typeof sizeVariant;
+    variant?: keyof typeof buttonVariant;
+  }
+>;
+
+export const Button = ({
   as = 'button',
   className,
   size = 'medium',
   variant = 'default',
   ...rest
-}) => {
+}: ButtonProps) => {
   const rootClassName = useClassNames(
     button,
     buttonVariant[variant],

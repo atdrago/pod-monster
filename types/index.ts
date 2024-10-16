@@ -1,4 +1,3 @@
-export * from './Button';
 export * from './Chapter';
 export * from './Checkbox';
 export * from './Details';
