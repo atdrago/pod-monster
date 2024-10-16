@@ -1,5 +1,4 @@
 export * from './Chapter';
-export * from './IconButton';
 export * from './ImageDimensions';
 export * from './InputField';
 export * from './MarkdownViewer';
