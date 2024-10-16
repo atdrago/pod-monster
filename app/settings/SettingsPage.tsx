@@ -13,7 +13,8 @@ import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport } from 'rest/fetchOpmlImport';
 import { listItem, listLayout, underlinedLink } from 'styles';
-import type { ApiErrorResponse, OpmlImportResponse } from 'types';
+import type { OpmlImportResponse } from 'types';
+import { ApiErrorResponse } from 'utils/createApiErrorResponse';
 
 export function SettingsPage() {
   const opmlFileUrl = useOpmlFileUrl();

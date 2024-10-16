@@ -1,4 +1,4 @@
-import type { ApiErrorResponse } from 'types';
+import type { ApiErrorResponse } from 'utils/createApiErrorResponse';
 
 /**
  * Generic method that handles errors from the API and properly throws them.

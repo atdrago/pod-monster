@@ -6,12 +6,11 @@ import rehypeSanitize from 'rehype-sanitize';
 
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
 import { supportedTranscriptTypes } from 'rest/fetchPodcastEpisodeTranscript';
-import type {
-  ApiErrorResponse,
-  TranscriptItem,
-  TranscriptDocument,
-} from 'types';
-import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+import type { TranscriptItem, TranscriptDocument } from 'types';
+import {
+  createApiErrorResponse,
+  type ApiErrorResponse,
+} from 'utils/createApiErrorResponse';
 import { tryConvertTextOrHtmlToVtt } from 'utils/tryConvertTextOrHtmlToVtt';
 
 const handler: NextApiHandler<TranscriptDocument | ApiErrorResponse> = async (

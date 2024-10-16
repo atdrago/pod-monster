@@ -2,8 +2,10 @@ import type { NextApiHandler } from 'next';
 import { ApiResponse } from 'podcastdx-client/src/types';
 
 import { episodesByFeedId, getAuthValues } from '@atdrago/podcast-index';
-import { ApiErrorResponse } from 'types';
-import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+import {
+  createApiErrorResponse,
+  type ApiErrorResponse,
+} from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
 const handler: NextApiHandler<ApiResponse.Episodes | ApiErrorResponse> = async (

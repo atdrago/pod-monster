@@ -1,4 +1,14 @@
-import type { ApiErrorResponse } from 'types';
+type Nullable<T> = T | null;
+
+interface ApiError {
+  message: string;
+  name: Nullable<string>;
+  stack: Nullable<string>;
+}
+
+export interface ApiErrorResponse {
+  error: ApiError;
+}
 
 /**
  * Takes an error parameter and returns an object with `message`, `name`, and

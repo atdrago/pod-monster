@@ -1,11 +1,10 @@
 import type { NextApiHandler } from 'next';
 
-import type {
-  ApiErrorResponse,
-  Chapter,
-  PodcastIndexChapterResponse,
-} from 'types';
-import { createApiErrorResponse } from 'utils/createApiErrorResponse';
+import type { Chapter, PodcastIndexChapterResponse } from 'types';
+import {
+  type ApiErrorResponse,
+  createApiErrorResponse,
+} from 'utils/createApiErrorResponse';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
 const handler: NextApiHandler<Array<Chapter> | ApiErrorResponse> = async (
