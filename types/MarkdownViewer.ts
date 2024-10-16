@@ -1,6 +1,6 @@
-import type { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
+import type { Options } from 'react-markdown';
 
-export interface MarkdownViewerProps extends ReactMarkdownOptions {
+export interface MarkdownViewerProps extends Options {
   className?: string;
   shouldUseCapsize?: boolean;
 }

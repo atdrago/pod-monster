@@ -54,7 +54,7 @@ export const HtmlViewer = memo(
             code({
               children: codeChildren,
               className: codeClassName,
-              inline: _inline,
+              // inline: _inline,
               node: _node,
               ...props
             }) {
@@ -125,7 +125,7 @@ export const HtmlViewer = memo(
             li({
               className: _className,
               node: _node,
-              ordered: _ordered,
+              // ordered: _ordered,
               ...props
             }) {
               return <li className={listItem} {...props} />;
@@ -133,7 +133,7 @@ export const HtmlViewer = memo(
             ol({
               className: _className,
               node: _node,
-              ordered: _ordered,
+              // ordered: _ordered,
               ...props
             }) {
               return <ol className={listLayout} {...props} />;
@@ -171,7 +171,7 @@ export const HtmlViewer = memo(
             ul({
               className: _className,
               node: _node,
-              ordered: _ordered,
+              // ordered: _ordered,
               ...props
             }) {
               return <ul className={listLayout} {...props} />;
