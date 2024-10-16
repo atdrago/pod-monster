@@ -3,7 +3,6 @@ export * from './Chapter';
 export * from './Checkbox';
 export * from './Details';
 export * from './EpisodePage';
-export * from './Head';
 export * from './IconButton';
 export * from './ImageDimensions';
 export * from './InputField';
