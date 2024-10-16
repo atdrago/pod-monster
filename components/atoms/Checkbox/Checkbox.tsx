@@ -1,19 +1,25 @@
+import type { ReactEventHandler } from 'react';
 import { Icon } from 'components/atoms/Icon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useClassNames } from 'hooks/useClassNames';
 import CheckedIcon from 'icons/checkmark.svg';
-import type { CheckboxComponent } from 'types';
 
 import { checkbox, checkboxChecked, input, label } from './checkbox.css';
 
-export const Checkbox: CheckboxComponent = ({
+interface CheckboxProps
+  extends Omit<JSX.IntrinsicElements['label'], 'checked' | 'onChange'> {
+  checked?: boolean;
+  onChange?: ReactEventHandler<HTMLInputElement>;
+}
+
+export const Checkbox = ({
   checked = false,
   children,
   className,
   onChange,
   ...labelProps
-}) => {
+}: CheckboxProps) => {
   const baseClassName = useClassNames(label, className);
 
   return (
