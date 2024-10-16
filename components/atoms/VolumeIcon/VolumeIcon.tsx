@@ -1,5 +1,3 @@
-import type { FunctionComponent } from 'react';
-
 import { Icon } from 'components/atoms/Icon';
 import VolumeHighIcon from 'icons/volume-high.svg';
 import VolumeLowIcon from 'icons/volume-low.svg';
@@ -7,15 +5,12 @@ import VolumeMediumIcon from 'icons/volume-medium.svg';
 import VolumeZeroIcon from 'icons/volume-mute.svg';
 import VolumeMuteIcon from 'icons/volume-mute2.svg';
 
-export interface VolumeIconProps {
+interface VolumeIconProps {
   isMuted: boolean;
   volume: number;
 }
 
-export const VolumeIcon: FunctionComponent<VolumeIconProps> = ({
-  isMuted,
-  volume,
-}) => (
+export const VolumeIcon = ({ isMuted, volume }: VolumeIconProps) => (
   <Icon size="small">
     {isMuted ? (
       <VolumeMuteIcon />

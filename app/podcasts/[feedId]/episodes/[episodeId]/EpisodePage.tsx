@@ -34,7 +34,7 @@ import type {
 import { longDateTimeFormat } from 'utils/date';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
-export interface EpisodePageProps {
+interface EpisodePageProps {
   episode: ApiResponse.EpisodeById['episode'];
   episodeImageDimensions?: ImageDimensions;
   feedFunding?: PIApiPodcast['funding'] | null;

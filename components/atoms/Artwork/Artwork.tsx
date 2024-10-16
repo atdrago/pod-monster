@@ -1,11 +1,11 @@
 'use client';
 
 import { ReactEventHandler, memo, useState } from 'react';
-import { Box } from 'react-polymorphic-box';
+import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
+import type { ImageProps } from 'next/image';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
-import type { ArtworkComponentProps } from 'types';
 
 import {
   artwork,
@@ -16,6 +16,21 @@ import {
   squareInner,
   subtitleContainer,
 } from './artwork.css';
+
+type ArtworkComponentProps = PolymorphicComponentProps<
+  'div',
+  {
+    alt: string;
+    height?: ImageProps['height'];
+    isSquare?: boolean;
+    label?: string;
+    priority?: ImageProps['priority'];
+    shadow?: keyof typeof shadowVariant;
+    src?: string;
+    subtitle?: React.ReactNode;
+    width?: ImageProps['width'];
+  }
+>;
 
 export const Artwork = memo<ArtworkComponentProps>(
   function ArtworkComponentMemo({

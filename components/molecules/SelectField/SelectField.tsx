@@ -3,11 +3,6 @@ import { useClassNames } from 'hooks/useClassNames';
 
 import { labelClassName, selectClassName } from './selectField.css';
 
-interface SelectFieldOptionProps {
-  label: string;
-  value: string | number;
-}
-
 type SelectFieldProps = JSX.IntrinsicElements['select'] & {
   label?: string;
 };
@@ -33,13 +28,5 @@ export const SelectField = ({
       </select>
       {label ?? value}
     </label>
-  );
-};
-
-export const SelectFieldOption = ({ label, value }: SelectFieldOptionProps) => {
-  return (
-    <option key={value} value={value}>
-      {label}
-    </option>
   );
 };
