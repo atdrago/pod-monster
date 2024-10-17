@@ -149,17 +149,6 @@ export default async function Page({ params }: PageProps) {
       });
   }
 
-  // if (episode.description) {
-  //   episode.description = ReactDomServer.renderToStaticMarkup(
-  //     <HtmlViewer
-  //       shouldUseCapsize={false}
-  //       rehypePlugins={[rehypeRaw, rehypeSanitize]}
-  //     >
-  //       {episode.description}
-  //     </HtmlViewer>
-  //   );
-  // }
-
   return (
     <EpisodePage
       episode={episode}

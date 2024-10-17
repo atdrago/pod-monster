@@ -7,7 +7,6 @@ export const artwork = style({
   height: 'auto',
   maxHeight: '100%',
   objectFit: 'contain',
-  position: 'absolute',
   width: '100%',
 });
 
