@@ -2,6 +2,7 @@ import 'styles/app.css';
 
 import { Viewport } from 'next';
 
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import { CenteredPageLayout } from 'components/layouts/CenteredPageLayout';
 import { Footer } from 'components/molecules/Footer';
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
             <Footer />
           </CenteredPageLayout>
         </Providers>
+        <SpeedInsights />
         <Analytics />
       </body>
     </html>
