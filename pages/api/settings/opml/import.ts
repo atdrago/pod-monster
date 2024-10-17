@@ -6,7 +6,8 @@ import {
 } from 'opml-to-json';
 
 import { getAuthValues, podcastsByFeedUrl } from '@atdrago/podcast-index';
-import type { FeedSettings, OpmlImportResponse } from 'types';
+import type { OpmlImportResponse } from 'rest/fetchOpmlImport';
+import type { FeedSettings } from 'contexts/SettingsContext';
 import {
   createApiErrorResponse,
   type ApiErrorResponse,

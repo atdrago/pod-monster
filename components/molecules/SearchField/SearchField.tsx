@@ -1,9 +1,8 @@
-import { FunctionComponent, useRef } from 'react';
+import { type ReactNode, useRef } from 'react';
 
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useUniqueId } from 'hooks/useUniqueId';
-import type { SearchFieldProps } from 'types';
 
 import {
   clearButton,
@@ -13,7 +12,13 @@ import {
   inputLabel,
 } from './searchField.css';
 
-export const SearchField: FunctionComponent<SearchFieldProps> = ({
+type SearchFieldProps = JSX.IntrinsicElements['input'] & {
+  feedback?: string | null;
+  label?: ReactNode;
+  type?: 'search' | 'text';
+};
+
+export const SearchField = ({
   className,
   feedback,
   label,
@@ -21,7 +26,7 @@ export const SearchField: FunctionComponent<SearchFieldProps> = ({
   type = 'text',
   value,
   ...inputProps
-}) => {
+}: SearchFieldProps) => {
   const id = useUniqueId();
   const inputRef = useRef<HTMLInputElement | null>(null);
 

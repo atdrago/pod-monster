@@ -1,7 +1,10 @@
 import { captureException } from '@sentry/nextjs';
 import { IDBPDatabase } from 'idb';
 
-import type { PodMonsterDb, LocalStorageSettings } from 'types';
+import type {
+  PodMonsterDb,
+  LocalStorageSettings,
+} from 'contexts/SettingsContext';
 import { tryLocalStorageGetItem } from 'utils/localStorage';
 
 /**

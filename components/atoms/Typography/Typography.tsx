@@ -1,7 +1,6 @@
-import { Box } from 'react-polymorphic-box';
+import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
 import { useClassNames } from 'hooks/useClassNames';
-import type { TypographyProps, TypographyComponentProps } from 'types';
 
 import {
   ellipsisContainer,
@@ -11,6 +10,19 @@ import {
   textAlignVariant,
   typography,
 } from './typography.css';
+
+interface TypographyProps {
+  className?: string;
+  shouldUseCapsize?: boolean;
+  size: keyof typeof sizeVariant;
+  textAlign?: keyof typeof textAlignVariant;
+  whitespace?: 'ellipsis' | 'normal' | number;
+}
+
+type TypographyComponentProps = PolymorphicComponentProps<
+  React.ElementType<any>,
+  TypographyProps
+>;
 
 export const useTypography = ({
   className,

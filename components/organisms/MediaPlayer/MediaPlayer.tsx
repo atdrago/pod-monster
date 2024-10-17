@@ -28,10 +28,9 @@ import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
 import { underlinedLink } from 'styles';
-import type { PlaybackRate } from 'types';
 import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 import { getEpisodePath } from 'utils/paths';
-import { playbackRates } from 'utils/playbackRates';
+import { playbackRates, type PlaybackRate } from 'utils/playbackRates';
 
 import {
   iconButton,

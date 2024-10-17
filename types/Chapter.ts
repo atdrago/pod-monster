@@ -2,7 +2,7 @@ export interface PodcastIndexChapterResponse {
   chapters: Array<PodcastIndexChapter>;
 }
 
-export interface PodcastIndexChapter {
+interface PodcastIndexChapter {
   img?: string | null;
   startTime?: number | null;
   title?: string | null;

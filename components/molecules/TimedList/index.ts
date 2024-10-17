@@ -1,1 +1,1 @@
-export { TimedList } from './TimedList';
+export { TimedList, type TimedListItem } from './TimedList';

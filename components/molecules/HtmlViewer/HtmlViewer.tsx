@@ -1,11 +1,15 @@
 import { memo } from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { type Options } from 'react-markdown';
 
 import { Blockquote } from 'components/atoms/Blockquote';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
 import { listItem, underlinedLink } from 'styles';
-import type { MarkdownViewerProps } from 'types';
+
+interface HtmlViewerProps extends Options {
+  className?: string;
+  shouldUseCapsize?: boolean;
+}
 
 import {
   htmlViewerContainer,
@@ -19,7 +23,7 @@ export const HtmlViewer = memo(
     className,
     shouldUseCapsize = true,
     ...reactMarkdownProps
-  }: MarkdownViewerProps) {
+  }: HtmlViewerProps) {
     const baseClassName = useClassNames(htmlViewerContainer, className);
 
     return (

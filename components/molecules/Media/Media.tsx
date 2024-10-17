@@ -1,7 +1,7 @@
 import { m } from 'framer-motion';
 import {
-  FunctionComponent,
-  ReactEventHandler,
+  type MutableRefObject,
+  type ReactEventHandler,
   useEffect,
   useState,
 } from 'react';
@@ -10,8 +10,8 @@ import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
 import { useUniqueId } from 'hooks/useUniqueId';
-import type { MediaProps } from 'types';
 import { secondsToFormattedTime } from 'utils/date';
+import type { PlaybackRate } from 'utils/playbackRates';
 
 import {
   audio,
@@ -22,7 +22,21 @@ import {
   timeLabelRight,
 } from './media.css';
 
-export const Media: FunctionComponent<MediaProps> = function MediaRef({
+type MediaProps = JSX.IntrinsicElements['audio'] &
+  Pick<JSX.IntrinsicElements['video'], 'poster'> & {
+    audioRef: MutableRefObject<HTMLAudioElement | null>;
+    currentTime?: number;
+    isTitleVisible?: boolean;
+    isVideoVisible?: boolean;
+    onCurrentTimeChange?: (currentTime: number) => void;
+    playbackRate?: PlaybackRate;
+    srcType?: string;
+    startTime?: number;
+    title?: string;
+    videoRef: MutableRefObject<HTMLVideoElement | null>;
+  };
+
+export const Media = function MediaRef({
   audioRef,
   className,
   currentTime = 0,
@@ -40,7 +54,7 @@ export const Media: FunctionComponent<MediaProps> = function MediaRef({
   title,
   videoRef,
   ...props
-}) {
+}: MediaProps) {
   const audioClassName = useClassNames(audio, className);
   const [duration, setDuration] = useState(0);
   const id = useUniqueId();

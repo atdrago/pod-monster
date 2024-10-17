@@ -1,5 +1,10 @@
-import type { OpmlImportResponse } from 'types';
 import { request } from 'utils/request';
+import type { FeedSettings } from 'contexts/SettingsContext';
+
+export type OpmlImportResponse = {
+  errors: Array<{ title: string }>;
+  feedSettings: FeedSettings;
+};
 
 export const fetchOpmlImport = async (
   opmlFile: File,

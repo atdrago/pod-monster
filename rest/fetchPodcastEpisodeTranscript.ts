@@ -1,9 +1,19 @@
 import { captureMessage } from '@sentry/nextjs';
 import type { PIApiEpisodeDetail } from 'podcastdx-client/src/types';
 
-import type { TranscriptDocument } from 'types';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 import { request } from 'utils/request';
+
+export interface TranscriptItem {
+  from: number;
+  id: string;
+  text: string;
+  to: number;
+}
+
+export type TranscriptDocument = {
+  content: Array<TranscriptItem> | string;
+};
 
 /**
  * Transcript types supported by the API. This list should be sorted from the

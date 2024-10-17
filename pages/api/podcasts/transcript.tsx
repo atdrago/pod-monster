@@ -5,8 +5,11 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
-import { supportedTranscriptTypes } from 'rest/fetchPodcastEpisodeTranscript';
-import type { TranscriptItem, TranscriptDocument } from 'types';
+import {
+  supportedTranscriptTypes,
+  type TranscriptDocument,
+  type TranscriptItem,
+} from 'rest/fetchPodcastEpisodeTranscript';
 import {
   createApiErrorResponse,
   type ApiErrorResponse,

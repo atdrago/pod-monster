@@ -10,7 +10,6 @@ import { Details } from 'components/atoms/Details';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useClassNames } from 'hooks/useClassNames';
-import type { TimedListProps } from 'types';
 
 import {
   paragraph,
@@ -18,6 +17,23 @@ import {
   transcriptItemHighlight,
   transcriptItemOuter,
 } from './timedList.css';
+
+export interface TimedListItem {
+  from: number;
+  text: string;
+}
+
+interface TimedListProps<TListItem extends TimedListItem = TimedListItem> {
+  error?: Error | null;
+  hasError?: boolean;
+  index: number;
+  isLoading?: boolean;
+  isVisibleAsSubtitle?: boolean;
+  list: Array<TListItem>;
+  onIsVisibleAsSubtitleChange?: (isVisibleAsSubtitle: boolean) => void;
+  onItemClick?: (item: TListItem) => void;
+  title: string;
+}
 
 const ListItemComponent = memo(function Row({
   data,

@@ -16,7 +16,7 @@ import { Stack } from 'components/layouts/Stack';
 import { Funding } from 'components/molecules/Funding';
 import { Header } from 'components/molecules/Header';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
-import { TimedList } from 'components/molecules/TimedList';
+import { TimedList, type TimedListItem } from 'components/molecules/TimedList';
 import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
@@ -24,13 +24,11 @@ import { useChapterIndex } from 'hooks/useChapterIndex';
 import ExternalLinkIcon from 'icons/arrow-up-right2.svg';
 import TvIcon from 'icons/tv.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
-import { fetchPodcastEpisodeTranscript } from 'rest/fetchPodcastEpisodeTranscript';
-import type {
-  Chapter,
-  ImageDimensions,
-  TimedListItem,
-  TranscriptDocument,
-} from 'types';
+import {
+  fetchPodcastEpisodeTranscript,
+  type TranscriptDocument,
+} from 'rest/fetchPodcastEpisodeTranscript';
+import type { Chapter, ImageDimensions } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 

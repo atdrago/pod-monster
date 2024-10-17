@@ -11,9 +11,8 @@ import { FileField } from 'components/molecules/FileField';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
-import { fetchOpmlImport } from 'rest/fetchOpmlImport';
+import { fetchOpmlImport, type OpmlImportResponse } from 'rest/fetchOpmlImport';
 import { listItem, listLayout, underlinedLink } from 'styles';
-import type { OpmlImportResponse } from 'types';
 import { ApiErrorResponse } from 'utils/createApiErrorResponse';
 
 export function SettingsPage() {
