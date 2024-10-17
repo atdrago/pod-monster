@@ -23,6 +23,7 @@ import { headingLink, nonUnderlinedLink } from 'styles';
 import { createMetadata } from 'utils/createMetadata';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
+import { FeedArtwork } from 'components/molecules/FeedArtwork';
 
 /**
  * @see .next/types/app/page
@@ -89,11 +90,12 @@ export default async function Page({ params }: PageProps) {
       <Stack as="main" maxWidth="small">
         <Stack as="article" space="small">
           <Stack kind="flexRow" space="small" align="center">
-            <Artwork
+            <FeedArtwork
               alt={`Podcast artwork for "${feed.title}"`}
               height={128}
               shadow="medium"
               src={feed.image}
+              feedId={feed.id}
               width={128}
             />
             <Stack space="small">

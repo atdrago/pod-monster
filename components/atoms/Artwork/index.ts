@@ -1,1 +1,1 @@
-export { Artwork } from './Artwork';
+export { Artwork, type ArtworkComponentProps } from './Artwork';

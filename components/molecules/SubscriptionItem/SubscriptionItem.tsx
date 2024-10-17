@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import type { ApiResponse } from 'podcastdx-client/src/types';
 
-import { Artwork } from 'components/atoms/Artwork';
 import { Dot } from 'components/atoms/Dot';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
+import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { fetchPodcastEpisodes } from 'rest/fetchPodcastEpisodes';
@@ -69,7 +69,14 @@ export const SubscriptionItem = ({
         label="New episodes."
       />
       <Stack align="center" space="small" kind="flexRow">
-        <Artwork alt="" width={80} height={80} src={image} shadow="medium" />
+        <FeedArtwork
+          alt=""
+          width={80}
+          height={80}
+          src={image}
+          feedId={feedId}
+          shadow="medium"
+        />
         <Typography as="h2" size="headingSmaller" whitespace={2}>
           {title}
         </Typography>

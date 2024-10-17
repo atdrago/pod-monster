@@ -17,7 +17,7 @@ import {
   subtitleContainer,
 } from './artwork.css';
 
-type ArtworkComponentProps = PolymorphicComponentProps<
+export type ArtworkComponentProps = PolymorphicComponentProps<
   'div',
   {
     alt: string;
