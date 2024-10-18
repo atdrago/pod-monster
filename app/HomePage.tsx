@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { ChangeEventHandler, useState } from 'react';
 
 import { searchByTerm } from '@atdrago/podcast-index';
@@ -28,7 +28,6 @@ export function HomePage({
   podcastIndexAuthTime,
   podcastIndexAuthToken,
 }: HomePageProps) {
-  const router = useRouter();
   const { feedSettings } = useSettingsContext();
   const [shouldIncludeDeadFeeds, setShouldIncludeDeadFeeds] = useState(false);
   const searchParams = useSearchParams();
@@ -51,7 +50,7 @@ export function HomePage({
 
   const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     setSearchTerm(event.currentTarget.value);
-    router.replace(`?term=${event.currentTarget.value}`);
+    window.history.replaceState({}, '', `?term=${event.currentTarget.value}`);
   };
 
   const isSearchEmpty = /^\s*$/.test(searchTerm);
