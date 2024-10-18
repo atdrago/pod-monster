@@ -117,7 +117,7 @@ module.exports = {
           'app/**/{global-error,layout,not-found,page}.tsx',
           'instrumentation.ts',
           'packages/podcast-index/{constants,index}.ts',
-          'pages/api/**/*.{ts,tsx}',
+          '{app,pages}/api/**/*.{ts,tsx}',
         ],
         unusedExports: true,
       },
