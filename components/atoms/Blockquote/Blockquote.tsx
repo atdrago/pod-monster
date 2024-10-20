@@ -1,6 +1,6 @@
 import type { FunctionComponent } from 'react';
 
-import { blockquote } from 'components/atoms/Typography';
+import { blockquote } from 'styles';
 import { useClassNames } from 'hooks/useClassNames';
 
 export const Blockquote: FunctionComponent<

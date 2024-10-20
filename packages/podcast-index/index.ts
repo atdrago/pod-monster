@@ -6,3 +6,4 @@ export { podcastsByFeedUrl } from './podcastsByFeedUrl';
 export { searchByTerm } from './searchByTerm';
 export { getAuthValues } from './getAuthValues';
 export * from './types';
+export type { Episode } from './episodesByFeedId';

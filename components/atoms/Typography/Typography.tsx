@@ -1,46 +1,14 @@
 import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
-import { useClassNames } from 'hooks/useClassNames';
+import { TypographyProps } from './types';
+import { useTypography } from './useTypography';
 
-import {
-  ellipsisContainer,
-  lineClampContainer,
-  sizeVariant,
-  sizeVariantNoCapsize,
-  textAlignVariant,
-  typography,
-} from './typography.css';
-
-interface TypographyProps {
-  className?: string;
-  shouldUseCapsize?: boolean;
-  size: keyof typeof sizeVariant;
-  textAlign?: keyof typeof textAlignVariant;
-  whitespace?: 'ellipsis' | 'normal' | number;
-}
+import { ellipsisContainer, lineClampContainer } from './typography.css';
 
 type TypographyComponentProps = PolymorphicComponentProps<
   React.ElementType<any>,
   TypographyProps
 >;
-
-export const useTypography = ({
-  className,
-  shouldUseCapsize = true,
-  size = 'headingLarge',
-  textAlign = 'left',
-  whitespace = 'normal',
-}: TypographyProps) => {
-  return useClassNames(
-    typography,
-    shouldUseCapsize ? sizeVariant[size] : sizeVariantNoCapsize[size],
-    textAlignVariant[textAlign],
-    whitespace === 'ellipsis' && !shouldUseCapsize
-      ? ellipsisContainer
-      : undefined,
-    className,
-  );
-};
 
 export const Typography = ({
   children,

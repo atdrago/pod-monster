@@ -7,23 +7,19 @@ import {
   getAuthValues,
   podcastsByFeedId,
 } from '@atdrago/podcast-index';
-import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
-import { Icon } from 'components/atoms/Icon';
 import { Label } from 'components/atoms/Label';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { EpisodeProgress } from 'components/molecules/EpisodeProgress';
-import { EpisodeUnlistenedDot } from 'components/molecules/EpisodeUnlistenedDot';
+import { EpisodeList } from 'components/molecules/EpisodeList';
+import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { Funding } from 'components/molecules/Funding';
 import { Header } from 'components/molecules/Header';
-import ExplicitIcon from 'icons/explicit.svg';
-import { headingLink, nonUnderlinedLink } from 'styles';
+import { headingLink } from 'styles';
 import { createMetadata } from 'utils/createMetadata';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
-import { getEpisodePath, getPodcastPath } from 'utils/paths';
-import { FeedArtwork } from 'components/molecules/FeedArtwork';
+import { getPodcastPath } from 'utils/paths';
 
 /**
  * @see .next/types/app/page
@@ -149,79 +145,7 @@ export default async function Page({ params }: PageProps) {
           </Typography>
         </Details>
         <Funding funding={feed.funding}></Funding>
-        <Stack space="small">
-          <Typography as="h4" size="headingSmaller">
-            Episodes
-          </Typography>
-          {episodes.map(
-            ({
-              datePublished,
-              duration,
-              explicit,
-              feedImage,
-              id,
-              image,
-              title,
-            }) => {
-              return (
-                <Stack
-                  align="center"
-                  as={Link}
-                  className={nonUnderlinedLink}
-                  href={getEpisodePath({
-                    episodeId: id,
-                    feedId: feed.id,
-                  })}
-                  key={id}
-                  kind="flexRow"
-                  space="xxsmall"
-                >
-                  <EpisodeUnlistenedDot
-                    episodeDatePublished={datePublished}
-                    episodeId={id}
-                    feedId={feedId}
-                  />
-                  <Stack align="center" space="small" kind="flexRow">
-                    <Artwork
-                      alt=""
-                      height={80}
-                      shadow="medium"
-                      src={image || feedImage}
-                      width={80}
-                    />
-                    <Stack
-                      space="xsmall"
-                      style={{ overflowY: 'hidden', padding: '4px 0' }}
-                    >
-                      <Stack kind="flexRow" space="xxsmall" align="center">
-                        {explicit > 0 ? (
-                          <Icon
-                            style={{ verticalAlign: 'middle' }}
-                            as={ExplicitIcon}
-                            size="smallMedium"
-                          />
-                        ) : null}{' '}
-                        <Typography
-                          as="h3"
-                          size="headingSmaller"
-                          shouldUseCapsize={false}
-                          whitespace="ellipsis"
-                        >
-                          {title}
-                        </Typography>
-                      </Stack>
-                      <EpisodeProgress
-                        episodeDatePublished={datePublished}
-                        episodeId={id}
-                        episodeDuration={duration}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-              );
-            },
-          )}
-        </Stack>
+        <EpisodeList episodes={episodes} feedId={feed.id} />
       </Stack>
     </>
   );

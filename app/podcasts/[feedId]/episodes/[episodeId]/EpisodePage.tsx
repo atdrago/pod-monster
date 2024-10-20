@@ -23,6 +23,7 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { useChapterIndex } from 'hooks/useChapterIndex';
 import ExternalLinkIcon from 'icons/arrow-up-right2.svg';
 import TvIcon from 'icons/tv.svg';
+import VideoCameraIcon from 'icons/video-camera.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import {
   fetchPodcastEpisodeTranscript,
@@ -222,6 +223,14 @@ export const EpisodePage = ({
                 ]
                   .filter(notNullOrUndefined)
                   .join(', ')}
+              </Typography>
+            </Stack>
+          ) : null}
+          {episode && episode.episodeType === 'trailer' ? (
+            <Stack kind="flexRow" space="small">
+              <Icon as={VideoCameraIcon} size="xsmall" />
+              <Typography as="h4" size="headingSmaller">
+                Trailer
               </Typography>
             </Stack>
           ) : null}

@@ -1,2 +1,2 @@
-export { Typography, useTypography } from './Typography';
-export { blockquote } from './typography.css';
+export { Typography } from './Typography';
+export { useTypography } from './useTypography';
