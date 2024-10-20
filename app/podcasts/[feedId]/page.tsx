@@ -8,6 +8,7 @@ import {
   podcastsByFeedId,
 } from '@atdrago/podcast-index';
 import { Details } from 'components/atoms/Details';
+import { Badge } from 'components/atoms/Badge';
 import { Label } from 'components/atoms/Label';
 import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
@@ -73,12 +74,16 @@ export default async function Page({ params }: PageProps) {
   );
   const config = getPodcastIndexConfig(authTime, authToken);
 
-  // -180 days (i.e., 6 months)
-  const since = -180 * 24 * 60 * 60;
   const podcastsResponse = await podcastsByFeedId(feedId, config);
-  const episodesResponse = await episodesByFeedId(feedId, { since }, config);
-  const episodes = episodesResponse.items;
   const feed = podcastsResponse.feed;
+  const isSerial = feed.itunesType === 'serial';
+
+  const episodesResponse = await episodesByFeedId(feedId, {}, config);
+  const episodes = isSerial
+    ? episodesResponse.items.toSorted(
+        (a, b) => a.datePublished - b.datePublished,
+      )
+    : episodesResponse.items;
 
   return (
     <>
@@ -112,7 +117,7 @@ export default async function Page({ params }: PageProps) {
               )}
               {feed.explicit ? (
                 <div>
-                  <Label>Explicit</Label>
+                  <Badge>Explicit</Badge>
                 </div>
               ) : null}
             </Stack>
