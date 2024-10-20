@@ -26,7 +26,7 @@ export const useChapterIndex = ({
       }
     }
 
-    return -1;
+    return 0;
   }, [chapters, currentTime]);
 
   return index;

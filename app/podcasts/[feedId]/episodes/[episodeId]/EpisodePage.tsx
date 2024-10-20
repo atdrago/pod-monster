@@ -163,7 +163,7 @@ export const EpisodePage = ({
       : -1;
 
   const handleTimedListItemClick = (item: TimedListItem) => {
-    if (item.from) {
+    if (typeof item.from === 'number') {
       if (isThisEpisodeInThePlayer) {
         setCurrentTime(item.from);
       } else {
