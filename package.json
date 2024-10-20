@@ -68,7 +68,7 @@
     "import-sort-style-atdrago": "^0.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "lint-staged": "^14.0.1",
+    "lint-staged": "^15.2.10",
     "podcastdx-client": "^5.0.0",
     "prettier": "3.3.3",
     "prettier-plugin-import-sort": "^0.0.7",
