@@ -9,7 +9,7 @@
     "format": "npx prettier --write .",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint --fix .",
-    "prepare": "husky install",
+    "prepare": "husky",
     "start": "next start",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
