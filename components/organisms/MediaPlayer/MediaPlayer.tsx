@@ -40,6 +40,7 @@ import {
   playerButtons,
   playerElevatedVariant,
   volumeLayout,
+  containerPinnedVariant,
 } from './mediaPlayer.css';
 
 const rateDecimalToFraction = (rate: PlaybackRate): string => {
@@ -243,9 +244,8 @@ export const MediaPlayer: FunctionComponent = () => {
   return (
     <AnimatePresence>
       {src && (
-        <Stack
-          as={m.aside}
-          maxWidth="small"
+        <m.aside
+          className={containerPinnedVariant[isPinned ? 'pinned' : 'unpinned']}
           animate={{
             height: 'auto',
             marginBottom: 0,
@@ -268,7 +268,6 @@ export const MediaPlayer: FunctionComponent = () => {
             y: '100%',
           }}
           style={{
-            bottom: 16,
             position: 'sticky',
             top: 0,
             zIndex: 1,
@@ -485,7 +484,7 @@ export const MediaPlayer: FunctionComponent = () => {
               />
             </div>
           </Stack>
-        </Stack>
+        </m.aside>
       )}
     </AnimatePresence>
   );
