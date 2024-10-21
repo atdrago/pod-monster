@@ -2,6 +2,27 @@ import { style, styleVariants } from '@vanilla-extract/css';
 
 import { vars } from 'styles';
 
+export const containerPinnedVariant = styleVariants({
+  pinned: {
+    '@media': {
+      'screen and (min-width: 512px)': {
+        bottom: 16,
+        marginLeft: 0,
+        width: '480px',
+      },
+    },
+    bottom: 0,
+    maxWidth: '512px',
+    width: '100vw',
+  },
+  unpinned: {
+    bottom: 16,
+    marginLeft: 0,
+    maxWidth: '480px',
+    width: '100vw',
+  },
+});
+
 export const player = style({
   '@supports': {
     '(backdrop-filter: blur(6px))': {
