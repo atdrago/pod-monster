@@ -1,6 +1,8 @@
 import { useClassNames } from 'hooks/useClassNames';
 import { underlinedLink } from 'styles';
 
+import type { JSX } from 'react';
+
 export const ExternalLink = ({
   children,
   className: classNameProp,

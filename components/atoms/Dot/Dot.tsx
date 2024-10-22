@@ -2,6 +2,8 @@ import { useClassNames } from 'hooks/useClassNames';
 
 import { backgroundVariants, dotClassName } from './dot.css';
 
+import type { JSX } from 'react';
+
 type DotProps = JSX.IntrinsicElements['span'] & {
   color: keyof typeof backgroundVariants;
   label?: string;

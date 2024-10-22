@@ -1,4 +1,4 @@
-import { type ReactNode, useRef } from 'react';
+import { type ReactNode, useRef, type JSX } from 'react';
 
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';

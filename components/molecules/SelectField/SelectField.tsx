@@ -3,6 +3,8 @@ import { useClassNames } from 'hooks/useClassNames';
 
 import { labelClassName, selectClassName } from './selectField.css';
 
+import type { JSX } from 'react';
+
 type SelectFieldProps = JSX.IntrinsicElements['select'] & {
   label?: string;
 };
