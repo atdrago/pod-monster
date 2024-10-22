@@ -24,7 +24,7 @@
     "capsize": "^2.0.0",
     "framer-motion": "^6.5.1",
     "idb": "^8.0.0",
-    "next": "^14.2.15",
+    "next": "^15.0.0",
     "next-plugin-svgr": "^1.1.1",
     "opml-to-json": "^1.0.1",
     "probe-image-size": "^7.2.3",
