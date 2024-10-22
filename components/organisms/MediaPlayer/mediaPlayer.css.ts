@@ -1,6 +1,11 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 
 import { vars } from 'styles';
+import {
+  stack,
+  spaceVariant,
+  kindVariant,
+} from 'components/layouts/Stack/stack.css';
 
 export const containerPinnedVariant = styleVariants({
   pinned: {
@@ -23,23 +28,29 @@ export const containerPinnedVariant = styleVariants({
   },
 });
 
-export const player = style({
-  '@supports': {
-    '(backdrop-filter: blur(6px))': {
-      backdropFilter: 'blur(6px)',
-      backgroundColor: vars.color.backgroundBlurred,
+export const player = style([
+  stack,
+  kindVariant['flex'],
+  spaceVariant['small'],
+  {
+    '@supports': {
+      '(backdrop-filter: blur(6px))': {
+        backdropFilter: 'blur(6px)',
+        backgroundColor: vars.color.backgroundBlurred,
+      },
     },
+    backdropFilter: 'blur(6px)',
+    backgroundColor: vars.color.backgroundBlurredOpaque,
+    border: '0.5px solid rgba(255, 255, 255, 0.3)',
+    overflow: 'hidden',
+    padding: `${vars.spacing.s016}`,
+    transition: '500ms ease box-shadow, 500ms ease transform',
   },
-  backdropFilter: 'blur(6px)',
-  backgroundColor: vars.color.backgroundBlurredOpaque,
-  border: '0.5px solid rgba(255, 255, 255, 0.3)',
-  overflow: 'hidden',
-  padding: `${vars.spacing.s016}`,
-  transition: '500ms ease box-shadow, 500ms ease transform',
-});
+]);
 
 export const playerElevatedVariant = styleVariants({
   elevated: {
+    border: 0,
     boxShadow: vars.color.shadowElevationHigh,
   },
   inset: {

@@ -277,7 +277,7 @@ export const MediaPlayer: FunctionComponent = () => {
             className={intersectionObserverClassName}
             ref={intersectionObserverRef}
           ></div>
-          <Stack as={m.div} className={playerClassName} space="small">
+          <m.div className={playerClassName}>
             <AnimatePresence>
               {size === 2 && (
                 <Stack as={m.div} space="small" {...animationProperties}>
@@ -483,7 +483,7 @@ export const MediaPlayer: FunctionComponent = () => {
                 }}
               />
             </div>
-          </Stack>
+          </m.div>
         </m.aside>
       )}
     </AnimatePresence>
