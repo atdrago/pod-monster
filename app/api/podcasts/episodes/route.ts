@@ -13,8 +13,8 @@ export async function GET(
   request: NextRequest,
 ): Promise<NextResponse<ApiResponse.Episodes | ApiErrorResponse>> {
   const feedId = request.nextUrl.searchParams.get('feedId');
-  const stringString = request.nextUrl.searchParams.get('since');
-  const since = stringString ? parseInt(stringString) : null;
+  const sinceString = request.nextUrl.searchParams.get('since');
+  const since = sinceString ? parseInt(sinceString) : null;
 
   if (!feedId) {
     return NextResponse.json(createApiErrorResponse('`feedId` is required'), {
