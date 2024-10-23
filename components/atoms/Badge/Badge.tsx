@@ -2,6 +2,8 @@ import { useClassNames } from 'hooks/useClassNames';
 
 import { badgeClassName } from './badge.css';
 
+import type { JSX } from 'react';
+
 type BadgeProps = JSX.IntrinsicElements['span'] & {
   label?: string;
 };

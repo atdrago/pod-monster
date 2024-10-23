@@ -1,4 +1,4 @@
-import type { ReactEventHandler } from 'react';
+import type { ReactEventHandler, JSX } from 'react';
 import { Icon } from 'components/atoms/Icon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';

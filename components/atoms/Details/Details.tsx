@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useState, type JSX } from 'react';
 
 import { Icon } from 'components/atoms/Icon';
 import { Stack } from 'components/layouts/Stack';

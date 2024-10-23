@@ -24,12 +24,12 @@
     "capsize": "^2.0.0",
     "framer-motion": "^6.5.1",
     "idb": "^8.0.0",
-    "next": "^14.2.15",
+    "next": "15.0.1",
     "next-plugin-svgr": "^1.1.1",
     "opml-to-json": "^1.0.1",
     "probe-image-size": "^7.2.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.0.0-rc-69d4b800-20241021",
+    "react-dom": "19.0.0-rc-69d4b800-20241021",
     "react-markdown": "^9.0.1",
     "react-polymorphic-box": "^3.0.3",
     "react-query": "^3.39.3",
@@ -43,11 +43,11 @@
     "use-debounce": "^10.0.4"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^14.2.15",
+    "@next/bundle-analyzer": "15.0.1",
     "@types/jest": "^29.5.13",
     "@types/probe-image-size": "^7.0.1",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "npm:types-react@19.0.0-rc.1",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
     "@types/react-window": "^1.8.6",
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.11.0",
@@ -55,7 +55,7 @@
     "babel-jest": "^29.7.0",
     "env-cmd": "^10.1.0",
     "eslint": "^8.10.0",
-    "eslint-config-next": "^14.2.15",
+    "eslint-config-next": "15.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-react": "^7.29.3",
@@ -87,5 +87,9 @@
   "packageManager": "npm@10.8.2",
   "workspaces": [
     "packages/podcast-index"
-  ]
+  ],
+  "overrides": {
+    "@types/react": "npm:types-react@19.0.0-rc.1",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+  }
 }

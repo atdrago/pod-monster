@@ -2,6 +2,8 @@ import { useClassNames } from 'hooks/useClassNames';
 
 import { range, rangeVariant } from './range.css';
 
+import type { JSX } from 'react';
+
 type RangeProps = JSX.IntrinsicElements['input'] & {
   variant: 'volume' | 'audio';
 };

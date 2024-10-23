@@ -4,6 +4,7 @@ import {
   type ReactEventHandler,
   useEffect,
   useState,
+  type JSX,
 } from 'react';
 
 import { Range } from 'components/atoms/Range';
