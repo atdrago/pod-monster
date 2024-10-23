@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import type { ApiResponse } from 'podcastdx-client/src/types';
+import type { PIApiEpisodeInfo } from 'podcastdx-client/src/types';
 
 import { Dot } from 'components/atoms/Dot';
 import { Typography } from 'components/atoms/Typography';
@@ -8,19 +7,20 @@ import { Stack } from 'components/layouts/Stack';
 import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
-import { fetchPodcastEpisodes } from 'rest/fetchPodcastEpisodes';
 import { nonUnderlinedLink } from 'styles';
 import { getPodcastPath } from 'utils/paths';
 
 import { subscriptionItemClassName } from './subscriptionItem.css';
 
 interface SubscriptionItemProps {
+  feedEpisodesData?: Array<PIApiEpisodeInfo>;
   feedId: string;
   image: string;
   title: string;
 }
 
 export const SubscriptionItem = ({
+  feedEpisodesData,
   feedId,
   image,
   title,
@@ -30,28 +30,20 @@ export const SubscriptionItem = ({
     nonUnderlinedLink,
   );
   const { episodeSettings, feedSettings } = useSettingsContext();
-  // -30 days
-  const since = -30 * 24 * 60 * 60;
-
-  const { data } = useQuery<ApiResponse.EpisodesByFeedId | null>({
-    queryFn: async () => await fetchPodcastEpisodes(feedId, since),
-    queryKey: [feedId],
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
 
   const subscribedAt = feedSettings[feedId]?.subscribedAt;
 
   // We say that the podcast has new episodes if there are episodes that the
   // user has not listened to that were published after the user subscribed and
   // within the last 30 days.
-  const hasUnlistenedEpisodes = !!data?.items.find(({ datePublished, id }) => {
-    return (
-      !episodeSettings[id] &&
-      new Date(datePublished * 1000) > new Date(subscribedAt ?? Infinity)
-    );
-  });
+  const hasUnlistenedEpisodes = !!feedEpisodesData?.find(
+    ({ datePublished, id }) => {
+      return (
+        !episodeSettings[id] &&
+        new Date(datePublished * 1000) > new Date(subscribedAt ?? Infinity)
+      );
+    },
+  );
 
   return (
     <Stack
