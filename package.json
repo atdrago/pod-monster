@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.0.1",
-    "@types/jest": "^29.5.13",
+    "@types/jest": "^29.5.14",
     "@types/probe-image-size": "^7.0.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
