@@ -19,11 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
  * @see .next/types/app/page
  */
 interface PageProps {
-  params?: unknown;
-  searchParams?: { term?: string };
+  params?: Promise<unknown>;
+  searchParams?: Promise<{ term?: string }>;
 }
 
-export default function Page({ searchParams }: PageProps) {
+export default async function Page(props: PageProps) {
+  const searchParams = await props.searchParams;
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,

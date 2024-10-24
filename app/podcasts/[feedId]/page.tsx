@@ -26,13 +26,12 @@ import { getPodcastPath } from 'utils/paths';
  * @see .next/types/app/page
  */
 interface PageProps {
-  params?: { feedId: string };
-  searchParams?: unknown;
+  params?: Promise<{ feedId: string }>;
+  searchParams?: Promise<unknown>;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const feedId = typeof params?.feedId === 'string' ? params.feedId : null;
 
   if (!feedId) {
@@ -61,7 +60,8 @@ export async function generateMetadata({
   });
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page(props: PageProps) {
+  const params = await props.params;
   const feedId = typeof params?.feedId === 'string' ? params.feedId : null;
 
   if (!feedId) {
