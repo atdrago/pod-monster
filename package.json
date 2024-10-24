@@ -22,7 +22,7 @@
     "@vercel/analytics": "^1.3.1",
     "@vercel/speed-insights": "^1.0.12",
     "capsize": "^2.0.0",
-    "framer-motion": "^6.5.1",
+    "framer-motion": "^11.11.9",
     "idb": "^8.0.0",
     "next": "^15.0.1",
     "next-plugin-svgr": "^1.1.1",
