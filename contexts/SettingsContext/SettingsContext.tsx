@@ -99,7 +99,6 @@ interface SettingsContext {
 }
 
 const SettingsContext = createContext<SettingsContext>({
-  /* eslint-disable @typescript-eslint/no-empty-function */
   episodeSettings: {},
   feedSettings: {},
   idbHydrationPromise: null,
@@ -108,7 +107,6 @@ const SettingsContext = createContext<SettingsContext>({
   setEpisodeSettingsItem: async (_) => {},
   setFeedSettingsItem: async (_) => {},
   setMediaPlayerSettings: (_) => {},
-  /* eslint-enable @typescript-eslint/no-empty-function */
 });
 
 const SETTINGS_VERSION = 5;

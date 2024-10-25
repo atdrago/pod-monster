@@ -1,0 +1,2 @@
+// https://github.com/import-js/eslint-plugin-import/issues/3079
+// If `npm run lint` works after deleting this file, you can keep it deleted.

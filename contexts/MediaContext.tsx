@@ -84,7 +84,6 @@ interface MediaContext {
 }
 
 const mediaContextDefaults: MediaContext = {
-  /* eslint-disable @typescript-eslint/no-empty-function */
   audioRef: { current: null },
   chapters: null,
   chaptersUrl: null,
@@ -141,7 +140,6 @@ const mediaContextDefaults: MediaContext = {
   srcType: null,
   videoRef: { current: null },
   volume: 1,
-  /* eslint-enable @typescript-eslint/no-empty-function */
 };
 
 const MediaContext = createContext<MediaContext | undefined>(undefined);
