@@ -23,6 +23,7 @@ export default function metadata(): MetadataRoute.Manifest {
       },
     ],
     name: 'Pod Monster',
+    orientation: 'portrait',
     short_name: 'PodMonster',
     start_url: '/',
     theme_color: '#272822',
