@@ -11,8 +11,11 @@ export interface TranscriptItem {
   to: number;
 }
 
+type TranscriptType = 'text/vtt' | 'application/srt' | 'text/html';
+
 export type TranscriptDocument = {
   content: Array<TranscriptItem> | string;
+  type: TranscriptType;
 };
 
 /**
