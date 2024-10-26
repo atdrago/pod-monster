@@ -49,6 +49,7 @@ type MediaPlayerSettings = {
   feedImage: string | null;
   feedTitle: string | null;
   isMuted: boolean;
+  isPaused: boolean;
   isTranscriptVisibleAsSubtitle: boolean;
   playbackRate: PlaybackRate;
   size: 1 | 2;

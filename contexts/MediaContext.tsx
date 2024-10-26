@@ -342,6 +342,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         setFeedId(mediaPlayerSettings.feedId);
         setFeedImage(mediaPlayerSettings.feedImage);
         setFeedTitle(mediaPlayerSettings.feedTitle);
+        setIsPaused(mediaPlayerSettings.isPaused);
         setIsMuted(mediaPlayerSettings.isMuted);
         setIsTranscriptVisibleAsSubtitle(
           mediaPlayerSettings.isTranscriptVisibleAsSubtitle,
@@ -399,6 +400,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         feedImage,
         feedTitle,
         isMuted,
+        isPaused,
         isTranscriptVisibleAsSubtitle,
         playbackRate,
         size,
@@ -421,6 +423,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     isFirstRenderAfterHydration,
     isTranscriptVisibleAsSubtitle,
     isMuted,
+    isPaused,
     mediaPlayerCurrentTimeDebounced,
     playbackRate,
     setMediaPlayerSettings,
