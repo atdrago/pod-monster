@@ -4,7 +4,7 @@ export default function metadata(): MetadataRoute.Manifest {
   return {
     background_color: '#ffffff',
     description: 'A front-end to the Podcast Index',
-    display: 'minimal-ui',
+    display: 'standalone',
     icons: [
       {
         sizes: '512x512',
