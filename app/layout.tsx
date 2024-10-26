@@ -9,7 +9,7 @@ import { Footer } from 'components/molecules/Footer';
 import { MediaPlayer } from 'components/organisms/MediaPlayer';
 import { vars } from 'styles';
 
-import { Providers } from './providers';
+import { Providers } from './Providers';
 
 export const viewport: Viewport = {
   themeColor: vars.color.background,
