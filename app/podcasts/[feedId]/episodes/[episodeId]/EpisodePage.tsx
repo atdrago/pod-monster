@@ -350,7 +350,6 @@ export const EpisodePage = ({
                     height: transcriptsError ? 'auto' : 48 * 5,
                     overflowY: 'auto',
                     padding: '4px 0',
-                    // whiteSpace: 'pre-wrap',
                   }}
                 >
                   {transcriptsError ? (
