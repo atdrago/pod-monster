@@ -1,4 +1,4 @@
-import type { NextApiHandler } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   ExternalOpmlFile,
   ExternalOpmlOutline,
@@ -6,12 +6,8 @@ import {
 } from 'opml-to-json';
 
 import { getAuthValues, podcastsByFeedUrl } from '@atdrago/podcast-index';
-import type { OpmlImportResponse } from 'rest/fetchOpmlImport';
 import type { FeedSettings } from 'contexts/SettingsContext';
-import {
-  createApiErrorResponse,
-  type ApiErrorResponse,
-} from 'utils/createApiErrorResponse';
+import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
 const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
@@ -30,27 +26,19 @@ const getOpmlFeeds = (outline: ExternalOpmlOutline | ExternalOpmlFile) => {
   return feeds;
 };
 
-const handler: NextApiHandler<OpmlImportResponse | ApiErrorResponse> = async (
-  req,
-  res,
-) => {
-  if (req.method?.toLowerCase() !== 'post') {
-    return res.status(400).json(createApiErrorResponse('Method must be POST'));
-  }
-
-  if (!req.body) {
-    return res.status(400).json(createApiErrorResponse('Missing body'));
-  }
-
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export async function POST(request: NextRequest) {
   const [authTime, authToken] = getAuthValues(
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY,
     process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET,
   );
   const config = getPodcastIndexConfig(authTime, authToken);
-  const opmlRoot = await opmlToJSON(req.body);
+  const opmlRoot = await opmlToJSON(await request.text());
 
   if (!opmlRoot.children) {
-    return res.status(400).json(createApiErrorResponse('Invalid OPML file.'));
+    return NextResponse.json(createApiErrorResponse('Invalid OPML file.'), {
+      status: 400,
+    });
   }
 
   const feeds = getOpmlFeeds(opmlRoot);
@@ -102,7 +90,8 @@ const handler: NextApiHandler<OpmlImportResponse | ApiErrorResponse> = async (
     }
   });
 
-  return res.status(200).json({ errors: feedSettingsErrors, feedSettings });
-};
-
-export default handler;
+  return NextResponse.json(
+    { errors: feedSettingsErrors, feedSettings },
+    { status: 200 },
+  );
+}
