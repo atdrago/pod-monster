@@ -295,6 +295,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     if (videoRef.current) {
       videoRef.current.pause();
     }
+
+    window.navigator.mediaSession.playbackState = 'paused';
   }, []);
 
   const playPause = useCallback(async () => {
@@ -327,6 +329,10 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         await videoRef.current.play();
       }
     }
+
+    window.navigator.mediaSession.playbackState = nextIsPaused
+      ? 'paused'
+      : 'playing';
   }, [didError, isPaused]);
 
   useEffect(() => {
@@ -449,6 +455,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         ],
         title: feedTitle ?? undefined,
       });
+      navigator.mediaSession.playbackState = isPaused ? 'paused' : 'playing';
     }
   }, [
     currentChapter?.img,
@@ -457,6 +464,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     episodeTitle,
     feedImage,
     feedTitle,
+    isPaused,
   ]);
 
   /**
