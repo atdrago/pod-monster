@@ -32,6 +32,7 @@ import {
 import type { Chapter, ImageDimensions } from 'types';
 import { longDateTimeFormat } from 'utils/date';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
+import rehypeParse from 'rehype-parse';
 
 interface EpisodePageProps {
   episode: ApiResponse.EpisodeById['episode'];
@@ -343,23 +344,33 @@ export const EpisodePage = ({
                 }
               >
                 <Typography
-                  as="p"
+                  as="div"
                   size="paragraph"
                   style={{
                     height: transcriptsError ? 'auto' : 48 * 5,
                     overflowY: 'auto',
                     padding: '4px 0',
-                    whiteSpace: 'pre-wrap',
+                    // whiteSpace: 'pre-wrap',
                   }}
                 >
                   {transcriptsError ? (
                     transcriptsError.message
                   ) : typeof transcript?.content === 'string' ? (
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: transcript?.content,
-                      }}
-                    ></span>
+                    <HtmlViewer
+                      shouldUseCapsize={false}
+                      rehypePlugins={[
+                        [
+                          rehypeParse,
+                          {
+                            fragment: true,
+                          },
+                        ],
+                        rehypeSanitize,
+                        rehypeRaw,
+                      ]}
+                    >
+                      {transcript?.content}
+                    </HtmlViewer>
                   ) : (
                     'Transcript type not supported'
                   )}
