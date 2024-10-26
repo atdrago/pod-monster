@@ -41,7 +41,6 @@ export const player = style([
     },
     backdropFilter: 'blur(6px)',
     backgroundColor: vars.color.backgroundBlurredOpaque,
-    border: '0.5px solid rgba(255, 255, 255, 0.3)',
     overflow: 'hidden',
     padding: `${vars.spacing.s016}`,
     transition: '500ms ease box-shadow, 500ms ease transform',
@@ -50,7 +49,6 @@ export const player = style([
 
 export const playerElevatedVariant = styleVariants({
   elevated: {
-    border: 0,
     boxShadow: vars.color.shadowElevationHigh,
   },
   inset: {
