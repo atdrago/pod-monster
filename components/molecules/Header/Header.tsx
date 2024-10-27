@@ -71,12 +71,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
         style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
         shouldUseCapsize={false}
       >
-        <Link
-          passHref={true}
-          aria-label="Pod Monster"
-          href="/"
-          className={homeLinkClassName}
-        >
+        <Link aria-label="Pod Monster" href="/" className={homeLinkClassName}>
           <Icon size="large" aria-hidden="true">
             <LogoIcon className={homeIconClassName} />
           </Icon>
