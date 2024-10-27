@@ -44,10 +44,23 @@ export const player = style([
   spaceVariant['small'],
   {
     overflow: 'hidden',
-    padding: `${vars.spacing.s016}`,
     transition: '500ms ease box-shadow, 500ms ease transform',
   },
 ]);
+
+export const playerPinnedVariant = styleVariants({
+  pinned: {
+    '@media': {
+      'screen and (min-width: 512px)': {
+        padding: `${vars.spacing.s016}`,
+      },
+    },
+    padding: `${vars.spacing.s032} ${vars.spacing.s016}`,
+  },
+  unpinned: {
+    padding: `${vars.spacing.s016}`,
+  },
+});
 
 export const playerElevatedVariant = styleVariants({
   elevated: {

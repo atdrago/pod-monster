@@ -41,6 +41,7 @@ import {
   player,
   playerButtons,
   playerElevatedVariant,
+  playerPinnedVariant,
   volumeLayout,
 } from './mediaPlayer.css';
 
@@ -133,6 +134,7 @@ export const MediaPlayer: FunctionComponent = () => {
   const playerClassName = useClassNames(
     player,
     playerElevatedVariant[isPinned ? 'elevated' : 'inset'],
+    playerPinnedVariant[isPinned ? 'pinned' : 'unpinned'],
   );
   const containerClassName = useClassNames(
     container,
