@@ -4,7 +4,6 @@ import { vars } from 'styles';
 
 export const stack = style({
   alignItems: 'stretch',
-  background: 'none',
   border: '0',
   margin: '0 auto',
   width: '100%',

@@ -127,6 +127,7 @@ export const EpisodePlayButton = ({
         align="center"
         justify="center"
         style={{
+          background: 'none',
           cursor: 'pointer',
           width: 'auto',
         }}
