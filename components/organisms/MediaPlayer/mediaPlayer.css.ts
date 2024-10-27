@@ -44,6 +44,7 @@ export const player = style([
   spaceVariant['small'],
   {
     overflow: 'hidden',
+    padding: `${vars.spacing.s016}`,
     transition: '500ms ease box-shadow, 500ms ease transform',
   },
 ]);
@@ -55,11 +56,8 @@ export const playerPinnedVariant = styleVariants({
         padding: `${vars.spacing.s032} ${vars.spacing.s016}`,
       },
     },
-    padding: `${vars.spacing.s016}`,
   },
-  unpinned: {
-    padding: `${vars.spacing.s016}`,
-  },
+  unpinned: {},
 });
 
 export const playerElevatedVariant = styleVariants({
@@ -72,9 +70,7 @@ export const playerElevatedVariant = styleVariants({
 });
 
 export const playerButtons = style({
-  alignItems: 'center',
-  display: 'grid',
-  gridTemplateColumns: '30px 1fr 155px 1fr 18px',
+  width: '100%',
 });
 
 const VOLUME_ICON_BUTTON_WIDTH = '30px';
@@ -101,7 +97,8 @@ export const iconButton = style({
 });
 
 export const playbackRateContainer = style({
-  margin: `0 ${vars.spacing.s008}`,
+  marginLeft: `auto`,
+  whiteSpace: 'nowrap',
 });
 
 export const intersectionObserverClassName = style({

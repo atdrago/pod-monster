@@ -21,7 +21,6 @@ import { VolumeIcon } from 'components/atoms/VolumeIcon';
 import { Stack } from 'components/layouts/Stack';
 import { Media } from 'components/molecules/Media';
 import { SelectField } from 'components/molecules/SelectField';
-import { SizeField } from 'components/molecules/SizeField';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
@@ -349,147 +348,154 @@ export const MediaPlayer: FunctionComponent = () => {
              * 3. CanPlay
              * 4. Playing
              */}
-            <Media
-              audioRef={audioRef}
-              currentTime={mediaPlayerCurrentTime}
-              isTitleVisible={!!feedTitle}
-              isVideoVisible={size === 2}
-              onCurrentTimeChange={setMediaPlayerCurrentTime}
-              onAbort={pause}
-              onEnded={pause}
-              onError={handleError}
-              onLoadedData={handleLoadedData}
-              onLoadedMetadata={handleLoadedData}
-              onPause={() => setIsPaused(true)}
-              onPlay={() => setIsPaused(false)}
-              onPlaying={() => setIsPaused(false)}
-              onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
-              onProgress={(event) => {
-                setProgressEventBufferedTuples(
-                  bufferedTimeRangesToTuples(event.currentTarget.buffered),
-                );
-              }}
-              playbackRate={playbackRate}
-              poster={playerArtwork ?? undefined}
-              src={src}
-              srcType={srcType ?? undefined}
-              startTime={currentTime}
-              title={
-                didError
-                  ? '⚠️ Failed to load episode. Press play to retry.'
-                  : (feedTitle ?? '')
-              }
-              videoRef={videoRef}
-            />
-            <AnimatePresence>
-              {!isMobileDevice && !isVideo && size === 2 && (
-                <m.div className={volumeLayout} {...animationProperties}>
-                  <button
-                    aria-label="Mute"
-                    className={iconButton}
-                    type="button"
-                    onClick={handleMuteClick}
-                  >
-                    <VolumeIcon isMuted={isMuted} volume={volume} />
-                  </button>
-                  <Range
-                    aria-label="Volume"
-                    onChange={handleVolumeRangeChange}
-                    max="1"
-                    min="0"
-                    step="0.01"
-                    value={volume}
-                    variant="volume"
-                  />
-                </m.div>
-              )}
-            </AnimatePresence>
-            <div className={playerButtons}>
-              <IconButton
-                label={'Stop'}
-                onClick={resetMediaContext}
-                size="small"
-              >
-                <Icon size="medium">
-                  <StopIcon />
-                </Icon>
-              </IconButton>
-              <Stack
-                align="center"
-                justify="center"
-                kind="flexRow"
-                space="small"
-                style={{ gridColumnStart: 3 }}
-              >
-                <IconButton
-                  background="circle"
-                  label={'Rewind 15 seconds'}
-                  onClick={() => seekBackward({ seekOffset: 15 })}
-                  size={'small'}
-                >
-                  <Icon size={'small'} orientation="reverse">
-                    <SpinnerIcon />
-                  </Icon>
-                </IconButton>
-                <IconButton
-                  background="circle"
-                  label={isPaused ? 'Play podcast' : 'Pause podcast'}
-                  onClick={playPause}
-                  size={'medium'}
-                >
-                  <PlayPauseIcon
-                    size="medium"
-                    isPaused={isPaused}
-                    isLoading={isLoadingAtCurrentTime}
-                  />
-                </IconButton>
-                <IconButton
-                  background="circle"
-                  label={'Skip 30 seconds'}
-                  onClick={() => seekForward({ seekOffset: 30 })}
-                  size={'small'}
-                >
-                  <Icon size={'small'}>
-                    <SpinnerIcon />
-                  </Icon>
-                </IconButton>
-              </Stack>
-              <div className={playbackRateContainer}>
-                <SelectField
-                  value={rateDecimalToFraction(playbackRate)}
-                  label={`${rateDecimalToFraction(playbackRate)}x`}
-                  onChange={(event) => {
-                    const nextPlaybackRate = fractionToPlaybackRate(
-                      event.currentTarget.value,
-                    );
-
-                    if (nextPlaybackRate) {
-                      setPlaybackRate(nextPlaybackRate);
-                    }
-                  }}
-                >
-                  {playbackRates.map((rate) => {
-                    return (
-                      <option key={rate} value={rateDecimalToFraction(rate)}>
-                        {rateDecimalToFraction(rate)}
-                      </option>
-                    );
-                  })}
-                </SelectField>
-              </div>
-              <SizeField
-                label="Player size"
-                value={size}
-                step={1}
-                max={2}
-                min={1}
-                onChange={(value) => {
-                  if (value === 1 || value === 2) {
-                    setSize(value);
+            <Stack kind="flexRow" space="small">
+              {playerArtwork ? (
+                <Artwork
+                  alt=""
+                  height={96}
+                  isSquare={!!episodeImageDimensions && !!hasChapters}
+                  src={playerArtwork}
+                  width={96}
+                />
+              ) : null}
+              <Stack space="small">
+                <Media
+                  audioRef={audioRef}
+                  currentTime={mediaPlayerCurrentTime}
+                  isTitleVisible={!!feedTitle}
+                  isVideoVisible={size === 2}
+                  onCurrentTimeChange={setMediaPlayerCurrentTime}
+                  onAbort={pause}
+                  onEnded={pause}
+                  onError={handleError}
+                  onLoadedData={handleLoadedData}
+                  onLoadedMetadata={handleLoadedData}
+                  onPause={() => setIsPaused(true)}
+                  onPlay={() => setIsPaused(false)}
+                  onPlaying={() => setIsPaused(false)}
+                  onVolumeChange={(event) =>
+                    setVolume(event.currentTarget.volume)
                   }
-                }}
-              />
-            </div>
+                  onProgress={(event) => {
+                    setProgressEventBufferedTuples(
+                      bufferedTimeRangesToTuples(event.currentTarget.buffered),
+                    );
+                  }}
+                  playbackRate={playbackRate}
+                  poster={playerArtwork ?? undefined}
+                  src={src}
+                  srcType={srcType ?? undefined}
+                  startTime={currentTime}
+                  title={
+                    didError
+                      ? '⚠️ Failed to load episode. Press play to retry.'
+                      : (feedTitle ?? '')
+                  }
+                  videoRef={videoRef}
+                />
+                <AnimatePresence>
+                  {!isMobileDevice && !isVideo && size === 2 && (
+                    <m.div className={volumeLayout} {...animationProperties}>
+                      <button
+                        aria-label="Mute"
+                        className={iconButton}
+                        type="button"
+                        onClick={handleMuteClick}
+                      >
+                        <VolumeIcon isMuted={isMuted} volume={volume} />
+                      </button>
+                      <Range
+                        aria-label="Volume"
+                        onChange={handleVolumeRangeChange}
+                        max="1"
+                        min="0"
+                        step="0.01"
+                        value={volume}
+                        variant="volume"
+                      />
+                    </m.div>
+                  )}
+                </AnimatePresence>
+                <Stack
+                  className={playerButtons}
+                  kind="flexRow"
+                  justify="spaceBetween"
+                  align="center"
+                >
+                  <IconButton
+                    label={'Stop'}
+                    onClick={resetMediaContext}
+                    size="small"
+                  >
+                    <Icon size="medium">
+                      <StopIcon />
+                    </Icon>
+                  </IconButton>
+                  <Stack
+                    align="center"
+                    justify="center"
+                    kind="flexRow"
+                    space="small"
+                    style={{ gridColumnStart: 3 }}
+                  >
+                    <IconButton
+                      background="circle"
+                      label={'Rewind 15 seconds'}
+                      onClick={() => seekBackward({ seekOffset: 15 })}
+                      size={'small'}
+                    >
+                      <Icon size={'small'} orientation="reverse">
+                        <SpinnerIcon />
+                      </Icon>
+                    </IconButton>
+                    <IconButton
+                      background="circle"
+                      label={isPaused ? 'Play podcast' : 'Pause podcast'}
+                      onClick={playPause}
+                      size={'medium'}
+                    >
+                      <PlayPauseIcon
+                        size="medium"
+                        isPaused={isPaused}
+                        isLoading={isLoadingAtCurrentTime}
+                      />
+                    </IconButton>
+                    <IconButton
+                      background="circle"
+                      label={'Skip 30 seconds'}
+                      onClick={() => seekForward({ seekOffset: 30 })}
+                      size={'small'}
+                    >
+                      <Icon size={'small'}>
+                        <SpinnerIcon />
+                      </Icon>
+                    </IconButton>
+                  </Stack>
+                  <SelectField
+                    className={playbackRateContainer}
+                    value={rateDecimalToFraction(playbackRate)}
+                    label={`${rateDecimalToFraction(playbackRate)}x`}
+                    onChange={(event) => {
+                      const nextPlaybackRate = fractionToPlaybackRate(
+                        event.currentTarget.value,
+                      );
+
+                      if (nextPlaybackRate) {
+                        setPlaybackRate(nextPlaybackRate);
+                      }
+                    }}
+                  >
+                    {playbackRates.map((rate) => {
+                      return (
+                        <option key={rate} value={rateDecimalToFraction(rate)}>
+                          {rateDecimalToFraction(rate)}
+                        </option>
+                      );
+                    })}
+                  </SelectField>
+                </Stack>
+              </Stack>
+            </Stack>
           </m.div>
         </m.aside>
       )}
