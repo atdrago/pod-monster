@@ -33,6 +33,8 @@ import { getEpisodePath } from 'utils/paths';
 import { playbackRates, type PlaybackRate } from 'utils/playbackRates';
 
 import {
+  container,
+  containerPinnedVariant,
   iconButton,
   intersectionObserverClassName,
   playbackRateContainer,
@@ -40,7 +42,6 @@ import {
   playerButtons,
   playerElevatedVariant,
   volumeLayout,
-  containerPinnedVariant,
 } from './mediaPlayer.css';
 
 const rateDecimalToFraction = (rate: PlaybackRate): string => {
@@ -132,6 +133,10 @@ export const MediaPlayer: FunctionComponent = () => {
   const playerClassName = useClassNames(
     player,
     playerElevatedVariant[isPinned ? 'elevated' : 'inset'],
+  );
+  const containerClassName = useClassNames(
+    container,
+    containerPinnedVariant[isPinned ? 'pinned' : 'unpinned'],
   );
 
   const playerArtwork = currentChapter?.img || episodeImage || feedImage;
@@ -245,7 +250,7 @@ export const MediaPlayer: FunctionComponent = () => {
     <AnimatePresence>
       {src && (
         <m.aside
-          className={containerPinnedVariant[isPinned ? 'pinned' : 'unpinned']}
+          className={containerClassName}
           animate={{
             height: 'auto',
             marginBottom: 0,

@@ -7,6 +7,16 @@ import {
   kindVariant,
 } from 'components/layouts/Stack/stack.css';
 
+export const container = style({
+  '@supports': {
+    '(backdrop-filter: blur(6px))': {
+      backdropFilter: 'blur(6px)',
+      background: vars.color.backgroundBlurred,
+    },
+  },
+  background: vars.color.backgroundBlurredOpaque,
+});
+
 export const containerPinnedVariant = styleVariants({
   pinned: {
     '@media': {
@@ -33,14 +43,6 @@ export const player = style([
   kindVariant['flex'],
   spaceVariant['small'],
   {
-    '@supports': {
-      '(backdrop-filter: blur(6px))': {
-        backdropFilter: 'blur(6px)',
-        backgroundColor: vars.color.backgroundBlurred,
-      },
-    },
-    backdropFilter: 'blur(6px)',
-    backgroundColor: vars.color.backgroundBlurredOpaque,
     overflow: 'hidden',
     padding: `${vars.spacing.s016}`,
     transition: '500ms ease box-shadow, 500ms ease transform',
