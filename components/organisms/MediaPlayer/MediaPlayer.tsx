@@ -362,7 +362,7 @@ export const MediaPlayer: FunctionComponent = () => {
                     align="center"
                     justify="center"
                     kind="flexRow"
-                    space="xsmall"
+                    space="small"
                     style={{ gridColumnStart: 3 }}
                   >
                     <IconButton
