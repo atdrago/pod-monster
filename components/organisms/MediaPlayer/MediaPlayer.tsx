@@ -347,7 +347,7 @@ export const MediaPlayer: FunctionComponent = () => {
                   kind="flexRow"
                   justify="spaceBetween"
                   align="center"
-                  space="xsmall"
+                  space="small"
                 >
                   <IconButton
                     label={'Stop'}

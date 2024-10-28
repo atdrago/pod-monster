@@ -53,7 +53,7 @@ export const playerPinnedVariant = styleVariants({
   pinned: {
     '@media': {
       'screen and (display-mode: standalone) and (max-width: 512px)': {
-        padding: `${vars.spacing.s032} ${vars.spacing.s016}`,
+        padding: `${vars.spacing.s016} ${vars.spacing.s016} ${vars.spacing.s032}`,
       },
     },
   },
