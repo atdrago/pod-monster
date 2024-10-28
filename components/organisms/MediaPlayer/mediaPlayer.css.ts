@@ -20,6 +20,9 @@ export const container = style({
 export const containerPinnedVariant = styleVariants({
   pinned: {
     '@media': {
+      'screen and (display-mode: standalone) and (max-width: 512px)': {
+        bottom: 16,
+      },
       'screen and (min-width: 512px)': {
         bottom: 16,
         marginLeft: 0,
@@ -51,22 +54,22 @@ export const player = style([
 
 export const playerPinnedVariant = styleVariants({
   pinned: {
-    '@media': {
-      'screen and (display-mode: standalone) and (max-width: 512px)': {
-        padding: `${vars.spacing.s016} ${vars.spacing.s016} ${vars.spacing.s032}`,
-      },
-    },
+    // '@media': {
+    //   'screen and (display-mode: standalone) and (max-width: 512px)': {
+    //     padding: `${vars.spacing.s016} ${vars.spacing.s016} ${vars.spacing.s032}`,
+    //   },
+    // },
   },
   unpinned: {},
 });
 
 export const playerElevatedVariant = styleVariants({
-  elevated: {
-    boxShadow: vars.color.shadowElevationHigh,
-  },
-  inset: {
-    boxShadow: vars.color.shadowElevationMedium,
-  },
+  // elevated: {
+  //   boxShadow: vars.color.shadowElevationHigh,
+  // },
+  // inset: {
+  //   boxShadow: vars.color.shadowElevationMedium,
+  // },
 });
 
 export const playerButtons = style({
