@@ -10,7 +10,7 @@ export const labelLayout = style({
   alignItems: 'center',
   bottom: '0',
   display: 'grid',
-  gap: vars.spacing.s016,
+  gap: vars.spacing.s008,
   gridTemplateColumns: 'max-content 1fr max-content',
   justifyContent: 'space-between',
   left: '0',
@@ -28,12 +28,16 @@ export const timeLabel = style({
   // dark and light mode users.
   color: '#fff',
   fontVariantNumeric: 'tabular-nums',
+  fontWeight: 'bold',
   mixBlendMode: 'difference',
+  paddingTop: vars.spacing.s002,
 });
 
 export const timeLabelCenter = style([
   timeLabel,
   {
+    fontWeight: 'normal',
+    paddingTop: 0,
     textAlign: 'center',
   },
 ]);

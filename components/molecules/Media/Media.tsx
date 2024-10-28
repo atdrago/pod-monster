@@ -225,7 +225,7 @@ export const Media = function MediaRef({
         <label htmlFor={id} className={labelLayout}>
           <Typography
             as="span"
-            size="paragraph"
+            size="legal"
             className={timeLabel}
             shouldUseCapsize={false}
           >
@@ -244,7 +244,7 @@ export const Media = function MediaRef({
           ) : null}
           <Typography
             as="span"
-            size="paragraph"
+            size="legal"
             className={timeLabelRight}
             shouldUseCapsize={false}
           >

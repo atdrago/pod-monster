@@ -1,8 +1,6 @@
 'use client';
 
 import { AnimatePresence, m } from 'framer-motion';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
   FunctionComponent,
   ReactEventHandler,
@@ -16,7 +14,6 @@ import { Icon } from 'components/atoms/Icon';
 import { IconButton } from 'components/atoms/IconButton';
 import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { Range } from 'components/atoms/Range';
-import { Typography } from 'components/atoms/Typography';
 import { VolumeIcon } from 'components/atoms/VolumeIcon';
 import { Stack } from 'components/layouts/Stack';
 import { Media } from 'components/molecules/Media';
@@ -26,9 +23,7 @@ import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
-import { underlinedLink } from 'styles';
 import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
-import { getEpisodePath } from 'utils/paths';
 import { playbackRates, type PlaybackRate } from 'utils/playbackRates';
 
 import {
@@ -95,11 +90,8 @@ export const MediaPlayer: FunctionComponent = () => {
     currentChapter,
     currentTime,
     didError,
-    episodeId,
     episodeImage,
     episodeImageDimensions,
-    episodeTitle,
-    feedId,
     feedImage,
     feedTitle,
     isLoadingAtCurrentTime,
@@ -119,7 +111,6 @@ export const MediaPlayer: FunctionComponent = () => {
     setMediaPlayerCurrentTime,
     setPlaybackRate,
     setProgressEventBufferedTuples,
-    setSize,
     setVolume,
     size,
     src,
@@ -128,7 +119,6 @@ export const MediaPlayer: FunctionComponent = () => {
     volume,
   } = useMediaContext();
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
-  const pathname = usePathname();
   const [isPinned, setIsPinned] = useState(false);
   const playerClassName = useClassNames(
     player,
@@ -226,12 +216,6 @@ export const MediaPlayer: FunctionComponent = () => {
     };
   }, [src]);
 
-  const isPlayingEpisodeOfCurrentPage =
-    episodeId &&
-    feedId &&
-    // TODO: Check that this is the path name and not the route id
-    pathname?.includes(getEpisodePath({ episodeId, feedId }));
-
   const animationProperties = {
     animate: {
       height: 'auto',
@@ -284,64 +268,6 @@ export const MediaPlayer: FunctionComponent = () => {
             ref={intersectionObserverRef}
           ></div>
           <m.div className={playerClassName}>
-            <AnimatePresence>
-              {size === 2 && (
-                <Stack as={m.div} space="small" {...animationProperties}>
-                  {episodeTitle ? (
-                    <Typography
-                      size="headingSmaller"
-                      as="h4"
-                      textAlign="center"
-                      whitespace="ellipsis"
-                    >
-                      {episodeId && feedId && !isPlayingEpisodeOfCurrentPage ? (
-                        <Link
-                          className={underlinedLink}
-                          href={getEpisodePath({ episodeId, feedId })}
-                          onClick={() => {
-                            setSize(1);
-                          }}
-                        >
-                          {episodeTitle}
-                        </Link>
-                      ) : (
-                        episodeTitle
-                      )}
-                    </Typography>
-                  ) : null}
-                  {currentChapter && currentChapter.title && (
-                    <Typography
-                      size="paragraph"
-                      as="h5"
-                      textAlign="center"
-                      whitespace="ellipsis"
-                    >
-                      {currentChapter?.url ? (
-                        <Link
-                          rel="noreferrer noopener"
-                          target="_blank"
-                          className={underlinedLink}
-                          href={currentChapter?.url}
-                        >
-                          {currentChapter.title}
-                        </Link>
-                      ) : (
-                        currentChapter.title
-                      )}
-                    </Typography>
-                  )}
-                  {!isVideo && playerArtwork ? (
-                    <Artwork
-                      alt=""
-                      height={episodeImageDimensions?.height}
-                      isSquare={!!episodeImageDimensions && !!hasChapters}
-                      src={playerArtwork}
-                      width={episodeImageDimensions?.width}
-                    />
-                  ) : null}
-                </Stack>
-              )}
-            </AnimatePresence>
             {/**
              * 1. Waiting
              * 2. Suspend
@@ -352,10 +278,10 @@ export const MediaPlayer: FunctionComponent = () => {
               {playerArtwork ? (
                 <Artwork
                   alt=""
-                  height={96}
+                  height={100}
                   isSquare={!!episodeImageDimensions && !!hasChapters}
                   src={playerArtwork}
-                  width={96}
+                  width={100}
                 />
               ) : null}
               <Stack space="small">
@@ -363,7 +289,7 @@ export const MediaPlayer: FunctionComponent = () => {
                   audioRef={audioRef}
                   currentTime={mediaPlayerCurrentTime}
                   isTitleVisible={!!feedTitle}
-                  isVideoVisible={size === 2}
+                  // isVideoVisible={size === 2}
                   onCurrentTimeChange={setMediaPlayerCurrentTime}
                   onAbort={pause}
                   onEnded={pause}
@@ -436,7 +362,7 @@ export const MediaPlayer: FunctionComponent = () => {
                     align="center"
                     justify="center"
                     kind="flexRow"
-                    space="small"
+                    space="xsmall"
                     style={{ gridColumnStart: 3 }}
                   >
                     <IconButton
