@@ -64,12 +64,12 @@ export const playerPinnedVariant = styleVariants({
 });
 
 export const playerElevatedVariant = styleVariants({
-  // elevated: {
-  //   boxShadow: vars.color.shadowElevationHigh,
-  // },
-  // inset: {
-  //   boxShadow: vars.color.shadowElevationMedium,
-  // },
+  elevated: {
+    // boxShadow: vars.color.shadowElevationHigh,
+  },
+  inset: {
+    // boxShadow: vars.color.shadowElevationMedium,
+  },
 });
 
 export const playerButtons = style({
