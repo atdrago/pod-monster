@@ -15,24 +15,20 @@ export const container = style({
     },
   },
   background: vars.color.backgroundBlurredOpaque,
+  bottom: 0,
 });
 
 export const containerPinnedVariant = styleVariants({
   pinned: {
     '@media': {
       'screen and (min-width: 512px)': {
-        bottom: 16,
-        marginLeft: 0,
         width: '480px',
       },
     },
-    bottom: 0,
     maxWidth: '512px',
     width: '100vw',
   },
   unpinned: {
-    bottom: 16,
-    marginLeft: 0,
     maxWidth: '480px',
     width: '100vw',
   },
@@ -44,22 +40,20 @@ export const player = style([
   spaceVariant['small'],
   {
     overflow: 'hidden',
+    padding: `${vars.spacing.s016}`,
     transition: '500ms ease box-shadow, 500ms ease transform',
   },
 ]);
 
 export const playerPinnedVariant = styleVariants({
   pinned: {
-    '@media': {
-      'screen and (display-mode: standalone) and (max-width: 512px)': {
-        padding: `${vars.spacing.s032} ${vars.spacing.s016}`,
-      },
-    },
-    padding: `${vars.spacing.s016}`,
+    // '@media': {
+    //   'screen and (display-mode: standalone) and (max-width: 512px)': {
+    //     padding: `${vars.spacing.s016} ${vars.spacing.s016} ${vars.spacing.s032}`,
+    //   },
+    // },
   },
-  unpinned: {
-    padding: `${vars.spacing.s016}`,
-  },
+  unpinned: {},
 });
 
 export const playerElevatedVariant = styleVariants({
@@ -67,14 +61,12 @@ export const playerElevatedVariant = styleVariants({
     boxShadow: vars.color.shadowElevationHigh,
   },
   inset: {
-    boxShadow: vars.color.shadowElevationMedium,
+    boxShadow: vars.color.shadowElevationLow,
   },
 });
 
 export const playerButtons = style({
-  alignItems: 'center',
-  display: 'grid',
-  gridTemplateColumns: '30px 1fr 155px 1fr 18px',
+  width: '100%',
 });
 
 const VOLUME_ICON_BUTTON_WIDTH = '30px';
@@ -101,7 +93,10 @@ export const iconButton = style({
 });
 
 export const playbackRateContainer = style({
-  margin: `0 ${vars.spacing.s008}`,
+  flex: '0 0 auto',
+  marginLeft: `auto`,
+  whiteSpace: 'nowrap',
+  width: 22,
 });
 
 export const intersectionObserverClassName = style({

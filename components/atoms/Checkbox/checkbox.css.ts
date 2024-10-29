@@ -15,7 +15,7 @@ export const checkbox = style({
   background: vars.color.background,
   border: `2px solid ${vars.color.foreground}`,
   display: 'inline-block',
-  flex: '1 0 auto',
+  flex: '0 0 auto',
   height: '12px',
   lineHeight: '0px',
   width: '12px',

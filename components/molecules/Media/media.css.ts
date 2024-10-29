@@ -10,7 +10,7 @@ export const labelLayout = style({
   alignItems: 'center',
   bottom: '0',
   display: 'grid',
-  gap: vars.spacing.s016,
+  gap: vars.spacing.s008,
   gridTemplateColumns: 'max-content 1fr max-content',
   justifyContent: 'space-between',
   left: '0',
@@ -22,24 +22,33 @@ export const labelLayout = style({
   top: '0',
 });
 
-export const timeLabel = style({
+const timeLabel = style({
   alignItems: 'center',
   // Because of `mix-blend-mode: difference`, this color must be white for both
   // dark and light mode users.
   color: '#fff',
   fontVariantNumeric: 'tabular-nums',
   mixBlendMode: 'difference',
+  paddingTop: vars.spacing.s002,
 });
+
+const timeLabelLeftAndRight = style({
+  letterSpacing: '-0.05rem',
+});
+
+export const timeLabelLeft = style([timeLabel, timeLabelLeftAndRight]);
 
 export const timeLabelCenter = style([
   timeLabel,
   {
+    paddingTop: 0,
     textAlign: 'center',
   },
 ]);
 
 export const timeLabelRight = style([
   timeLabel,
+  timeLabelLeftAndRight,
   {
     gridColumnStart: '3',
     textAlign: 'right',

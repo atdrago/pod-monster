@@ -5,7 +5,6 @@ export const labelClassName = style({
   fontWeight: 'bold',
   position: 'relative',
   textAlign: 'center',
-  width: '100%',
 });
 
 export const selectClassName = style({
@@ -20,5 +19,4 @@ export const selectClassName = style({
   right: 0,
   textAlign: 'center',
   top: 0,
-  width: '100%',
 });

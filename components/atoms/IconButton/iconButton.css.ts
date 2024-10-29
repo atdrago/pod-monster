@@ -16,7 +16,7 @@ export const iconButton = style({
 export const backgroundVariant = styleVariants({
   circle: {
     background: vars.color.background,
-    border: `2px solid ${vars.color.foreground}`,
+    border: `3px solid ${vars.color.foreground}`,
     borderRadius: '100%',
     padding: `${vars.spacing.s016}`,
     textAlign: 'center',

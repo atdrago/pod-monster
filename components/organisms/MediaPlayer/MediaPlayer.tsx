@@ -1,8 +1,6 @@
 'use client';
 
 import { AnimatePresence, m } from 'framer-motion';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
   FunctionComponent,
   ReactEventHandler,
@@ -16,20 +14,16 @@ import { Icon } from 'components/atoms/Icon';
 import { IconButton } from 'components/atoms/IconButton';
 import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { Range } from 'components/atoms/Range';
-import { Typography } from 'components/atoms/Typography';
 import { VolumeIcon } from 'components/atoms/VolumeIcon';
 import { Stack } from 'components/layouts/Stack';
 import { Media } from 'components/molecules/Media';
 import { SelectField } from 'components/molecules/SelectField';
-import { SizeField } from 'components/molecules/SizeField';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
-import { underlinedLink } from 'styles';
 import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
-import { getEpisodePath } from 'utils/paths';
 import { playbackRates, type PlaybackRate } from 'utils/playbackRates';
 
 import {
@@ -96,11 +90,8 @@ export const MediaPlayer: FunctionComponent = () => {
     currentChapter,
     currentTime,
     didError,
-    episodeId,
     episodeImage,
     episodeImageDimensions,
-    episodeTitle,
-    feedId,
     feedImage,
     feedTitle,
     isLoadingAtCurrentTime,
@@ -120,7 +111,6 @@ export const MediaPlayer: FunctionComponent = () => {
     setMediaPlayerCurrentTime,
     setPlaybackRate,
     setProgressEventBufferedTuples,
-    setSize,
     setVolume,
     size,
     src,
@@ -129,7 +119,6 @@ export const MediaPlayer: FunctionComponent = () => {
     volume,
   } = useMediaContext();
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
-  const pathname = usePathname();
   const [isPinned, setIsPinned] = useState(false);
   const playerClassName = useClassNames(
     player,
@@ -227,12 +216,6 @@ export const MediaPlayer: FunctionComponent = () => {
     };
   }, [src]);
 
-  const isPlayingEpisodeOfCurrentPage =
-    episodeId &&
-    feedId &&
-    // TODO: Check that this is the path name and not the route id
-    pathname?.includes(getEpisodePath({ episodeId, feedId }));
-
   const animationProperties = {
     animate: {
       height: 'auto',
@@ -276,7 +259,6 @@ export const MediaPlayer: FunctionComponent = () => {
           }}
           style={{
             position: 'sticky',
-            top: 0,
             zIndex: 1,
           }}
         >
@@ -285,211 +267,161 @@ export const MediaPlayer: FunctionComponent = () => {
             ref={intersectionObserverRef}
           ></div>
           <m.div className={playerClassName}>
-            <AnimatePresence>
-              {size === 2 && (
-                <Stack as={m.div} space="small" {...animationProperties}>
-                  {episodeTitle ? (
-                    <Typography
-                      size="headingSmaller"
-                      as="h4"
-                      textAlign="center"
-                      whitespace="ellipsis"
-                    >
-                      {episodeId && feedId && !isPlayingEpisodeOfCurrentPage ? (
-                        <Link
-                          className={underlinedLink}
-                          href={getEpisodePath({ episodeId, feedId })}
-                          onClick={() => {
-                            setSize(1);
-                          }}
-                        >
-                          {episodeTitle}
-                        </Link>
-                      ) : (
-                        episodeTitle
-                      )}
-                    </Typography>
-                  ) : null}
-                  {currentChapter && currentChapter.title && (
-                    <Typography
-                      size="paragraph"
-                      as="h5"
-                      textAlign="center"
-                      whitespace="ellipsis"
-                    >
-                      {currentChapter?.url ? (
-                        <Link
-                          rel="noreferrer noopener"
-                          target="_blank"
-                          className={underlinedLink}
-                          href={currentChapter?.url}
-                        >
-                          {currentChapter.title}
-                        </Link>
-                      ) : (
-                        currentChapter.title
-                      )}
-                    </Typography>
-                  )}
-                  {!isVideo && playerArtwork ? (
-                    <Artwork
-                      alt=""
-                      height={episodeImageDimensions?.height}
-                      isSquare={!!episodeImageDimensions && !!hasChapters}
-                      src={playerArtwork}
-                      width={episodeImageDimensions?.width}
-                    />
-                  ) : null}
-                </Stack>
-              )}
-            </AnimatePresence>
             {/**
              * 1. Waiting
              * 2. Suspend
              * 3. CanPlay
              * 4. Playing
              */}
-            <Media
-              audioRef={audioRef}
-              currentTime={mediaPlayerCurrentTime}
-              isTitleVisible={!!feedTitle}
-              isVideoVisible={size === 2}
-              onCurrentTimeChange={setMediaPlayerCurrentTime}
-              onAbort={pause}
-              onEnded={pause}
-              onError={handleError}
-              onLoadedData={handleLoadedData}
-              onLoadedMetadata={handleLoadedData}
-              onPause={() => setIsPaused(true)}
-              onPlay={() => setIsPaused(false)}
-              onPlaying={() => setIsPaused(false)}
-              onVolumeChange={(event) => setVolume(event.currentTarget.volume)}
-              onProgress={(event) => {
-                setProgressEventBufferedTuples(
-                  bufferedTimeRangesToTuples(event.currentTarget.buffered),
-                );
-              }}
-              playbackRate={playbackRate}
-              poster={playerArtwork ?? undefined}
-              src={src}
-              srcType={srcType ?? undefined}
-              startTime={currentTime}
-              title={
-                didError
-                  ? '⚠️ Failed to load episode. Press play to retry.'
-                  : (feedTitle ?? '')
-              }
-              videoRef={videoRef}
-            />
-            <AnimatePresence>
-              {!isMobileDevice && !isVideo && size === 2 && (
-                <m.div className={volumeLayout} {...animationProperties}>
-                  <button
-                    aria-label="Mute"
-                    className={iconButton}
-                    type="button"
-                    onClick={handleMuteClick}
-                  >
-                    <VolumeIcon isMuted={isMuted} volume={volume} />
-                  </button>
-                  <Range
-                    aria-label="Volume"
-                    onChange={handleVolumeRangeChange}
-                    max="1"
-                    min="0"
-                    step="0.01"
-                    value={volume}
-                    variant="volume"
-                  />
-                </m.div>
-              )}
-            </AnimatePresence>
-            <div className={playerButtons}>
-              <IconButton
-                label={'Stop'}
-                onClick={resetMediaContext}
-                size="small"
-              >
-                <Icon size="medium">
-                  <StopIcon />
-                </Icon>
-              </IconButton>
-              <Stack
-                align="center"
-                justify="center"
-                kind="flexRow"
-                space="small"
-                style={{ gridColumnStart: 3 }}
-              >
-                <IconButton
-                  background="circle"
-                  label={'Rewind 15 seconds'}
-                  onClick={() => seekBackward({ seekOffset: 15 })}
-                  size={'small'}
-                >
-                  <Icon size={'small'} orientation="reverse">
-                    <SpinnerIcon />
-                  </Icon>
-                </IconButton>
-                <IconButton
-                  background="circle"
-                  label={isPaused ? 'Play podcast' : 'Pause podcast'}
-                  onClick={playPause}
-                  size={'medium'}
-                >
-                  <PlayPauseIcon
-                    size="medium"
-                    isPaused={isPaused}
-                    isLoading={isLoadingAtCurrentTime}
-                  />
-                </IconButton>
-                <IconButton
-                  background="circle"
-                  label={'Skip 30 seconds'}
-                  onClick={() => seekForward({ seekOffset: 30 })}
-                  size={'small'}
-                >
-                  <Icon size={'small'}>
-                    <SpinnerIcon />
-                  </Icon>
-                </IconButton>
-              </Stack>
-              <div className={playbackRateContainer}>
-                <SelectField
-                  value={rateDecimalToFraction(playbackRate)}
-                  label={`${rateDecimalToFraction(playbackRate)}x`}
-                  onChange={(event) => {
-                    const nextPlaybackRate = fractionToPlaybackRate(
-                      event.currentTarget.value,
-                    );
-
-                    if (nextPlaybackRate) {
-                      setPlaybackRate(nextPlaybackRate);
-                    }
-                  }}
-                >
-                  {playbackRates.map((rate) => {
-                    return (
-                      <option key={rate} value={rateDecimalToFraction(rate)}>
-                        {rateDecimalToFraction(rate)}
-                      </option>
-                    );
-                  })}
-                </SelectField>
-              </div>
-              <SizeField
-                label="Player size"
-                value={size}
-                step={1}
-                max={2}
-                min={1}
-                onChange={(value) => {
-                  if (value === 1 || value === 2) {
-                    setSize(value);
+            <Stack kind="flexRow" space="small">
+              {playerArtwork ? (
+                <Artwork
+                  alt=""
+                  height={100}
+                  isSquare={!!episodeImageDimensions && !!hasChapters}
+                  src={playerArtwork}
+                  width={100}
+                />
+              ) : null}
+              <Stack space="small">
+                <Media
+                  audioRef={audioRef}
+                  currentTime={mediaPlayerCurrentTime}
+                  isTitleVisible={!!feedTitle}
+                  // isVideoVisible={size === 2}
+                  onCurrentTimeChange={setMediaPlayerCurrentTime}
+                  onAbort={pause}
+                  onEnded={pause}
+                  onError={handleError}
+                  onLoadedData={handleLoadedData}
+                  onLoadedMetadata={handleLoadedData}
+                  onPause={() => setIsPaused(true)}
+                  onPlay={() => setIsPaused(false)}
+                  onPlaying={() => setIsPaused(false)}
+                  onVolumeChange={(event) =>
+                    setVolume(event.currentTarget.volume)
                   }
-                }}
-              />
-            </div>
+                  onProgress={(event) => {
+                    setProgressEventBufferedTuples(
+                      bufferedTimeRangesToTuples(event.currentTarget.buffered),
+                    );
+                  }}
+                  playbackRate={playbackRate}
+                  poster={playerArtwork ?? undefined}
+                  src={src}
+                  srcType={srcType ?? undefined}
+                  startTime={currentTime}
+                  title={
+                    didError
+                      ? '⚠️ Failed to load episode. Press play to retry.'
+                      : (feedTitle ?? '')
+                  }
+                  videoRef={videoRef}
+                />
+                <AnimatePresence>
+                  {!isMobileDevice && !isVideo && size === 2 && (
+                    <m.div className={volumeLayout} {...animationProperties}>
+                      <button
+                        aria-label="Mute"
+                        className={iconButton}
+                        type="button"
+                        onClick={handleMuteClick}
+                      >
+                        <VolumeIcon isMuted={isMuted} volume={volume} />
+                      </button>
+                      <Range
+                        aria-label="Volume"
+                        onChange={handleVolumeRangeChange}
+                        max="1"
+                        min="0"
+                        step="0.01"
+                        value={volume}
+                        variant="volume"
+                      />
+                    </m.div>
+                  )}
+                </AnimatePresence>
+                <Stack
+                  className={playerButtons}
+                  kind="flexRow"
+                  justify="spaceBetween"
+                  align="center"
+                  space="small"
+                >
+                  <SelectField
+                    className={playbackRateContainer}
+                    value={rateDecimalToFraction(playbackRate)}
+                    label={`${rateDecimalToFraction(playbackRate)}x`}
+                    onChange={(event) => {
+                      const nextPlaybackRate = fractionToPlaybackRate(
+                        event.currentTarget.value,
+                      );
+
+                      if (nextPlaybackRate) {
+                        setPlaybackRate(nextPlaybackRate);
+                      }
+                    }}
+                  >
+                    {playbackRates.map((rate) => {
+                      return (
+                        <option key={rate} value={rateDecimalToFraction(rate)}>
+                          {rateDecimalToFraction(rate)}
+                        </option>
+                      );
+                    })}
+                  </SelectField>
+                  <Stack
+                    align="center"
+                    justify="center"
+                    kind="flexRow"
+                    space="small"
+                    style={{ gridColumnStart: 3 }}
+                  >
+                    <IconButton
+                      background="circle"
+                      label={'Rewind 15 seconds'}
+                      onClick={() => seekBackward({ seekOffset: 15 })}
+                      size={'small'}
+                    >
+                      <Icon size={'small'} orientation="reverse">
+                        <SpinnerIcon />
+                      </Icon>
+                    </IconButton>
+                    <IconButton
+                      background="circle"
+                      label={isPaused ? 'Play podcast' : 'Pause podcast'}
+                      onClick={playPause}
+                      size={'medium'}
+                    >
+                      <PlayPauseIcon
+                        size="medium"
+                        isPaused={isPaused}
+                        isLoading={isLoadingAtCurrentTime}
+                      />
+                    </IconButton>
+                    <IconButton
+                      background="circle"
+                      label={'Skip 30 seconds'}
+                      onClick={() => seekForward({ seekOffset: 30 })}
+                      size={'small'}
+                    >
+                      <Icon size={'small'}>
+                        <SpinnerIcon />
+                      </Icon>
+                    </IconButton>
+                  </Stack>
+                  <IconButton
+                    label={'Stop'}
+                    onClick={resetMediaContext}
+                    size="small"
+                  >
+                    <Icon size="medium">
+                      <StopIcon />
+                    </Icon>
+                  </IconButton>
+                </Stack>
+              </Stack>
+            </Stack>
           </m.div>
         </m.aside>
       )}

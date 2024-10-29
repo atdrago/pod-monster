@@ -5,8 +5,9 @@ import { vars } from 'styles';
 import { getFontMetricsFromUserAgent } from 'utils/typography';
 
 export const button = style({
-  border: `1px solid ${vars.color.buttonBorder}`,
+  border: 0,
   borderRadius: '4px',
+  boxShadow: vars.color.shadowElevationLow,
   cursor: 'pointer',
   fontSize: vars.typography.fontSize.s18,
   margin: 0,
