@@ -17,7 +17,7 @@ import {
   audio,
   labelLayout,
   mediaBase,
-  timeLabel,
+  timeLabelLeft,
   timeLabelCenter,
   timeLabelRight,
 } from './media.css';
@@ -226,7 +226,7 @@ export const Media = function MediaRef({
           <Typography
             as="span"
             size="legal"
-            className={timeLabel}
+            className={timeLabelLeft}
             shouldUseCapsize={false}
           >
             {duration === 0 ? '...' : secondsToFormattedTime(currentTime)}

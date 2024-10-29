@@ -259,7 +259,6 @@ export const MediaPlayer: FunctionComponent = () => {
           }}
           style={{
             position: 'sticky',
-            top: 0,
             zIndex: 1,
           }}
         >
@@ -349,15 +348,28 @@ export const MediaPlayer: FunctionComponent = () => {
                   align="center"
                   space="small"
                 >
-                  <IconButton
-                    label={'Stop'}
-                    onClick={resetMediaContext}
-                    size="small"
+                  <SelectField
+                    className={playbackRateContainer}
+                    value={rateDecimalToFraction(playbackRate)}
+                    label={`${rateDecimalToFraction(playbackRate)}x`}
+                    onChange={(event) => {
+                      const nextPlaybackRate = fractionToPlaybackRate(
+                        event.currentTarget.value,
+                      );
+
+                      if (nextPlaybackRate) {
+                        setPlaybackRate(nextPlaybackRate);
+                      }
+                    }}
                   >
-                    <Icon size="medium">
-                      <StopIcon />
-                    </Icon>
-                  </IconButton>
+                    {playbackRates.map((rate) => {
+                      return (
+                        <option key={rate} value={rateDecimalToFraction(rate)}>
+                          {rateDecimalToFraction(rate)}
+                        </option>
+                      );
+                    })}
+                  </SelectField>
                   <Stack
                     align="center"
                     justify="center"
@@ -398,28 +410,15 @@ export const MediaPlayer: FunctionComponent = () => {
                       </Icon>
                     </IconButton>
                   </Stack>
-                  <SelectField
-                    className={playbackRateContainer}
-                    value={rateDecimalToFraction(playbackRate)}
-                    label={`${rateDecimalToFraction(playbackRate)}x`}
-                    onChange={(event) => {
-                      const nextPlaybackRate = fractionToPlaybackRate(
-                        event.currentTarget.value,
-                      );
-
-                      if (nextPlaybackRate) {
-                        setPlaybackRate(nextPlaybackRate);
-                      }
-                    }}
+                  <IconButton
+                    label={'Stop'}
+                    onClick={resetMediaContext}
+                    size="small"
                   >
-                    {playbackRates.map((rate) => {
-                      return (
-                        <option key={rate} value={rateDecimalToFraction(rate)}>
-                          {rateDecimalToFraction(rate)}
-                        </option>
-                      );
-                    })}
-                  </SelectField>
+                    <Icon size="medium">
+                      <StopIcon />
+                    </Icon>
+                  </IconButton>
                 </Stack>
               </Stack>
             </Stack>

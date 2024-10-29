@@ -15,27 +15,20 @@ export const container = style({
     },
   },
   background: vars.color.backgroundBlurredOpaque,
+  bottom: 0,
 });
 
 export const containerPinnedVariant = styleVariants({
   pinned: {
     '@media': {
-      'screen and (display-mode: standalone) and (max-width: 512px)': {
-        bottom: 16,
-      },
       'screen and (min-width: 512px)': {
-        bottom: 16,
-        marginLeft: 0,
         width: '480px',
       },
     },
-    bottom: 0,
     maxWidth: '512px',
     width: '100vw',
   },
   unpinned: {
-    bottom: 16,
-    marginLeft: 0,
     maxWidth: '480px',
     width: '100vw',
   },
@@ -65,10 +58,10 @@ export const playerPinnedVariant = styleVariants({
 
 export const playerElevatedVariant = styleVariants({
   elevated: {
-    // boxShadow: vars.color.shadowElevationHigh,
+    boxShadow: vars.color.shadowElevationHigh,
   },
   inset: {
-    // boxShadow: vars.color.shadowElevationMedium,
+    boxShadow: vars.color.shadowElevationLow,
   },
 });
 
@@ -100,8 +93,10 @@ export const iconButton = style({
 });
 
 export const playbackRateContainer = style({
+  flex: '0 0 auto',
   marginLeft: `auto`,
   whiteSpace: 'nowrap',
+  width: 22,
 });
 
 export const intersectionObserverClassName = style({

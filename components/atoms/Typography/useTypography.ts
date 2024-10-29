@@ -14,7 +14,7 @@ export const useTypography = ({
   className,
   shouldUseCapsize = true,
   size = 'headingLarge',
-  textAlign = 'left',
+  textAlign,
   whitespace = 'normal',
 }: TypographyProps) => {
   return useClassNames(
@@ -22,7 +22,7 @@ export const useTypography = ({
     shouldUseCapsize
       ? typographySizeVariant[size]
       : typographySizeVariantNoCapsize[size],
-    typographyTextAlignVariant[textAlign],
+    textAlign ? typographyTextAlignVariant[textAlign] : undefined,
     whitespace === 'ellipsis' && !shouldUseCapsize
       ? ellipsisContainer
       : undefined,

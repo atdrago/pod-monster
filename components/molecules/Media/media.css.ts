@@ -22,21 +22,25 @@ export const labelLayout = style({
   top: '0',
 });
 
-export const timeLabel = style({
+const timeLabel = style({
   alignItems: 'center',
   // Because of `mix-blend-mode: difference`, this color must be white for both
   // dark and light mode users.
   color: '#fff',
   fontVariantNumeric: 'tabular-nums',
-  fontWeight: 'bold',
   mixBlendMode: 'difference',
   paddingTop: vars.spacing.s002,
 });
 
+const timeLabelLeftAndRight = style({
+  letterSpacing: '-0.05rem',
+});
+
+export const timeLabelLeft = style([timeLabel, timeLabelLeftAndRight]);
+
 export const timeLabelCenter = style([
   timeLabel,
   {
-    fontWeight: 'normal',
     paddingTop: 0,
     textAlign: 'center',
   },
@@ -44,6 +48,7 @@ export const timeLabelCenter = style([
 
 export const timeLabelRight = style([
   timeLabel,
+  timeLabelLeftAndRight,
   {
     gridColumnStart: '3',
     textAlign: 'right',

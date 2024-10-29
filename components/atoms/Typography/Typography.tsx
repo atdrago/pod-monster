@@ -15,7 +15,7 @@ export const Typography = ({
   className,
   shouldUseCapsize = true,
   size = 'headingLarge',
-  textAlign = 'left',
+  textAlign,
   whitespace = 'normal',
   ...spanProps
 }: TypographyComponentProps) => {

@@ -19,5 +19,4 @@ export const selectClassName = style({
   right: 0,
   textAlign: 'center',
   top: 0,
-  width: '100%',
 });
