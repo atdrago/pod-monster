@@ -485,21 +485,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       navigator.mediaSession.setActionHandler('previoustrack', null);
       navigator.mediaSession.setActionHandler('nexttrack', null);
     }
-
-    return () => {
-      if ('mediaSession' in window.navigator) {
-        // Note: This un-setting may be unnecessary but it seems like the right
-        // thing to do when the player unmounts
-        navigator.mediaSession.setActionHandler('play', null);
-        navigator.mediaSession.setActionHandler('pause', null);
-        navigator.mediaSession.setActionHandler('stop', null);
-        navigator.mediaSession.setActionHandler('seekbackward', null);
-        navigator.mediaSession.setActionHandler('seekforward', null);
-        navigator.mediaSession.setActionHandler('seekto', null);
-        navigator.mediaSession.setActionHandler('previoustrack', null);
-        navigator.mediaSession.setActionHandler('nexttrack', null);
-      }
-    };
   }, [pause, playPause, seekBackward, seekForward]);
 
   /**
