@@ -93,7 +93,14 @@ export const EpisodePlayButton = ({
           audioRef.current.load();
         }
 
-        await audioRef.current.play();
+        try {
+          await audioRef.current.play();
+        } catch {
+          setDidError(true);
+          setIsPaused(true);
+
+          return;
+        }
       }
     }
 
@@ -106,7 +113,14 @@ export const EpisodePlayButton = ({
           videoRef.current.load();
         }
 
-        await videoRef.current.play();
+        try {
+          await videoRef.current.play();
+        } catch {
+          setDidError(true);
+          setIsPaused(true);
+
+          return;
+        }
       }
     }
   };

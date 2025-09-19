@@ -159,13 +159,23 @@ export const MediaPlayer: FunctionComponent = () => {
   ) => {
     if (audioRef.current) {
       if (audioRef.current.paused && !isPaused) {
-        await audioRef.current.play();
+        try {
+          await audioRef.current.play();
+        } catch {
+          setDidError(true);
+          setIsPaused(true);
+        }
       }
     }
 
     if (videoRef.current) {
       if (videoRef.current.paused && !isPaused) {
-        await videoRef.current.play();
+        try {
+          await videoRef.current.play();
+        } catch {
+          setDidError(true);
+          setIsPaused(true);
+        }
       }
     }
 

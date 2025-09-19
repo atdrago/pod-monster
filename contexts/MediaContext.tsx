@@ -44,6 +44,7 @@ interface MediaContext {
   mediaPlayerCurrentTime: number;
   mediaPlayerCurrentTimeDebounced: number;
   pause: () => void;
+  play: () => Promise<void>;
   playPause: () => Promise<void>;
   playbackRate: PlaybackRate;
   progressEventBufferedTuples: Array<[number, number]>;
@@ -107,6 +108,7 @@ const mediaContextDefaults: MediaContext = {
   mediaPlayerCurrentTime: 0,
   mediaPlayerCurrentTimeDebounced: 0,
   pause: () => {},
+  play: async () => {},
   playPause: async () => {},
   playbackRate: 1,
   progressEventBufferedTuples: [],
@@ -308,6 +310,44 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     window.navigator.mediaSession.playbackState = 'paused';
   }, []);
 
+  const play = useCallback(async () => {
+    setIsPaused(false);
+
+    if (audioRef.current) {
+      if (didError) {
+        setDidError(false);
+        audioRef.current.load();
+      }
+
+      try {
+        await audioRef.current.play();
+      } catch {
+        setDidError(true);
+        setIsPaused(true);
+
+        return;
+      }
+    }
+
+    if (videoRef.current) {
+      if (didError) {
+        setDidError(false);
+        videoRef.current.load();
+      }
+
+      try {
+        await videoRef.current.play();
+      } catch {
+        setDidError(true);
+        setIsPaused(true);
+
+        return;
+      }
+    }
+
+    window.navigator.mediaSession.playbackState = 'playing';
+  }, [didError]);
+
   const playPause = useCallback(async () => {
     const nextIsPaused = !isPaused;
 
@@ -322,7 +362,14 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
           audioRef.current.load();
         }
 
-        await audioRef.current.play();
+        try {
+          await audioRef.current.play();
+        } catch {
+          setDidError(true);
+          setIsPaused(true);
+
+          return;
+        }
       }
     }
 
@@ -335,7 +382,14 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
           videoRef.current.load();
         }
 
-        await videoRef.current.play();
+        try {
+          await videoRef.current.play();
+        } catch {
+          setDidError(true);
+          setIsPaused(true);
+
+          return;
+        }
       }
     }
 
@@ -481,8 +535,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
    */
   useEffect(() => {
     if ('mediaSession' in window.navigator) {
-      navigator.mediaSession.setActionHandler('play', playPause);
-      navigator.mediaSession.setActionHandler('pause', playPause);
+      navigator.mediaSession.setActionHandler('play', play);
+      navigator.mediaSession.setActionHandler('pause', pause);
       navigator.mediaSession.setActionHandler('stop', pause);
       navigator.mediaSession.setActionHandler('seekbackward', seekBackward);
       navigator.mediaSession.setActionHandler('seekforward', seekForward);
@@ -494,7 +548,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       navigator.mediaSession.setActionHandler('previoustrack', null);
       navigator.mediaSession.setActionHandler('nexttrack', null);
     }
-  }, [pause, playPause, seekBackward, seekForward]);
+  }, [pause, play, seekBackward, seekForward]);
 
   /**
    * Update `mediaPlayerCurrentTime` whenever `currentTime` changes (via calls
@@ -569,6 +623,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         mediaPlayerCurrentTime,
         mediaPlayerCurrentTimeDebounced,
         pause,
+        play,
         playPause,
         playbackRate,
         progressEventBufferedTuples,
