@@ -566,10 +566,18 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         navigator.mediaSession.setActionHandler('previoustrack', null);
         navigator.mediaSession.setActionHandler('nexttrack', null);
 
-        // Set new handlers
-        navigator.mediaSession.setActionHandler('play', play);
-        navigator.mediaSession.setActionHandler('pause', pause);
-        navigator.mediaSession.setActionHandler('stop', pause);
+        // Set new handlers - use wrapper functions to ensure fresh state
+        navigator.mediaSession.setActionHandler('play', () => {
+          play().catch(() => {
+            // Handle play failure silently
+          });
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+          pause();
+        });
+        navigator.mediaSession.setActionHandler('stop', () => {
+          pause();
+        });
         navigator.mediaSession.setActionHandler('seekbackward', seekBackward);
         navigator.mediaSession.setActionHandler('seekforward', seekForward);
         navigator.mediaSession.setActionHandler('seekto', ({ seekTime }) => {
