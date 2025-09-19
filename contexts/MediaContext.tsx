@@ -144,6 +144,9 @@ const mediaContextDefaults: MediaContext = {
 
 const MediaContext = createContext<MediaContext | undefined>(undefined);
 
+export const DEFAULT_SEEK_BACKWARD_OFFSET = 15;
+export const DEFAULT_SEEK_FORWARD_OFFSET = 30;
+
 export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   children,
 }) => {
@@ -268,8 +271,11 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   }, []);
 
   const seekBackward = useCallback(
-    ({ seekOffset }: Partial<MediaSessionActionDetails>) => {
-      const resultTime = mediaPlayerCurrentTime - (seekOffset ?? 0);
+    ({
+      seekOffset = DEFAULT_SEEK_BACKWARD_OFFSET,
+    }: Partial<MediaSessionActionDetails>) => {
+      const resultTime =
+        mediaPlayerCurrentTime - (seekOffset ?? DEFAULT_SEEK_BACKWARD_OFFSET);
 
       setCurrentTime(resultTime);
     },
@@ -277,8 +283,11 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   );
 
   const seekForward = useCallback(
-    ({ seekOffset }: Partial<MediaSessionActionDetails>) => {
-      const resultTime = mediaPlayerCurrentTime + (seekOffset ?? 0);
+    ({
+      seekOffset = DEFAULT_SEEK_FORWARD_OFFSET,
+    }: Partial<MediaSessionActionDetails>) => {
+      const resultTime =
+        mediaPlayerCurrentTime + (seekOffset ?? DEFAULT_SEEK_FORWARD_OFFSET);
 
       setCurrentTime(resultTime);
     },
