@@ -22,7 +22,11 @@ import { Stack } from 'components/layouts/Stack';
 import { Media } from 'components/molecules/Media';
 import { SelectField } from 'components/molecules/SelectField';
 import { SizeField } from 'components/molecules/SizeField';
-import { useMediaContext } from 'contexts/MediaContext';
+import {
+  DEFAULT_SEEK_BACKWARD_OFFSET,
+  DEFAULT_SEEK_FORWARD_OFFSET,
+  useMediaContext,
+} from 'contexts/MediaContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
@@ -424,7 +428,9 @@ export const MediaPlayer: FunctionComponent = () => {
                 <IconButton
                   background="circle"
                   label={'Rewind 15 seconds'}
-                  onClick={() => seekBackward({ seekOffset: 15 })}
+                  onClick={() =>
+                    seekBackward({ seekOffset: DEFAULT_SEEK_BACKWARD_OFFSET })
+                  }
                   size={'small'}
                 >
                   <Icon size={'small'} orientation="reverse">
@@ -446,7 +452,9 @@ export const MediaPlayer: FunctionComponent = () => {
                 <IconButton
                   background="circle"
                   label={'Skip 30 seconds'}
-                  onClick={() => seekForward({ seekOffset: 30 })}
+                  onClick={() =>
+                    seekForward({ seekOffset: DEFAULT_SEEK_FORWARD_OFFSET })
+                  }
                   size={'small'}
                 >
                   <Icon size={'small'}>
