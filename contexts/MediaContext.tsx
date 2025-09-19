@@ -307,7 +307,10 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       videoRef.current.pause();
     }
 
-    window.navigator.mediaSession.playbackState = 'paused';
+    // Ensure MediaSession state is updated
+    if ('mediaSession' in window.navigator) {
+      window.navigator.mediaSession.playbackState = 'paused';
+    }
   }, []);
 
   const play = useCallback(async () => {
@@ -321,6 +324,11 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
       try {
         await audioRef.current.play();
+
+        // Ensure MediaSession state is updated after successful play
+        if ('mediaSession' in window.navigator) {
+          window.navigator.mediaSession.playbackState = 'playing';
+        }
       } catch {
         setDidError(true);
         setIsPaused(true);
@@ -337,6 +345,11 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
       try {
         await videoRef.current.play();
+
+        // Ensure MediaSession state is updated after successful play
+        if ('mediaSession' in window.navigator) {
+          window.navigator.mediaSession.playbackState = 'playing';
+        }
       } catch {
         setDidError(true);
         setIsPaused(true);
@@ -344,8 +357,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         return;
       }
     }
-
-    window.navigator.mediaSession.playbackState = 'playing';
   }, [didError]);
 
   const playPause = useCallback(async () => {
@@ -523,22 +534,10 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       }
     };
 
-    // Set metadata initially
-    setMediaSessionMetadata();
-
-    // Re-set metadata when the document becomes visible (important for PWAs)
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // Small delay to ensure PWA is fully active
-        setTimeout(setMediaSessionMetadata, 100);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
+    // Only set metadata if we have media content
+    if (src || episodeId) {
+      setMediaSessionMetadata();
+    }
   }, [
     currentChapter?.img,
     currentChapter?.title,
@@ -547,6 +546,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     feedImage,
     feedTitle,
     isPaused,
+    src,
+    episodeId,
   ]);
 
   /**
@@ -555,6 +556,17 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   useEffect(() => {
     const setMediaSessionHandlers = () => {
       if ('mediaSession' in window.navigator) {
+        // Clear existing handlers first to ensure clean state
+        navigator.mediaSession.setActionHandler('play', null);
+        navigator.mediaSession.setActionHandler('pause', null);
+        navigator.mediaSession.setActionHandler('stop', null);
+        navigator.mediaSession.setActionHandler('seekbackward', null);
+        navigator.mediaSession.setActionHandler('seekforward', null);
+        navigator.mediaSession.setActionHandler('seekto', null);
+        navigator.mediaSession.setActionHandler('previoustrack', null);
+        navigator.mediaSession.setActionHandler('nexttrack', null);
+
+        // Set new handlers
         navigator.mediaSession.setActionHandler('play', play);
         navigator.mediaSession.setActionHandler('pause', pause);
         navigator.mediaSession.setActionHandler('stop', pause);
@@ -573,28 +585,21 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     // Set handlers initially
     setMediaSessionHandlers();
 
-    // Re-set handlers when the document becomes visible (important for PWAs)
+    // Re-set handlers when there's actual media content and the app becomes visible
+    // This helps with lock screen widget functionality
     const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // Small delay to ensure PWA is fully active
+      if (!document.hidden && (src || episodeId)) {
+        // Small delay to ensure the app is fully active
         setTimeout(setMediaSessionHandlers, 100);
       }
     };
 
-    // Re-set handlers when the window gains focus (important for PWAs)
-    const handleFocus = () => {
-      // Small delay to ensure PWA is fully active
-      setTimeout(setMediaSessionHandlers, 100);
-    };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
     };
-  }, [pause, play, seekBackward, seekForward]);
+  }, [pause, play, seekBackward, seekForward, src, episodeId]);
 
   /**
    * Update `mediaPlayerCurrentTime` whenever `currentTime` changes (via calls
