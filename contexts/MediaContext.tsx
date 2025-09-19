@@ -506,20 +506,39 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
    * Set MediaSession metadata whenever any piece of it changes.
    */
   useEffect(() => {
-    if ('mediaSession' in window.navigator) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        album: currentChapter?.title ?? undefined,
-        artist: episodeTitle ?? undefined,
-        artwork: [
-          {
-            sizes: '512x512',
-            src: currentChapter?.img || episodeImage || feedImage || '',
-          },
-        ],
-        title: feedTitle ?? undefined,
-      });
-      navigator.mediaSession.playbackState = isPaused ? 'paused' : 'playing';
-    }
+    const setMediaSessionMetadata = () => {
+      if ('mediaSession' in window.navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          album: currentChapter?.title ?? undefined,
+          artist: episodeTitle ?? undefined,
+          artwork: [
+            {
+              sizes: '512x512',
+              src: currentChapter?.img || episodeImage || feedImage || '',
+            },
+          ],
+          title: feedTitle ?? undefined,
+        });
+        navigator.mediaSession.playbackState = isPaused ? 'paused' : 'playing';
+      }
+    };
+
+    // Set metadata initially
+    setMediaSessionMetadata();
+
+    // Re-set metadata when the document becomes visible (important for PWAs)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Small delay to ensure PWA is fully active
+        setTimeout(setMediaSessionMetadata, 100);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [
     currentChapter?.img,
     currentChapter?.title,
@@ -534,20 +553,47 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
    * Set MediaSession action handlers.
    */
   useEffect(() => {
-    if ('mediaSession' in window.navigator) {
-      navigator.mediaSession.setActionHandler('play', play);
-      navigator.mediaSession.setActionHandler('pause', pause);
-      navigator.mediaSession.setActionHandler('stop', pause);
-      navigator.mediaSession.setActionHandler('seekbackward', seekBackward);
-      navigator.mediaSession.setActionHandler('seekforward', seekForward);
-      navigator.mediaSession.setActionHandler('seekto', ({ seekTime }) => {
-        if (typeof seekTime === 'number') {
-          setCurrentTime(seekTime);
-        }
-      });
-      navigator.mediaSession.setActionHandler('previoustrack', null);
-      navigator.mediaSession.setActionHandler('nexttrack', null);
-    }
+    const setMediaSessionHandlers = () => {
+      if ('mediaSession' in window.navigator) {
+        navigator.mediaSession.setActionHandler('play', play);
+        navigator.mediaSession.setActionHandler('pause', pause);
+        navigator.mediaSession.setActionHandler('stop', pause);
+        navigator.mediaSession.setActionHandler('seekbackward', seekBackward);
+        navigator.mediaSession.setActionHandler('seekforward', seekForward);
+        navigator.mediaSession.setActionHandler('seekto', ({ seekTime }) => {
+          if (typeof seekTime === 'number') {
+            setCurrentTime(seekTime);
+          }
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', null);
+        navigator.mediaSession.setActionHandler('nexttrack', null);
+      }
+    };
+
+    // Set handlers initially
+    setMediaSessionHandlers();
+
+    // Re-set handlers when the document becomes visible (important for PWAs)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Small delay to ensure PWA is fully active
+        setTimeout(setMediaSessionHandlers, 100);
+      }
+    };
+
+    // Re-set handlers when the window gains focus (important for PWAs)
+    const handleFocus = () => {
+      // Small delay to ensure PWA is fully active
+      setTimeout(setMediaSessionHandlers, 100);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [pause, play, seekBackward, seekForward]);
 
   /**
