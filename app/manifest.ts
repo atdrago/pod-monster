@@ -22,6 +22,10 @@ export default function metadata(): MetadataRoute.Manifest {
         type: 'image/png',
       },
     ],
+    id:
+      process.env.VERCEL_ENV === 'production'
+        ? 'https://pod.monster'
+        : `https://pod.monster/${process.env.VERCEL_ENV}`,
     name: 'Pod Monster',
     orientation: 'portrait',
     short_name: 'PodMonster',
