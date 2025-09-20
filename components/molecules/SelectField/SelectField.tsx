@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 import { useTypography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
 

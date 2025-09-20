@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 import { useClassNames } from 'hooks/useClassNames';
 
 import { range, rangeVariant } from './range.css';

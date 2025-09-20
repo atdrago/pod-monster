@@ -3,7 +3,7 @@ import {
   type FunctionComponent,
   type PropsWithChildren,
   type Dispatch,
-  type MutableRefObject,
+  type RefObject,
   type SetStateAction,
   createContext,
   useCallback,
@@ -21,7 +21,7 @@ import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 import type { PlaybackRate } from 'utils/playbackRates';
 
 interface MediaContext {
-  audioRef: MutableRefObject<HTMLAudioElement | null>;
+  audioRef: RefObject<HTMLAudioElement | null>;
   chapters: Array<Chapter> | null | undefined;
   chaptersUrl: string | null;
   currentChapter: Chapter | null;
@@ -79,7 +79,7 @@ interface MediaContext {
   size: 1 | 2;
   src: string | null;
   srcType: string | null;
-  videoRef: MutableRefObject<HTMLVideoElement | null>;
+  videoRef: RefObject<HTMLVideoElement | null>;
   volume: number;
 }
 
