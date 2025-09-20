@@ -1,9 +1,10 @@
 import { m } from 'framer-motion';
 import {
-  type MutableRefObject,
   type ReactEventHandler,
   useEffect,
   useState,
+  type JSX,
+  type RefObject,
 } from 'react';
 
 import { Range } from 'components/atoms/Range';
@@ -24,16 +25,17 @@ import {
 
 type MediaProps = JSX.IntrinsicElements['audio'] &
   Pick<JSX.IntrinsicElements['video'], 'poster'> & {
-    audioRef: MutableRefObject<HTMLAudioElement | null>;
+    audioRef: RefObject<HTMLAudioElement | null>;
     currentTime?: number;
     isTitleVisible?: boolean;
     isVideoVisible?: boolean;
     onCurrentTimeChange?: (currentTime: number) => void;
     playbackRate?: PlaybackRate;
     srcType?: string;
+    src: string | null;
     startTime?: number;
     title?: string;
-    videoRef: MutableRefObject<HTMLVideoElement | null>;
+    videoRef: RefObject<HTMLVideoElement | null>;
   };
 
 export const Media = function MediaRef({

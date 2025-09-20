@@ -9,10 +9,6 @@ const { withSentryConfig } = require('@sentry/nextjs');
 const withVanillaExtract = createVanillaExtractPlugin();
 
 const nextConfig = {
-  i18n: {
-    defaultLocale: 'en-US',
-    locales: ['en-US'],
-  },
   images: {
     domains: imageDomains,
     minimumCacheTTL: 31536000,
