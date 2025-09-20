@@ -28,6 +28,7 @@ export default function metadata(): MetadataRoute.Manifest {
         : `https://pod.monster/${process.env.VERCEL_ENV}`,
     name: 'Pod Monster',
     orientation: 'portrait',
+    scope: 'https://pod.monster/',
     short_name: 'PodMonster',
     start_url: '/',
     theme_color: '#272822',
