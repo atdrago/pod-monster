@@ -39,7 +39,7 @@
     "rehype-strip-html": "^0.1.1",
     "server-only": "^0.0.1",
     "unified": "^11.0.5",
-    "use-debounce": "^10.0.4"
+    "use-debounce": "^10.0.6"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.1",
