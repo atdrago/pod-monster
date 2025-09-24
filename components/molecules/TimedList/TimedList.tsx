@@ -149,7 +149,7 @@ export const TimedList: FunctionComponent<TimedListProps> = memo(
         }}
         open={isOpen}
         summary={
-          <Typography as="h4" size="headingSmaller">
+          <Typography as="h4" className="font-bold" size="headingSmaller">
             {title}
           </Typography>
         }

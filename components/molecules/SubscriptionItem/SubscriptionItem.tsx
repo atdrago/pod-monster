@@ -69,7 +69,12 @@ export const SubscriptionItem = ({
           feedId={feedId}
           shadow="medium"
         />
-        <Typography as="h2" size="headingSmaller" whitespace={2}>
+        <Typography
+          as="h2"
+          className="font-bold"
+          size="headingSmaller"
+          whitespace={2}
+        >
           {title}
         </Typography>
       </Stack>

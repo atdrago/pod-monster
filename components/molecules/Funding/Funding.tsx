@@ -26,7 +26,7 @@ export const Funding = ({ funding }: FundingProps) => {
       style={{ marginLeft: 0, marginRight: 'auto', width: 'auto' }}
     >
       <Icon as={FundingIcon} size="xsmall" />
-      <Typography as="h4" size="headingSmaller">
+      <Typography as="h4" className="font-bold" size="headingSmaller">
         {funding.message}
       </Typography>
       <Icon as={ExternalLinkIcon} size="small" />

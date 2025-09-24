@@ -141,7 +141,12 @@ export const EpisodePlayButton = ({
             isLoading={isThisEpisodeLoadingAtCurrentTime}
           />
         </IconButton>
-        <Typography size="headingSmaller" as="h3" whitespace={2}>
+        <Typography
+          className="font-bold"
+          size="headingSmaller"
+          as="h3"
+          whitespace={2}
+        >
           {episode && episode.explicit > 0 ? (
             <Icon
               style={{ verticalAlign: 'middle' }}
