@@ -36,7 +36,7 @@ export const EpisodeList = ({ episodes, feedId }: EpisodeListProps) => {
   return (
     <Stack space="small">
       <Stack kind="flexRow">
-        <Typography as="h4" size="headingSmaller">
+        <Typography as="h4" className="font-bold" size="headingSmaller">
           Episodes
         </Typography>
         {hasTrailers ? (
@@ -102,6 +102,7 @@ export const EpisodeList = ({ episodes, feedId }: EpisodeListProps) => {
                     {episodeType === 'trailer' ? <Badge>Trailer</Badge> : null}
                     <Typography
                       as="h3"
+                      className="font-bold"
                       size="headingSmaller"
                       shouldUseCapsize={false}
                       whitespace="ellipsis"

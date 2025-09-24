@@ -14,7 +14,6 @@ import {
   shadowVariant,
   square,
   squareInner,
-  subtitleContainer,
 } from './artwork.css';
 
 export type ArtworkComponentProps = PolymorphicComponentProps<
@@ -92,7 +91,9 @@ export const Artwork = memo<ArtworkComponentProps>(
           <div
             aria-label="Subtitles"
             aria-live="polite"
-            className={subtitleContainer}
+            className={
+              'bg-white/80 dark:bg-black/80 m-4 p-4 absolute bottom-0 right-0 left-0'
+            }
             role="log"
           >
             <Typography as="span" size="paragraph">

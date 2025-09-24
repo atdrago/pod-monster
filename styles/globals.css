@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+.list-layout {
+  @apply flex flex-col gap-8 pl-10;
+
+  ul& {
+    @apply list-disc;
+  }
+
+  ol& {
+    @apply list-decimal;
+  }
+}

@@ -163,6 +163,7 @@ export function HomePage({
                           as="h2"
                           size="headingSmaller"
                           whitespace="ellipsis"
+                          className="font-bold"
                         >
                           {feed.title}
                         </Typography>
@@ -192,7 +193,7 @@ export function HomePage({
           )}
           {feedSettingsEntries.length > 0 && (
             <Stack space="small">
-              <Typography as="h2" size="headingSmall">
+              <Typography as="h2" size="headingSmall" className="font-bold">
                 Subscriptions
               </Typography>
               {feedSettingsEntries.map(([feedId, { image, title }]) => {

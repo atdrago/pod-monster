@@ -217,7 +217,7 @@ export const EpisodePage = ({
           {episode && (episode.season || episode.episode) ? (
             <Stack kind="flexRow" space="small">
               <Icon as={TvIcon} size="xsmall" />
-              <Typography as="h4" size="headingSmaller">
+              <Typography as="h4" className="font-bold" size="headingSmaller">
                 {[
                   episode.season ? `Season ${episode.season}` : null,
                   episode.episode ? `Episode ${episode.episode}` : null,
@@ -230,14 +230,14 @@ export const EpisodePage = ({
           {episode && episode.episodeType === 'trailer' ? (
             <Stack kind="flexRow" space="small">
               <Icon as={VideoCameraIcon} size="xsmall" />
-              <Typography as="h4" size="headingSmaller">
+              <Typography as="h4" className="font-bold" size="headingSmaller">
                 Trailer
               </Typography>
             </Stack>
           ) : null}
           <Details
             summary={
-              <Typography as="h4" size="headingSmaller">
+              <Typography as="h4" className="font-bold" size="headingSmaller">
                 Description
               </Typography>
             }
@@ -263,7 +263,7 @@ export const EpisodePage = ({
           {episode && episode.persons && episode.persons.length ? (
             <Details
               summary={
-                <Typography as="h4" size="headingSmaller">
+                <Typography as="h4" className="font-bold" size="headingSmaller">
                   People
                 </Typography>
               }
@@ -300,7 +300,11 @@ export const EpisodePage = ({
                           padding: '4px 0',
                         }}
                       >
-                        <Typography as="h5" size="paragraph">
+                        <Typography
+                          as="h5"
+                          className="font-bold"
+                          size="paragraph"
+                        >
                           {person.name}
                         </Typography>
                         {person.role && (
@@ -338,7 +342,11 @@ export const EpisodePage = ({
                 hasError={!!transcriptsError}
                 isLoading={isTranscriptLoading}
                 summary={
-                  <Typography as="h4" size="headingSmaller">
+                  <Typography
+                    as="h4"
+                    className="font-bold"
+                    size="headingSmaller"
+                  >
                     Transcript
                   </Typography>
                 }

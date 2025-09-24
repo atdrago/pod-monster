@@ -100,7 +100,7 @@ export default async function Page(props: PageProps) {
               width={128}
             />
             <Stack space="small">
-              <Typography as="h3" size="paragraph">
+              <Typography as="h3" className="font-bold" size="paragraph">
                 {feed.author}
               </Typography>
               {feed.link && (
@@ -140,7 +140,7 @@ export default async function Page(props: PageProps) {
         </Stack>
         <Details
           summary={
-            <Typography as="h4" size="headingSmaller">
+            <Typography as="h4" className="font-bold" size="headingSmaller">
               About
             </Typography>
           }

@@ -17,7 +17,7 @@ export default function NotFound() {
     <>
       <Header />
       <Stack as="main">
-        <Typography as="h2" size="headingMedium">
+        <Typography as="h2" size="headingMedium" className="font-bold">
           404 - Not found
         </Typography>
         <Typography as="p" size="paragraph">

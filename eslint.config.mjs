@@ -12,10 +12,10 @@ import { includeIgnoreFile } from '@eslint/compat';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  resolvePluginsRelativeTo: __dirname,
-  recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  resolvePluginsRelativeTo: __dirname,
 });
 
 const gitignorePath = path.resolve(__dirname, '.gitignore');
@@ -25,16 +25,16 @@ const eslintConfig = [
   ...compat.extends('next', 'next/core-web-vitals', 'prettier'),
   // ...compat.plugins('@typescript-eslint'),
   {
-    name: 'TypeScript and JavaScript files',
     files: ['**/*.{ts,tsx,js}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
+    name: 'TypeScript and JavaScript files',
     plugins: {
+      import: importPlugin,
       'sort-destructure-keys': sortDestructureKeys,
       'sort-keys-fix': sortKeysFix,
-      import: importPlugin,
     },
     rules: {
       '@next/next/no-img-element': 'off',
@@ -121,19 +121,13 @@ const eslintConfig = [
       'sort-keys-fix/sort-keys-fix': 'warn',
       yoda: 'error',
     },
+    ignores: ['next-env.d.ts'],
   },
   {
     ...compat.extends('next/typescript')[0],
-    name: 'TypeScript files',
     files: ['**/*.{ts,tsx}'],
-    plugins: {
-      // 'typescript-sort-keys': typescriptSortKeys,
-      '@typescript-eslint': typescriptEslint,
-    },
     languageOptions: {
       ecmaVersion: 'latest',
-      sourceType: 'module',
-
       parserOptions: {
         project: [
           './tsconfig.json',
@@ -141,6 +135,13 @@ const eslintConfig = [
         ],
         tsconfigRootDir: __dirname,
       },
+
+      sourceType: 'module',
+    },
+    name: 'TypeScript files',
+    plugins: {
+      // 'typescript-sort-keys': typescriptSortKeys,
+      '@typescript-eslint': typescriptEslint,
     },
     rules: {
       ...typescriptEslint.configs.recommended.rules,
@@ -212,6 +213,7 @@ const eslintConfig = [
 
       'no-shadow': 'off',
     },
+    ignores: ['next-env.d.ts'],
   },
 ];
 
