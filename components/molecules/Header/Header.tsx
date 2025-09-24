@@ -70,6 +70,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
         size="headingSmall"
         style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
         shouldUseCapsize={false}
+        className="font-bold"
       >
         <Link aria-label="Pod Monster" href="/" className={homeLinkClassName}>
           <Icon size="large" aria-hidden="true">
@@ -90,6 +91,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
           </Typography>
           <Typography
             as="h2"
+            className="font-bold"
             size="headingSmall"
             whitespace="ellipsis"
             style={{
@@ -118,6 +120,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
           </Typography>
           <Typography
             as="h2"
+            className="font-bold"
             size="headingSmall"
             whitespace="ellipsis"
             style={{
@@ -155,6 +158,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
           </Typography>
           <Typography
             as="h3"
+            className="font-bold"
             size="headingSmall"
             whitespace="ellipsis"
             style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}

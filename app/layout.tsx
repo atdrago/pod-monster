@@ -1,4 +1,5 @@
 import 'styles/app.css';
+import 'styles/globals.css';
 
 import { Viewport } from 'next';
 

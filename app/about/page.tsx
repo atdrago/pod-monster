@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { headingLink, listItem, listLayout, underlinedLink } from 'styles';
+import { headingLink, underlinedLink } from 'styles';
 import { createMetadata } from 'utils/createMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -64,11 +64,11 @@ const HeadingAnchorLink = ({
 export default function Page() {
   return (
     <Stack as="main">
-      <Typography as="h3" size="headingMedium">
+      <Typography as="h3" className="font-bold" size="headingMedium">
         Pod Monster
       </Typography>
       <Stack as="section">
-        <Typography as="h3" size="headingSmall">
+        <Typography as="h3" className="font-bold" size="headingSmall">
           <HeadingAnchor label="Mission" />
         </Typography>
         <Typography as="p" size="paragraph">
@@ -78,7 +78,7 @@ export default function Page() {
         </Typography>
       </Stack>
       <Stack as="section">
-        <Typography as="h3" size="headingSmall">
+        <Typography as="h3" className="font-bold" size="headingSmall">
           <HeadingAnchor label="How it works" />
         </Typography>
         <Typography as="p" size="paragraph">
@@ -105,7 +105,7 @@ export default function Page() {
         </Typography>
       </Stack>
       <Stack as="section">
-        <Typography as="h3" size="headingSmall">
+        <Typography as="h3" className="font-bold" size="headingSmall">
           <HeadingAnchor label="Releases" />
         </Typography>
         <Typography as="p" size="paragraph">
@@ -113,53 +113,49 @@ export default function Page() {
         </Typography>
         <Typography
           as="ul"
-          className={listLayout}
+          className="list-layout"
           size="paragraph"
           shouldUseCapsize={false}
         >
-          <li className={listItem}>
-            It is available for public testing and use.
-          </li>
-          <li className={listItem}>
-            You can expect all changes that land to be stable.
-          </li>
-          <li className={listItem}>
+          <li>It is available for public testing and use.</li>
+          <li>You can expect all changes that land to be stable.</li>
+          <li>
             There are core features that have not yet been implemented, and the
             features that have been implemented are subject to frequent changes.
           </li>
         </Typography>
       </Stack>
       <Stack as="section">
-        <Typography as="h3" size="headingSmall">
+        <Typography as="h3" className="font-bold" size="headingSmall">
           <HeadingAnchor label="Principles" />
         </Typography>
         <Typography
           as="ul"
-          className={listLayout}
+          className="list-layout"
           size="paragraph"
           shouldUseCapsize={false}
         >
-          <li className={listItem}>
+          <li>
             No account is required to subscribe to or listen to podcasts (though
             certain limits may need to be imposed eventually due to browser
             restrictions).
           </li>
-          <li className={listItem}>
+          <li>
             None of your usage data or personal information will ever be sold to
             a third party or used to sell you third-party products.
           </li>
-          <li className={listItem}>
+          <li>
             The interface is intentionally minimal and plain to prevent
             distractions from information that isn&apos;t relevant to the
             podcast or episode.
           </li>
-          <li className={listItem}>
+          <li>
             Wherever possible, the interface uses standard, native web controls
             in place of custom JavaScript-based controls. The goal is to give
             you an accessible experience that feels familiar and comfortable,
             not custom.
           </li>
-          <li className={listItem}>
+          <li>
             Every consumer-focused feature of the Podcast Index is in the plans,
             and I will implement them in the order that I see fit.
           </li>
@@ -167,16 +163,16 @@ export default function Page() {
       </Stack>
 
       <Stack as="section">
-        <Typography as="h3" size="headingSmall">
+        <Typography as="h3" className="font-bold" size="headingSmall">
           <HeadingAnchor label="Known Issues" />
         </Typography>
         <Typography
           as="ul"
-          className={listLayout}
+          className="list-layout"
           size="paragraph"
           shouldUseCapsize={false}
         >
-          <li className={listItem}>
+          <li>
             <Typography as="p" size="paragraph" shouldUseCapsize={false}>
               All settings, including subscriptions, are currently stored in
               LocalStorage, making them reasonably persistent. Unfortunately,
@@ -215,7 +211,7 @@ export default function Page() {
         </Typography>
       </Stack>
       <Stack as="section">
-        <Typography as="h3" size="headingSmall">
+        <Typography as="h3" className="font-bold" size="headingSmall">
           <HeadingAnchor label="Technologies" />
         </Typography>
         <Typography as="p" size="paragraph">
@@ -224,11 +220,11 @@ export default function Page() {
         </Typography>
         <Typography
           as="ol"
-          className={listLayout}
+          className="list-layout"
           size="paragraph"
           shouldUseCapsize={false}
         >
-          <li className={listItem}>
+          <li>
             <ExternalLink href="https://podcastindex.org/">
               The Podcast Index
             </ExternalLink>{' '}
@@ -238,14 +234,14 @@ export default function Page() {
             episode, you&apos;re viewing information provided by the Podcast
             Index.
           </li>
-          <li className={listItem}>
+          <li>
             <ExternalLink href="https://www.typescriptlang.org/">
               TypeScript
             </ExternalLink>{' '}
             allows you to write statically-typed JavaScript and, when used in
             strict mode, eliminates an entire category of possible errors.
           </li>
-          <li className={listItem}>
+          <li>
             <ExternalLink href="https://nextjs.org/">Next.js</ExternalLink> is a
             framework for building full-stack web applications in React. It
             includes technologies like server-side rendering, static generation,
@@ -253,13 +249,13 @@ export default function Page() {
             optimization, all of which make building a performant application
             much more manageable.
           </li>
-          <li className={listItem}>
+          <li>
             <ExternalLink href="https://vercel.com/">Vercel</ExternalLink> is a
             performance-focused platform that integrates directly with GitHub to
             allow things like PR preview deployments and main branch production
             deployments with 0 project-based configuration.
           </li>
-          <li className={listItem}>
+          <li>
             <ExternalLink href="https://vanilla-extract.style/">
               Vanilla Extract
             </ExternalLink>{' '}
@@ -269,7 +265,7 @@ export default function Page() {
             dark/light mode support a breeze. It generates all CSS at build
             time, so there is no run time performance implication.
           </li>
-          <li className={listItem}>
+          <li>
             <ExternalLink href="https://icomoon.io/">IcoMoon</ExternalLink> lets
             you hand-pick and download icons, without an account, for free
             (though they also offer paid sets). Except for the logo, every SVG

@@ -12,7 +12,7 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport, type OpmlImportResponse } from 'rest/fetchOpmlImport';
-import { listItem, listLayout, underlinedLink } from 'styles';
+import { underlinedLink } from 'styles';
 import { ApiErrorResponse } from 'utils/createApiErrorResponse';
 
 export function SettingsPage() {
@@ -67,7 +67,7 @@ export function SettingsPage() {
   return (
     <Stack as="main" maxWidth="small">
       <Stack as="section">
-        <Typography as="h3" size="headingMedium">
+        <Typography as="h3" className="font-bold" size="headingMedium">
           OPML
         </Typography>
         <Typography as="p" size="paragraph">
@@ -86,7 +86,7 @@ export function SettingsPage() {
         </Typography>
         {opmlFileUrl ? (
           <Stack as="section" space="small">
-            <Typography as="h3" size="headingSmall">
+            <Typography as="h3" className="font-bold" size="headingSmall">
               Export
             </Typography>
             <Typography as="p" size="paragraph">
@@ -106,7 +106,7 @@ export function SettingsPage() {
           </Stack>
         ) : null}
         <Stack as="section" space="small">
-          <Typography as="h3" size="headingSmall">
+          <Typography as="h3" className="font-bold" size="headingSmall">
             Import
           </Typography>
           {hasExistingSubscriptions ? (
@@ -142,16 +142,12 @@ export function SettingsPage() {
                 </Typography>
                 <Typography
                   as="ul"
-                  className={listLayout}
+                  className="list-layout"
                   size="paragraph"
                   shouldUseCapsize={false}
                 >
                   {data.errors.map(({ title }, i) => {
-                    return (
-                      <li className={listItem} key={i}>
-                        {title}
-                      </li>
-                    );
+                    return <li key={i}>{title}</li>;
                   })}
                 </Typography>
               </>
