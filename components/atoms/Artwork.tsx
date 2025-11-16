@@ -1,21 +1,10 @@
 'use client';
 
-import { ReactEventHandler, memo, useState } from 'react';
+import { memo, useState } from 'react';
 import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
 import type { ImageProps } from 'next/image';
 import { Typography } from 'components/atoms/Typography';
-import { useClassNames } from 'hooks/useClassNames';
-
-import {
-  artwork,
-  artworkFallback,
-  shadowContainer,
-  shadowVariant,
-  square,
-  squareInner,
-  subtitleContainer,
-} from './artwork.css';
 
 export type ArtworkComponentProps = PolymorphicComponentProps<
   'div',
@@ -25,7 +14,7 @@ export type ArtworkComponentProps = PolymorphicComponentProps<
     isSquare?: boolean;
     label?: string;
     priority?: ImageProps['priority'];
-    shadow?: keyof typeof shadowVariant;
+    shadow?: boolean;
     src?: string;
     subtitle?: React.ReactNode;
     width?: ImageProps['width'];
@@ -35,37 +24,27 @@ export type ArtworkComponentProps = PolymorphicComponentProps<
 export const Artwork = memo<ArtworkComponentProps>(
   function ArtworkComponentMemo({
     alt,
-    className,
     height = 512,
     isSquare = true,
     label,
-    shadow = 'none',
+    shadow = false,
     src,
     subtitle,
     width = 512,
   }) {
     const [failedToLoad, setFailedToLoad] = useState(false);
-    const squareClassName = useClassNames(square, className);
-    const artworkClassName = useClassNames(artwork, className);
-    const artworkFallbackClassName = useClassNames(artworkFallback, className);
-    const shadowClassName = useClassNames(
-      shadowContainer,
-      shadowVariant[shadow],
-    );
 
     const shouldShowImage = src && !failedToLoad;
-
-    const handleError: ReactEventHandler<HTMLImageElement> = () => {
-      setFailedToLoad(true);
-    };
 
     const imageOrPlaceholder = shouldShowImage ? (
       <Box
         as={'img'}
         alt={alt}
-        className={artworkClassName}
+        className={`self-center object-contain h-auto max-h-full w-full`}
         height={height}
-        onError={handleError}
+        onError={() => {
+          setFailedToLoad(true);
+        }}
         src={src}
         width={width}
       />
@@ -73,17 +52,41 @@ export const Artwork = memo<ArtworkComponentProps>(
       <Typography
         as="span"
         size="headingLarge"
-        className={artworkFallbackClassName}
+        className={`
+          self-center object-contain items-center justify-center
+          h-auto max-h-full w-full p-4
+          flex grow-0 shrink-0
+          whitespace-nowrap
+        `}
       >
         {label}
       </Typography>
     );
 
     return (
-      <Box className={shadowClassName} style={{ width: `${width}px` }}>
+      <Box
+        className={`
+          max-w-full leading-0 grow-0 shrink-0 relative
+          ${shadow ? 'shadow-lg/35' : ''}
+        `}
+        style={{ width: `${width}px` }}
+      >
         {isSquare ? (
-          <div className={squareClassName}>
-            <div className={squareInner}>{imageOrPlaceholder}</div>
+          <div
+            style={{ gridArea: '1 / 1' }}
+            className={`
+              dark:bg-zinc-900/70
+              grid overflow-hidden
+              h-0 w-full pt-[100%] relative
+            `}
+          >
+            <div
+              className={`
+                items-center flex justify-center mt-[-100%] text-center w-full
+              `}
+            >
+              {imageOrPlaceholder}
+            </div>
           </div>
         ) : (
           imageOrPlaceholder
@@ -92,7 +95,11 @@ export const Artwork = memo<ArtworkComponentProps>(
           <div
             aria-label="Subtitles"
             aria-live="polite"
-            className={subtitleContainer}
+            className={`
+              bg-zinc-300/80 dark:bg-zinc-900/80
+              absolute bottom-0 right-0 left-0
+              m-4 p-4
+            `}
             role="log"
           >
             <Typography as="span" size="paragraph">

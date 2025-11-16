@@ -74,6 +74,7 @@ export const HtmlViewer = memo(
                   shouldUseCapsize={shouldUseCapsize}
                   as="h1"
                   size="headingSmall"
+                  className="font-bold"
                   {...props}
                 />
               );
@@ -81,6 +82,7 @@ export const HtmlViewer = memo(
             h2({ node: _node, ...props }) {
               return (
                 <Typography
+                  className="font-bold"
                   shouldUseCapsize={shouldUseCapsize}
                   as="h2"
                   size="headingSmall"
@@ -91,6 +93,7 @@ export const HtmlViewer = memo(
             h3({ node: _node, ...props }) {
               return (
                 <Typography
+                  className="font-bold"
                   shouldUseCapsize={shouldUseCapsize}
                   as="h3"
                   size="headingSmall"
@@ -101,8 +104,9 @@ export const HtmlViewer = memo(
             h4({ node: _node, ...props }) {
               return (
                 <Typography
-                  shouldUseCapsize={shouldUseCapsize}
                   as="h4"
+                  className="font-bold"
+                  shouldUseCapsize={shouldUseCapsize}
                   size="headingSmaller"
                   {...props}
                 />

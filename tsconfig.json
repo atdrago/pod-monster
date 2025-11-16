@@ -28,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     "utils/imageDomains.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "postcss.config.mjs"
   ],
   "references": [
     {

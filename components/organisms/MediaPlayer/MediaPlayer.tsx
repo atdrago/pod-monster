@@ -294,10 +294,11 @@ export const MediaPlayer: FunctionComponent = () => {
                 <Stack as={m.div} space="small" {...animationProperties}>
                   {episodeTitle ? (
                     <Typography
-                      size="headingSmaller"
                       as="h4"
+                      size="headingSmaller"
                       textAlign="center"
                       whitespace="ellipsis"
+                      className="font-bold"
                     >
                       {episodeId && feedId && !isPlayingEpisodeOfCurrentPage ? (
                         <Link
@@ -316,8 +317,9 @@ export const MediaPlayer: FunctionComponent = () => {
                   ) : null}
                   {currentChapter && currentChapter.title && (
                     <Typography
-                      size="paragraph"
                       as="h5"
+                      className="font-bold"
+                      size="paragraph"
                       textAlign="center"
                       whitespace="ellipsis"
                     >

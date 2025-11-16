@@ -237,7 +237,7 @@ export const Media = function MediaRef({
             <Typography
               as="h4"
               size="paragraph"
-              className={timeLabelCenter}
+              className={timeLabelCenter + ' font-bold'}
               whitespace="ellipsis"
               shouldUseCapsize={false}
             >
