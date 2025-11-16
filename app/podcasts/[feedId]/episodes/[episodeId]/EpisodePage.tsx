@@ -199,9 +199,9 @@ export const EpisodePage = ({
         <Artwork
           alt="Podcast episode or chapter artwork"
           height={episodeImageDimensions?.height}
-          priority={true}
-          shadow="medium"
           isSquare={episodeImageDimensions && !!hasChapters}
+          priority={true}
+          shadow={true}
           src={episodeArtwork}
           subtitle={currentTranscriptItemText}
           width={episodeImageDimensions?.width}
@@ -286,11 +286,11 @@ export const EpisodePage = ({
                     >
                       <Artwork
                         alt={person.name}
+                        height={80}
                         label={`${index + 1}.`}
+                        shadow={true}
                         src={person.img}
                         width={80}
-                        height={80}
-                        shadow="medium"
                       />
                       <Stack
                         space="xsmall"

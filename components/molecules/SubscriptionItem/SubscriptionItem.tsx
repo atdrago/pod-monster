@@ -63,11 +63,11 @@ export const SubscriptionItem = ({
       <Stack align="center" space="small" kind="flexRow">
         <FeedArtwork
           alt=""
-          width={80}
-          height={80}
-          src={image}
           feedId={feedId}
-          shadow="medium"
+          height={80}
+          shadow={true}
+          src={image}
+          width={80}
         />
         <Typography
           as="h2"

@@ -51,14 +51,6 @@ export const typography = style({
   wordBreak: 'break-word',
 });
 
-export const blockquote = style({
-  borderLeft: `2px solid ${vars.color.blockquoteBorder}`,
-  margin: 'auto',
-  maxWidth: '48rem',
-  padding: `${vars.spacing.s016} 0 ${vars.spacing.s016} ${vars.spacing.s016}`,
-  width: '100%',
-});
-
 function removeBeforeAndAfter<TInput = unknown>(css: TInput): TInput {
   return removeNullAndUndefined({
     ...css,
@@ -124,11 +116,6 @@ const sizeVariantStyles: Record<string | number, StyleRule> = {
       leading: 16 * EIGHTEEN_AND_UNDER_LEADING,
     }),
     fontSize: vars.typography.fontSize.s16,
-    selectors: {
-      [`${blockquote} &`]: {
-        color: vars.color.blockquote,
-      },
-    },
   },
 };
 

@@ -83,7 +83,7 @@ export const EpisodeList = ({ episodes, feedId }: EpisodeListProps) => {
                 <Artwork
                   alt=""
                   height={80}
-                  shadow="medium"
+                  shadow={true}
                   src={image || feedImage}
                   width={80}
                 />

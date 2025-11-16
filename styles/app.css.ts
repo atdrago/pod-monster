@@ -19,6 +19,7 @@ globalStyle('html', {
   // Prevent text from increasing on landscape on iOS
   WebkitTextSizeAdjust: '100%',
   background: vars.color.background,
+  // TODO: Remove this font size adjust
   fontSize: '62.5%',
   fontSmooth: 'always',
 });

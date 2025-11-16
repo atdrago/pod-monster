@@ -93,10 +93,10 @@ export default async function Page(props: PageProps) {
           <Stack kind="flexRow" space="small" align="center">
             <FeedArtwork
               alt={`Podcast artwork for "${feed.title}"`}
-              height={128}
-              shadow="medium"
-              src={feed.image}
               feedId={feed.id}
+              height={128}
+              shadow={true}
+              src={feed.image}
               width={128}
             />
             <Stack space="small">

@@ -149,7 +149,7 @@ export function HomePage({
                         width={80}
                         height={80}
                         src={feed.image}
-                        shadow="medium"
+                        shadow={true}
                         label={`${index + 1}.`}
                       />
                       <Stack
