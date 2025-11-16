@@ -58,7 +58,7 @@
     "env-cmd": "^10.1.0",
     "eslint": "^9.13.0",
     "eslint-config-next": "15.5.3",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react": "^7.29.3",
     "eslint-plugin-sort-destructure-keys": "^2.0.0",
