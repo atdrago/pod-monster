@@ -37,7 +37,7 @@ export const SubscribeButton: FunctionComponent<SubscribeButtonProps> = ({
   };
 
   return (
-    <Button onClick={handleSubscribeClick} size="medium">
+    <Button onClick={handleSubscribeClick}>
       {feedSettings[id]?.subscribedAt ? 'Unsubscribe' : 'Subscribe'}
     </Button>
   );
