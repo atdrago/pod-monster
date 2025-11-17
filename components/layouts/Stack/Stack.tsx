@@ -1,17 +1,7 @@
 import { forwardRef } from 'react';
 import { Box } from 'react-polymorphic-box';
 
-import { useClassNames } from 'hooks/useClassNames';
 import type { StackProps } from 'types';
-
-import {
-  alignVariant,
-  justifyVariant,
-  kindVariant,
-  maxWidthVariant,
-  spaceVariant,
-  stack,
-} from './stack.css';
 
 export const Stack = forwardRef<HTMLElement, StackProps>(function StackRef(
   {
@@ -28,15 +18,53 @@ export const Stack = forwardRef<HTMLElement, StackProps>(function StackRef(
   }: StackProps,
   ref,
 ) {
-  const rootClassName = useClassNames(
-    stack,
-    spaceVariant[space],
-    maxWidthVariant[maxWidth],
-    kindVariant[kind],
-    align && alignVariant[align],
-    justify && justifyVariant[justify],
-    className,
-  );
+  const spaceClasses = {
+    large: 'gap-12',
+    medium: 'gap-8',
+    none: 'gap-0',
+    small: 'gap-4',
+    xlarge: 'gap-16',
+    xsmall: 'gap-2',
+    xxsmall: 'gap-1',
+  };
 
-  return <Box as={as} className={rootClassName} ref={ref} {...divProps} />;
+  const maxWidthClasses = {
+    none: 'max-w-none',
+    small: 'max-w-3xl', // 48rem
+  };
+
+  const kindClasses = {
+    flex: 'flex flex-col',
+    flexRow: 'flex flex-row',
+    flexRowReverse: 'flex flex-row-reverse',
+    grid: 'grid',
+  };
+
+  const alignClasses = {
+    center: 'items-center',
+    end: 'items-end',
+    start: 'items-start',
+  };
+
+  const justifyClasses = {
+    center: 'justify-center',
+    spaceBetween: 'justify-between',
+  };
+
+  return (
+    <Box
+      as={as}
+      className={`
+        mx-auto w-full
+        ${spaceClasses[space]}
+        ${maxWidthClasses[maxWidth]}
+        ${kindClasses[kind]}
+        ${align ? alignClasses[align] : ''}
+        ${justify ? justifyClasses[justify] : ''}
+        ${className ?? ''}
+      `}
+      ref={ref}
+      {...divProps}
+    />
+  );
 });

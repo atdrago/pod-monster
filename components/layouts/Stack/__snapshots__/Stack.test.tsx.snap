@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Stack should export Stack component 1`] = `
+<div>
+  <div
+    class="
+        mx-auto w-full
+        gap-8
+        max-w-none
+        flex flex-col
+        
+        
+        
+      "
+  />
+</div>
+`;
