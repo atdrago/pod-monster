@@ -1,11 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css';
 
 import { vars } from 'styles';
-import {
-  stack,
-  spaceVariant,
-  kindVariant,
-} from 'components/layouts/Stack/stack.css';
 
 export const container = style({
   '@supports': {
@@ -38,15 +33,17 @@ export const containerPinnedVariant = styleVariants({
   },
 });
 
-export const player = style([
-  stack,
-  kindVariant['flex'],
-  spaceVariant['small'],
-  {
-    overflow: 'hidden',
-    transition: '500ms ease box-shadow, 500ms ease transform',
-  },
-]);
+export const player = style({
+  alignItems: 'stretch',
+  border: '0',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.spacing.s016,
+  margin: '0 auto',
+  overflow: 'hidden',
+  transition: '500ms ease box-shadow, 500ms ease transform',
+  width: '100%',
+});
 
 export const playerPinnedVariant = styleVariants({
   pinned: {
