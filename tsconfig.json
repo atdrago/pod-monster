@@ -16,6 +16,7 @@
     "strict": true,
     "target": "es5",
     "incremental": true,
+    "types": ["vitest/globals"],
     "plugins": [
       {
         "name": "next"
