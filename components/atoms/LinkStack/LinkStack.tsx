@@ -1,10 +1,7 @@
 import Link, { LinkProps } from 'next/link';
 
 import { Stack } from 'components/layouts/Stack';
-import { useClassNames } from 'hooks/useClassNames';
 import type { StackProps } from 'types';
-
-import { linkStackClassName } from './linkStack.css';
 
 type LinkStackProps = (StackProps & LinkProps) | StackProps;
 
@@ -18,7 +15,7 @@ export const LinkStack = ({
   className,
   ...props
 }: LinkStackProps) => {
-  const baseClassName = useClassNames(linkStackClassName, className);
+  const baseClassName = `no-underline ${className ?? ''}`;
 
   return 'href' in props ? (
     <Stack as={Link} className={baseClassName} {...props}>

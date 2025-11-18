@@ -1,0 +1,58 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LinkStack > should export LinkStack component 1`] = `
+<div>
+  <div
+    class="
+        mx-auto w-full
+        gap-8
+        max-w-none
+        flex flex-col
+        
+        
+        no-underline 
+      "
+  />
+</div>
+`;
+
+exports[`LinkStack > should render as a Link when href is provided 1`] = `
+<div>
+  <a
+    class="
+        mx-auto w-full
+        gap-8
+        max-w-none
+        flex flex-col
+        
+        
+        no-underline 
+      "
+    href="/test-link"
+  >
+    <div>
+      Link content
+    </div>
+  </a>
+</div>
+`;
+
+exports[`LinkStack > should render with custom className 1`] = `
+<div>
+  <div
+    class="
+        mx-auto w-full
+        gap-8
+        max-w-none
+        flex flex-col
+        
+        
+        no-underline custom-class
+      "
+  >
+    <div>
+      Custom styled content
+    </div>
+  </div>
+</div>
+`;
