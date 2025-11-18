@@ -4,6 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 // eslint-disable-next-line import/no-unused-modules
 export default defineConfig({
+  // @ts-expect-error workaround for moduleResolution: 'bundler' issue
   plugins: [tsconfigPaths(), react()],
   test: {
     environment: 'jsdom',
