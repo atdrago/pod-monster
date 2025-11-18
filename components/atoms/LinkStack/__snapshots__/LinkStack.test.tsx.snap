@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`LinkStack should export LinkStack component 1`] = `
+exports[`LinkStack > should export LinkStack component 1`] = `
 <div>
   <div
     class="
@@ -8,15 +8,15 @@ exports[`LinkStack should export LinkStack component 1`] = `
         gap-8
         max-w-none
         flex flex-col
-
-
-        no-underline
+        
+        
+        no-underline 
       "
   />
 </div>
 `;
 
-exports[`LinkStack should render as a Link when href is provided 1`] = `
+exports[`LinkStack > should render as a Link when href is provided 1`] = `
 <div>
   <a
     class="
@@ -24,9 +24,9 @@ exports[`LinkStack should render as a Link when href is provided 1`] = `
         gap-8
         max-w-none
         flex flex-col
-
-
-        no-underline
+        
+        
+        no-underline 
       "
     href="/test-link"
   >
@@ -37,7 +37,7 @@ exports[`LinkStack should render as a Link when href is provided 1`] = `
 </div>
 `;
 
-exports[`LinkStack should render with custom className 1`] = `
+exports[`LinkStack > should render with custom className 1`] = `
 <div>
   <div
     class="
@@ -45,8 +45,8 @@ exports[`LinkStack should render with custom className 1`] = `
         gap-8
         max-w-none
         flex flex-col
-
-
+        
+        
         no-underline custom-class
       "
   >
