@@ -11,3 +11,5 @@ export function register() {
     tracesSampleRate: 1,
   });
 }
+
+export const onRequestError = Sentry.captureRequestError;
