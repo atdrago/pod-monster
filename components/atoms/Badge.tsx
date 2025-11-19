@@ -14,7 +14,6 @@ export const Badge = ({ label, ...spanProps }: BadgeProps) => (
         rounded-sm inline-block p-2 w-auto
       `}
     style={{
-      // @ts-expect-error React does not support text-box yet
       textBox: 'trim-both cap',
     }}
     {...spanProps}
