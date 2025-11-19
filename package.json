@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "^2.0.5",
-    "@sentry/nextjs": "^10.25.0",
+    "@sentry/nextjs": "^10.26.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@tanstack/react-query": "^5.90.5",
     "@vanilla-extract/css": "^1.16.0",
