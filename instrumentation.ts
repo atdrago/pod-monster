@@ -11,3 +11,17 @@ export function register() {
     tracesSampleRate: 1,
   });
 }
+
+export async function onRequestError(
+  err: unknown,
+  request: {
+    path: string;
+  },
+  context: {
+    routerKind: 'Pages Router' | 'App Router';
+    routePath: string;
+    routeType: 'render' | 'route' | 'action' | 'middleware';
+  },
+) {
+  await Sentry.captureRequestError(err, request, context);
+}
