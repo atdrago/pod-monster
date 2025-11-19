@@ -16,3 +16,9 @@ updates:
           - 'react-dom'
           - '@types/react'
           - '@types/react-dom'
+      nextjs:
+        patterns:
+          - 'next'
+          - 'eslint-config-next'
+          - '@next/bundle-analyzer'
+          - '@vanilla-extract/next-plugin'
