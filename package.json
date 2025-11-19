@@ -33,7 +33,7 @@
     "probe-image-size": "^7.2.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-markdown": "^9.0.1",
+    "react-markdown": "^10.1.0",
     "react-polymorphic-box": "^3.0.3",
     "react-window": "^1.8.11",
     "rehype-parse": "^9.0.1",
