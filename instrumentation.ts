@@ -12,16 +12,4 @@ export function register() {
   });
 }
 
-export async function onRequestError(
-  err: unknown,
-  request: {
-    path: string;
-  },
-  context: {
-    routerKind: 'Pages Router' | 'App Router';
-    routePath: string;
-    routeType: 'render' | 'route' | 'action' | 'middleware';
-  },
-) {
-  await Sentry.captureRequestError(err, request, context);
-}
+export const onRequestError = Sentry.captureRequestError;
