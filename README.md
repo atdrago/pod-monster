@@ -32,7 +32,6 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
    #### **Retrieve your Podcast Index API Key and Secret**
 
    You will need to obtain your Podcast Index API Key and Secret from your Podcastindex.org account:
-
    1. [Log in or sign up here.](https://api.podcastindex.org/)
    2. In the "API Keys" section, click the "+" button to create a new API Key / Secret pair.
    3. You should copy these values down and put them in a safe place as they cannot be retrieved later, but for now it's fine to keep them only in the `.env.local` file you've created.
