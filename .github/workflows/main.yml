@@ -31,4 +31,4 @@ jobs:
         run: npx prettier --check .
 
       - name: Run Vitest
-        run: npx vitest
+        run: npx playwright install && npx vitest
