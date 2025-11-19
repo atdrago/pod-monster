@@ -76,7 +76,7 @@
     "import-sort-style-atdrago": "^0.1.7",
     "jiti": "^2.3.3",
     "jsdom": "^27.2.0",
-    "lint-staged": "^15.2.10",
+    "lint-staged": "^16.2.7",
     "playwright": "^1.56.1",
     "podcastdx-client": "^5.0.0",
     "prettier": "3.6.2",
