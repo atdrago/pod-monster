@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-foreground-light: theme('colors.zinc.800');
+  --color-background-light: theme('colors.zinc.300');
+  --color-foreground-dark: theme('colors.zinc.300');
+  --color-background-dark: theme('colors.zinc.800');
+}
+
 .list-layout {
   @apply flex flex-col gap-8 pl-10;
 

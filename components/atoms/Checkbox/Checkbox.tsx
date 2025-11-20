@@ -1,12 +1,8 @@
 import type { ReactEventHandler, JSX } from 'react';
 
-import { Icon } from 'components/atoms/Icon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { useClassNames } from 'hooks/useClassNames';
 import CheckedIcon from 'icons/checkmark.svg';
-
-import { checkbox, checkboxChecked, input, label } from './checkbox.css';
 
 interface CheckboxProps
   extends Omit<JSX.IntrinsicElements['label'], 'checked' | 'onChange'> {
@@ -18,29 +14,40 @@ export const Checkbox = ({
   checked = false,
   children,
   className,
-  onChange,
+  onChange = () => {},
   ...labelProps
 }: CheckboxProps) => {
-  const baseClassName = useClassNames(label, className);
-
   return (
-    <label className={baseClassName} {...labelProps}>
+    <label
+      className={`cursor-pointer flex-auto shrink-0 ${className ?? ''}`}
+      {...labelProps}
+    >
       <input
         checked={checked}
-        className={input}
+        className="hidden"
         onChange={onChange}
         type="checkbox"
       />
       <Stack kind="flexRow" space="xsmall">
-        {checked ? (
-          <span className={checkboxChecked}>
-            <Icon color="background" size="xsmall">
-              <CheckedIcon />
-            </Icon>
-          </span>
-        ) : (
-          <span className={checkbox}></span>
-        )}
+        <span
+          // should be "h-3 w-3" after removing global font size adjustment
+          className={`
+            inline-block flex-auto shrink-0 h-5 w-5 leading-0
+            border-foreground-light dark:border-foreground-dark
+            ${
+              checked
+                ? 'bg-foreground-light dark:bg-foreground-dark border-0'
+                : 'bg-background-light dark:bg-background-dark border-2'
+            }
+          `}
+        >
+          {checked ? (
+            <CheckedIcon
+              // should be "h-3 w-3" after removing global font size adjustment
+              className="text-background-light dark:text-background-dark h-5 w-5 leading-0"
+            />
+          ) : null}
+        </span>
         <Typography as="span" size="paragraph">
           {children}
         </Typography>

@@ -38,3 +38,6 @@ yarn-error.log*
 
 # Sentry Auth Token
 .sentryclirc
+
+# Vitest screenshots
+.vitest-attachments
