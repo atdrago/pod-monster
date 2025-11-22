@@ -200,7 +200,6 @@ export const EpisodePage = ({
           alt="Podcast episode or chapter artwork"
           height={episodeImageDimensions?.height}
           isSquare={episodeImageDimensions && !!hasChapters}
-          priority={true}
           shadow={true}
           src={episodeArtwork}
           subtitle={currentTranscriptItemText}
