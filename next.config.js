@@ -3,14 +3,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 const withSvgr = require('next-plugin-svgr');
-const imageDomains = require('./utils/imageDomains');
 const { withSentryConfig } = require('@sentry/nextjs');
 
 const withVanillaExtract = createVanillaExtractPlugin();
 
 const nextConfig = {
   images: {
-    domains: imageDomains,
     minimumCacheTTL: 31536000,
   },
   productionBrowserSourceMaps: true,

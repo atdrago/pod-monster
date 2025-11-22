@@ -3,21 +3,19 @@
 import { memo, useState } from 'react';
 import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
-import type { ImageProps } from 'next/image';
 import { Typography } from 'components/atoms/Typography';
 
 export type ArtworkComponentProps = PolymorphicComponentProps<
   'div',
   {
     alt: string;
-    height?: ImageProps['height'];
+    height?: number | `${number}` | undefined;
     isSquare?: boolean;
     label?: string;
-    priority?: ImageProps['priority'];
     shadow?: boolean;
     src?: string;
     subtitle?: React.ReactNode;
-    width?: ImageProps['width'];
+    width?: number | `${number}` | undefined;
   }
 >;
 

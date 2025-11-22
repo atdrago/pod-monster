@@ -28,7 +28,6 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "utils/imageDomains.js",
     ".next/types/**/*.ts",
     "postcss.config.mjs"
   ],
