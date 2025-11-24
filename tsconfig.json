@@ -26,6 +26,7 @@
   "exclude": ["node_modules"],
   "include": [
     "next-env.d.ts",
+    "vite-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
