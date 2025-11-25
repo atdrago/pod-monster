@@ -8,12 +8,6 @@ import PlayIcon from 'icons/play3.svg';
 import SpinnerIcon from 'icons/spinner8.svg';
 import WarningIcon from 'icons/warning.svg';
 
-import {
-  articleClassName,
-  footerClassName,
-  summaryClassName,
-} from './details.css';
-
 type DetailsProps = JSX.IntrinsicElements['details'] & {
   footer?: ReactNode;
   hasError?: boolean;
@@ -35,7 +29,7 @@ export const Details = ({
     <details {...detailsProps}>
       <Stack
         as="summary"
-        className={summaryClassName}
+        className="cursor-pointer outline-none text-foreground [&::marker]:hidden [&::-webkit-details-marker]:hidden"
         kind="flexRow"
         onClick={() => setIsOpen(!isOpen)}
         space="small"
@@ -59,8 +53,17 @@ export const Details = ({
         )}
         {summary}
       </Stack>
-      {children && <article className={articleClassName}>{children}</article>}
-      {footer && <div className={footerClassName}>{footer}</div>}
+      {children ? (
+        <article
+          className={`
+            border-l-12 border-foreground-light dark:border-foreground-dark
+            mt-6 pl-6
+          `}
+        >
+          {children}
+        </article>
+      ) : null}
+      {footer ? <div className="mt-6">{footer}</div> : null}
     </details>
   );
 };
