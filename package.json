@@ -77,7 +77,7 @@
     "jiti": "^2.3.3",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.2.7",
-    "playwright": "^1.56.1",
+    "playwright": "^1.57.0",
     "podcastdx-client": "^5.0.0",
     "prettier": "3.6.2",
     "prettier-plugin-import-sort": "^0.0.7",
