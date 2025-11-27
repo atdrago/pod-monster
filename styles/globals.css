@@ -5,6 +5,17 @@
   --color-background-light: theme('colors.zinc.300');
   --color-foreground-dark: theme('colors.zinc.300');
   --color-background-dark: theme('colors.zinc.800');
+
+  --animate-spin-1s: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
 }
 
 .list-layout {
