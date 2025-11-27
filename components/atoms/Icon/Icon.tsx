@@ -1,18 +1,39 @@
 import { Box, PolymorphicComponentProps } from 'react-polymorphic-box';
 
-import { useClassNames } from 'hooks/useClassNames';
 import { vars } from 'styles';
 
-import { icon, iconOrientationVariant, iconSizeVariant } from './icon.css';
+export type IconSize =
+  | 'xxsmall'
+  | 'xsmall'
+  | 'small'
+  | 'smallMedium'
+  | 'medium'
+  | 'large';
 
 type IconComponentProps = PolymorphicComponentProps<
   React.ElementType,
   {
     color?: keyof typeof vars.color;
-    orientation?: keyof typeof iconOrientationVariant;
-    size: keyof typeof iconSizeVariant;
+    orientation?: 'default' | 'reverse' | 'rotate90' | 'spinning';
+    size: IconSize;
   }
 >;
+
+const sizeClasses = {
+  large: 'text-[36px] min-h-[36px] min-w-[36px]',
+  medium: 'text-[22px] min-h-[22px] min-w-[22px]',
+  small: 'text-[16px] min-h-[16px] min-w-[16px]',
+  smallMedium: 'text-[20px] min-h-[20px] min-w-[20px]',
+  xsmall: 'text-[12px] min-h-[12px] min-w-[12px]',
+  xxsmall: 'text-[8px] min-h-[8px] min-w-[8px]',
+} as const;
+
+const orientationClasses = {
+  default: '',
+  reverse: 'scale-x-[-1]',
+  rotate90: 'rotate-90',
+  spinning: 'animate-[spin_1s_linear_infinite] origin-center',
+} as const;
 
 export const Icon = ({
   className,
@@ -21,17 +42,10 @@ export const Icon = ({
   size,
   ...spanProps
 }: IconComponentProps) => {
-  const rootClassName = useClassNames(
-    icon,
-    iconSizeVariant[size],
-    iconOrientationVariant[orientation],
-    className,
-  );
-
   return (
     <Box
       as="span"
-      className={rootClassName}
+      className={`inline-flex items-center leading-none ${sizeClasses[size]} ${orientationClasses[orientation]} ${className ?? ''}`}
       style={{ color: vars.color[color] }}
       {...spanProps}
     />
