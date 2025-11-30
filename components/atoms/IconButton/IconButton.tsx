@@ -1,18 +1,30 @@
 import { ElementType } from 'react';
 import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
-import { useClassNames } from 'hooks/useClassNames';
-
-import { backgroundVariant, iconButton, sizeVariant } from './iconButton.css';
+type IconButtonSize = 'small' | 'medium' | 'large';
+type IconButtonBackground = 'default' | 'circle';
 
 type IconButtonProps = PolymorphicComponentProps<
   ElementType,
   {
-    background?: keyof typeof backgroundVariant;
+    background?: IconButtonBackground;
     label?: string;
-    size?: keyof typeof sizeVariant;
+    size?: IconButtonSize;
   }
 >;
+
+const sizeClasses = {
+  large: 'h-[75px] w-[75px]',
+  medium: 'h-[50px] w-[50px]',
+  small: 'h-[30px] w-[30px]',
+} as const;
+
+const backgroundClasses = {
+  circle: `rounded-full p-2 text-center
+    bg-light dark:bg-dark
+    border-2 border-foreground-light dark:border-foreground-dark`,
+  default: 'bg-none border-0',
+} as const;
 
 export const IconButton = ({
   as: asProp = 'button',
@@ -22,17 +34,23 @@ export const IconButton = ({
   size = 'small',
   ...props
 }: IconButtonProps) => {
-  const baseClassName = useClassNames(
-    iconButton,
-    backgroundVariant[background],
-    sizeVariant[size],
-    className,
-  );
-
   const buttonProps =
     asProp === 'button' ? { 'aria-label': label, type: 'button' } : undefined;
 
   return (
-    <Box as={asProp} className={baseClassName} {...buttonProps} {...props} />
+    <Box
+      as={asProp}
+      className={`
+        inline-flex items-center justify-center
+        cursor-pointer
+        text-foreground
+        m-0 p-0
+        ${sizeClasses[size]}
+        ${backgroundClasses[background]}
+        ${className ?? ''}
+      `}
+      {...buttonProps}
+      {...props}
+    />
   );
 };
