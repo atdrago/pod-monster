@@ -62,7 +62,7 @@
     "@vanilla-extract/next-plugin": "^2.4.14",
     "@vanilla-extract/vite-plugin": "^5.1.3",
     "@vitejs/plugin-react": "^5.1.1",
-    "@vitest/browser": "^4.0.13",
+    "@vitest/browser": "^4.0.15",
     "@vitest/browser-playwright": "^4.0.10",
     "@vitest/ui": "^4.0.10",
     "eslint": "^9.13.0",
