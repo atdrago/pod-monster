@@ -41,7 +41,7 @@ export const IconButton = ({
     <Box
       as={asProp}
       className={`
-        inline-flex items-center justify-center
+        inline-flex items-center justify-center flex-0-0-auto
         cursor-pointer
         text-foreground
         m-0 p-0
