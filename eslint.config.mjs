@@ -1,36 +1,26 @@
 import sortDestructureKeys from 'eslint-plugin-sort-destructure-keys';
 import sortKeysFix from 'eslint-plugin-sort-keys-fix';
 import importPlugin from 'eslint-plugin-import';
-// import typescriptSortKeys from 'eslint-plugin-typescript-sort-keys';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
 import { includeIgnoreFile } from '@eslint/compat';
+import nextConfig from 'eslint-config-next/core-web-vitals';
+import nextTsConfig from 'eslint-config-next/typescript';
+import prettier from 'eslint-config-prettier/flat';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  allConfig: js.configs.all,
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  resolvePluginsRelativeTo: __dirname,
-});
 
 const gitignorePath = path.resolve(__dirname, '.gitignore');
 
 const eslintConfig = [
   includeIgnoreFile(gitignorePath),
-  ...compat.extends('next', 'next/core-web-vitals', 'prettier'),
-  // ...compat.plugins('@typescript-eslint'),
+  ...nextConfig,
+  ...nextTsConfig,
+  prettier,
   {
     files: ['**/*.{ts,tsx,js}'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    },
-    name: 'TypeScript and JavaScript files',
+    name: 'Custom JavaScript and TypeScript rules',
     plugins: {
       import: importPlugin,
       'sort-destructure-keys': sortDestructureKeys,
@@ -121,13 +111,10 @@ const eslintConfig = [
       'sort-keys-fix/sort-keys-fix': 'warn',
       yoda: 'error',
     },
-    ignores: ['next-env.d.ts'],
   },
   {
-    ...compat.extends('next/typescript')[0],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 'latest',
       parserOptions: {
         project: [
           './tsconfig.json',
@@ -135,16 +122,9 @@ const eslintConfig = [
         ],
         tsconfigRootDir: __dirname,
       },
-
-      sourceType: 'module',
     },
-    name: 'TypeScript files',
-    plugins: {
-      // 'typescript-sort-keys': typescriptSortKeys,
-      '@typescript-eslint': typescriptEslint,
-    },
+    name: 'Custom TypeScript rules',
     rules: {
-      ...typescriptEslint.configs.recommended.rules,
       '@typescript-eslint/array-type': [
         'warn',
         {
@@ -213,7 +193,6 @@ const eslintConfig = [
 
       'no-shadow': 'off',
     },
-    ignores: ['next-env.d.ts'],
   },
 ];
 

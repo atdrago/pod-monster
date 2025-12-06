@@ -94,8 +94,8 @@
     }
   },
   "lint-staged": {
-    "*.js": "npx eslint --config eslint.config.mjs --max-warnings 0",
-    "*.{ts,tsx}": "npx eslint --config eslint.config.mjs --max-warnings 0",
+    "*.js": "npx eslint --config eslint.config.mjs --max-warnings 0 --no-warn-ignored",
+    "*.{ts,tsx}": "npx eslint --config eslint.config.mjs --max-warnings 0 --no-warn-ignored",
     "*.{gql,md,js,json,svg,ts,tsx}": "prettier --write"
   },
   "packageManager": "npm@10.8.2",
