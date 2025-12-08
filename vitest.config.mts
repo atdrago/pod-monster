@@ -5,7 +5,6 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { playwright } from '@vitest/browser-playwright';
 import svgr from 'vite-plugin-svgr';
 
-// eslint-disable-next-line import/no-unused-modules
 export default defineConfig({
   plugins: [
     tsconfigPaths(),
