@@ -4,8 +4,10 @@ import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import CheckedIcon from 'icons/checkmark.svg';
 
-interface CheckboxProps
-  extends Omit<JSX.IntrinsicElements['label'], 'checked' | 'onChange'> {
+interface CheckboxProps extends Omit<
+  JSX.IntrinsicElements['label'],
+  'checked' | 'onChange'
+> {
   checked?: boolean;
   onChange?: ReactEventHandler<HTMLInputElement>;
 }
