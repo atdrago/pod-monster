@@ -237,11 +237,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       ? chapters[currentChapterIndex]
       : null;
 
-  const isFirstRenderAfterHydration =
-    mediaPlayerSettings &&
-    !mediaPlayerSettingsRef.current &&
-    isDoneHydratingFromIdb;
-
   const resetMediaContext = useCallback(() => {
     audioRef.current?.pause();
     videoRef.current?.pause();
@@ -402,7 +397,12 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   ]);
 
   useEffect(() => {
-    if (isDoneHydratingFromIdb) {
+    const isFirstRenderAfterHydration =
+      mediaPlayerSettings &&
+      !mediaPlayerSettingsRef.current &&
+      isDoneHydratingFromIdb;
+
+    if (isFirstRenderAfterHydration) {
       setMediaPlayerSettings({
         chaptersUrl,
         currentTime: mediaPlayerCurrentTimeDebounced,
@@ -435,7 +435,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     feedImage,
     feedTitle,
     isDoneHydratingFromIdb,
-    isFirstRenderAfterHydration,
     isTranscriptVisibleAsSubtitle,
     isMuted,
     isPaused,
@@ -446,6 +445,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     src,
     srcType,
     volume,
+    mediaPlayerSettings,
   ]);
 
   /**
