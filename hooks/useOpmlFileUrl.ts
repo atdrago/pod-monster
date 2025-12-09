@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useSettingsContext } from 'contexts/SettingsContext';
 
@@ -6,18 +6,16 @@ export const useOpmlFileUrl = () => {
   const { feedSettings } = useSettingsContext();
   const [url, setUrl] = useState<string | null>(null);
 
-  useEffect(() => {
+  const opmlContent = useMemo(() => {
     const feedEntries = Object.entries(feedSettings).filter(
       ([_, { subscribedAt }]) => subscribedAt !== null,
     );
 
     if (feedEntries.length === 0) {
-      setUrl(null);
-
-      return;
+      return null;
     }
 
-    const opml = `<?xml version="1.0" encoding="UTF-8"?>
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <opml version="1.0">
   <head>
     <title>Pod Monster Podcast Subscriptions</title>
@@ -36,16 +34,29 @@ export const useOpmlFileUrl = () => {
       .join('\n    ')}
   </body>
 </opml>`;
+  }, [feedSettings]);
 
-    const file = new File([opml], 'podmonster.opml', { type: 'text/xml' });
-    const fileUrl = URL.createObjectURL(file);
+  useEffect(() => {
+    let fileUrl: string | null = null;
 
-    setUrl(fileUrl);
+    if (opmlContent !== null) {
+      const file = new File([opmlContent], 'podmonster.opml', {
+        type: 'text/xml',
+      });
+      fileUrl = URL.createObjectURL(file);
+    }
+
+    // Use queueMicrotask to defer the state update to avoid synchronous setState
+    queueMicrotask(() => {
+      setUrl(fileUrl);
+    });
 
     return () => {
-      URL.revokeObjectURL(fileUrl);
+      if (fileUrl) {
+        URL.revokeObjectURL(fileUrl);
+      }
     };
-  }, [feedSettings]);
+  }, [opmlContent, setUrl]);
 
   return url;
 };

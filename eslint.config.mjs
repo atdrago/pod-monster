@@ -182,11 +182,6 @@ const eslintConfig = [
       '@typescript-eslint/no-extraneous-class': 'error',
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-      // TODO - fix
-      'react-hooks/refs': 'off',
-      'react-hooks/purity': 'off',
-      'react-hooks/set-state-in-effect': 'off',
-
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
