@@ -1,9 +1,11 @@
-const { createVanillaExtractPlugin } = require('@vanilla-extract/next-plugin');
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
+import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
+import bundleAnalyzer from '@next/bundle-analyzer';
+import withSvgr from 'next-plugin-svgr';
+import { withSentryConfig } from '@sentry/nextjs';
+
+const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
-const withSvgr = require('next-plugin-svgr');
-const { withSentryConfig } = require('@sentry/nextjs');
 
 const withVanillaExtract = createVanillaExtractPlugin();
 
@@ -15,7 +17,7 @@ const nextConfig = {
   reactStrictMode: true,
 };
 
-module.exports = withSentryConfig(
+export default withSentryConfig(
   withBundleAnalyzer(withSvgr(withVanillaExtract(nextConfig))),
   {
     org: 'adam-drago',

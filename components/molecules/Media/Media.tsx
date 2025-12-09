@@ -5,12 +5,12 @@ import {
   useState,
   type JSX,
   type RefObject,
+  useId,
 } from 'react';
 
 import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
-import { useUniqueId } from 'hooks/useUniqueId';
 import { secondsToFormattedTime } from 'utils/date';
 import type { PlaybackRate } from 'utils/playbackRates';
 
@@ -59,7 +59,7 @@ export const Media = function MediaRef({
 }: MediaProps) {
   const audioClassName = useClassNames(audio, className);
   const [duration, setDuration] = useState(0);
-  const id = useUniqueId();
+  const id = useId();
 
   const handleTimeUpdate: ReactEventHandler<HTMLMediaElement> = (event) => {
     onCurrentTimeChange(event.currentTarget.currentTime);

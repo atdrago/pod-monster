@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import type { ApiResponse, PIApiPodcast } from 'podcastdx-client/src/types';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 
@@ -62,7 +62,6 @@ export const EpisodePage = ({
   const {
     episodeId,
     isTranscriptVisibleAsSubtitle,
-    mediaPlayerCurrentTime,
     mediaPlayerCurrentTimeDebounced,
     setCurrentTime,
     setIsTranscriptVisibleAsSubtitle,
@@ -71,8 +70,10 @@ export const EpisodePage = ({
   const isVideo = episode?.enclosureType.includes('video');
   const isThisEpisodeInThePlayer = episodeId === episode?.id;
 
+  // Derive the current time based on whether this episode is in the player
+  // If it's in the player, use the debounced media player time; otherwise use local state
   const interpretedCurrentTime = isThisEpisodeInThePlayer
-    ? mediaPlayerCurrentTime
+    ? mediaPlayerCurrentTimeDebounced
     : episodeCurrentTime;
 
   const hasTranscripts =
@@ -172,12 +173,6 @@ export const EpisodePage = ({
       }
     }
   };
-
-  useEffect(() => {
-    if (isThisEpisodeInThePlayer) {
-      setEpisodeCurrentTime(mediaPlayerCurrentTimeDebounced);
-    }
-  }, [mediaPlayerCurrentTimeDebounced, isThisEpisodeInThePlayer]);
 
   const currentTranscriptItem = transcript?.content[currentTranscriptIndex];
   const currentTranscriptItemText =

@@ -1,9 +1,5 @@
 import { FunctionComponent, memo, useEffect, useRef, useState } from 'react';
-import {
-  FixedSizeList as List,
-  ListChildComponentProps,
-  areEqual,
-} from 'react-window';
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 
 import { Checkbox } from 'components/atoms/Checkbox';
 import { Details } from 'components/atoms/Details';
@@ -35,7 +31,7 @@ interface TimedListProps<TListItem extends TimedListItem = TimedListItem> {
   title: string;
 }
 
-const ListItemComponent = memo(function Row({
+const ListItemComponent = function Row({
   data,
   index: listItemIndex,
   style,
@@ -58,7 +54,7 @@ const ListItemComponent = memo(function Row({
       <span className={transcriptItem}>{text}</span>
     </span>
   );
-}, areEqual);
+};
 
 export const TimedList: FunctionComponent<TimedListProps> = memo(
   function TimedListMemo({
@@ -74,44 +70,15 @@ export const TimedList: FunctionComponent<TimedListProps> = memo(
     },
     title,
   }) {
-    const indexRef = useRef<number>(index);
-    const indexUpdatedAtRef = useRef<number>(Date.now());
     const listRef = useRef<List | null>(null);
     const [isScrollingLocked, setIsScrollingLocked] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
-    const isOpenRef = useRef(isOpen);
 
     useEffect(() => {
       if (isScrollingLocked) {
         listRef.current?.scrollToItem(index, 'center');
       }
     }, [index, isScrollingLocked]);
-
-    useEffect(() => {
-      indexRef.current = index;
-      indexUpdatedAtRef.current = Date.now();
-    }, [index]);
-
-    useEffect(() => {
-      isOpenRef.current = isOpen;
-    }, [isOpen]);
-
-    const indexDelta = Math.abs(index - indexRef.current);
-    const indexUpdatedAtDelta = Math.abs(
-      Date.now() - indexUpdatedAtRef.current,
-    );
-    /**
-     * Only smooth scroll if it's a short distance to transition, and if the
-     * current item hasn't changed within the last 750ms, and if the details
-     * element is open now, and was also open on the last render. Otherwise,
-     * the effect can be overwhelming and react-window has a hard time keeping
-     * up.
-     */
-    const shouldSmoothScroll =
-      indexDelta < 5 &&
-      indexUpdatedAtDelta > 750 &&
-      isOpenRef.current &&
-      isOpen;
 
     return (
       <Details
@@ -168,7 +135,7 @@ export const TimedList: FunctionComponent<TimedListProps> = memo(
                 isScrollingLocked
                   ? {
                       overflow: 'hidden',
-                      scrollBehavior: shouldSmoothScroll ? 'smooth' : 'auto',
+                      scrollBehavior: 'smooth',
                     }
                   : {}
               }

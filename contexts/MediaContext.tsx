@@ -11,6 +11,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 
 import { useSettingsContext } from 'contexts/SettingsContext';
@@ -200,7 +201,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [isPaused, setIsPaused] = useState<boolean>(
     mediaContextDefaults.isPaused,
   );
-  const [isLoadingAtCurrentTime, setIsLoadingAtCurrentTime] = useState(false);
   const [isTranscriptVisibleAsSubtitle, setIsTranscriptVisibleAsSubtitle] =
     useState(mediaContextDefaults.isTranscriptVisibleAsSubtitle);
   const [playbackRate, setPlaybackRate] = useState<PlaybackRate>(1);
@@ -237,11 +237,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       ? chapters[currentChapterIndex]
       : null;
 
-  const isFirstRenderAfterHydration =
-    mediaPlayerSettings &&
-    !mediaPlayerSettingsRef.current &&
-    isDoneHydratingFromIdb;
-
   const resetMediaContext = useCallback(() => {
     audioRef.current?.pause();
     videoRef.current?.pause();
@@ -260,7 +255,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setFeedId(mediaContextDefaults.feedId);
     setFeedImage(mediaContextDefaults.feedImage);
     setFeedTitle(mediaContextDefaults.feedTitle);
-    setIsLoadingAtCurrentTime(mediaContextDefaults.isLoadingAtCurrentTime);
     setIsMuted(mediaContextDefaults.isMuted);
     setIsPaused(mediaContextDefaults.isPaused);
     setPlaybackRate(mediaContextDefaults.playbackRate);
@@ -402,7 +396,12 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   ]);
 
   useEffect(() => {
-    if (isDoneHydratingFromIdb) {
+    const isFirstRenderAfterHydration =
+      mediaPlayerSettings &&
+      !mediaPlayerSettingsRef.current &&
+      isDoneHydratingFromIdb;
+
+    if (isFirstRenderAfterHydration) {
       setMediaPlayerSettings({
         chaptersUrl,
         currentTime: mediaPlayerCurrentTimeDebounced,
@@ -435,7 +434,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     feedImage,
     feedTitle,
     isDoneHydratingFromIdb,
-    isFirstRenderAfterHydration,
     isTranscriptVisibleAsSubtitle,
     isMuted,
     isPaused,
@@ -446,6 +444,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     src,
     srcType,
     volume,
+    mediaPlayerSettings,
   ]);
 
   /**
@@ -512,14 +511,19 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     setMediaPlayerCurrentTime(currentTime);
   }, [audioRef, videoRef, currentTime, setMediaPlayerCurrentTime]);
 
+  const bufferedTimeRanges =
+    // eslint-disable-next-line react-hooks/refs
+    audioRef.current?.buffered || videoRef.current?.buffered;
+
   /**
    * Update `isLoadingAtCurrentTime` whenever the buffered time ranges change,
    * either from the element's `progress` event, or from changes to the
    * element's `.buffered` property.
    */
-  useEffect(() => {
+  const isLoadingAtCurrentTime = useMemo(() => {
     const elementBufferedTuples = bufferedTimeRangesToTuples(
-      videoRef.current?.buffered ?? audioRef.current?.buffered,
+      // eslint-disable-next-line react-hooks/refs
+      bufferedTimeRanges,
     );
 
     const isCurrentTimeInTuple = ([begin, end]: [number, number]) => {
@@ -530,17 +534,12 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       elementBufferedTuples.some(isCurrentTimeInTuple) ||
       progressEventBufferedTuples.some(isCurrentTimeInTuple);
 
-    if (!isBufferedAtCurrentTime && !isPaused) {
-      setIsLoadingAtCurrentTime(true);
-    } else {
-      setIsLoadingAtCurrentTime(false);
-    }
+    return !isBufferedAtCurrentTime && !isPaused;
   }, [
     progressEventBufferedTuples,
     isPaused,
     mediaPlayerCurrentTime,
-    audioRef.current?.buffered,
-    videoRef.current?.buffered,
+    bufferedTimeRanges,
   ]);
 
   return (

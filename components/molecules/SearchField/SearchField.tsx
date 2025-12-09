@@ -1,8 +1,7 @@
-import { type ReactNode, useRef, type JSX } from 'react';
+import { type ReactNode, useRef, type JSX, useId } from 'react';
 
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { useUniqueId } from 'hooks/useUniqueId';
 
 import {
   clearButton,
@@ -27,7 +26,7 @@ export const SearchField = ({
   value,
   ...inputProps
 }: SearchFieldProps) => {
-  const id = useUniqueId();
+  const id = useId();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
