@@ -23,7 +23,7 @@
       }
     ]
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "packages/podcast-index"],
   "include": [
     "next-env.d.ts",
     "vite-env.d.ts",

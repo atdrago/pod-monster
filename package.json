@@ -12,7 +12,8 @@
     "prepare": "husky",
     "start": "next start",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@plussub/srt-vtt-parser": "^2.0.5",
