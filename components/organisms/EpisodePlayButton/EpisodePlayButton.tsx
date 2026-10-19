@@ -8,15 +8,23 @@ import { useMediaContext } from 'contexts/MediaContext';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import ExplicitIcon from 'icons/explicit.svg';
 import type { Chapter, ImageDimensions } from 'types';
-import type { ApiResponse } from 'podcastdx-client/src/types';
-
-type EpisodePageEpisode = ApiResponse.EpisodeById['episode'] & {
-  descriptionRaw?: string;
-};
+import type { PodcastEpisode } from 'types/PodcastFeed';
 
 interface EpisodePlayButtonProps {
   currentChapter: Chapter | null;
-  episode?: EpisodePageEpisode;
+  episode: Pick<
+    PodcastEpisode,
+    | 'chaptersUrl'
+    | 'enclosureType'
+    | 'enclosureUrl'
+    | 'explicit'
+    | 'feedImage'
+    | 'feedTitle'
+    | 'feedUrl'
+    | 'identity'
+    | 'image'
+    | 'title'
+  >;
   episodeCurrentTime: number;
   episodeImageDimensions?: ImageDimensions;
   isVideo?: boolean;
@@ -32,20 +40,20 @@ export const EpisodePlayButton = ({
   const {
     audioRef,
     didError,
-    episodeId,
+    episodeIdentity,
+    feedUrl,
     isLoadingAtCurrentTime,
     isPaused,
     setChaptersUrl,
     setCurrentTime,
-    setDateCrawled,
     setDidError,
-    setEpisodeId,
+    setEpisodeIdentity,
     setEpisodeImage,
     setEpisodeImageDimensions,
     setEpisodeTitle,
-    setFeedId,
     setFeedImage,
     setFeedTitle,
+    setFeedUrl,
     setIsPaused,
     setSize,
     setSrc,
@@ -54,31 +62,34 @@ export const EpisodePlayButton = ({
     videoRef,
   } = useMediaContext();
 
-  const isThisEpisodeInThePlayer = episodeId === episode?.id;
+  const { enclosureUrl } = episode;
+  const isThisEpisodeInThePlayer =
+    episodeIdentity === episode.identity && feedUrl === episode.feedUrl;
   const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;
   const isThisEpisodeLoadingAtCurrentTime =
     isThisEpisodeInThePlayer && !isThisEpisodePaused && isLoadingAtCurrentTime;
 
   const handlePlayPauseClick = async () => {
-    if (!episode) {
+    if (enclosureUrl === undefined) {
       return;
     }
 
     const nextIsPaused = !isThisEpisodePaused;
 
-    if (!nextIsPaused && episode.enclosureUrl !== src) {
-      setChaptersUrl(episode.chaptersUrl);
+    // Two episodes can share an enclosure URL, so a match of `src` alone does
+    // not show that this episode is in the player.
+    if (!nextIsPaused && (!isThisEpisodeInThePlayer || enclosureUrl !== src)) {
+      setChaptersUrl(episode.chaptersUrl ?? null);
       setCurrentTime(episodeCurrentTime);
-      setDateCrawled(episode.dateCrawled);
-      setEpisodeId(episode.id);
-      setEpisodeImage(episode.image);
+      setEpisodeIdentity(episode.identity);
+      setEpisodeImage(episode.image ?? null);
       setEpisodeImageDimensions(episodeImageDimensions ?? null);
       setEpisodeTitle(episode.title);
-      setFeedId(episode.feedId);
-      setFeedImage(episode.feedImage);
+      setFeedImage(episode.feedImage ?? null);
       setFeedTitle(episode.feedTitle);
-      setSrc(episode.enclosureUrl);
-      setSrcType(episode.enclosureType);
+      setFeedUrl(episode.feedUrl);
+      setSrc(enclosureUrl);
+      setSrcType(episode.enclosureType ?? null);
       setSize(isVideo ? 2 : 1);
     }
 
@@ -122,6 +133,7 @@ export const EpisodePlayButton = ({
       <Stack
         aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
         as="button"
+        disabled={enclosureUrl === undefined}
         kind="flexRow"
         space="small"
         align="center"
@@ -147,14 +159,14 @@ export const EpisodePlayButton = ({
           as="h3"
           whitespace={2}
         >
-          {episode && episode.explicit > 0 ? (
+          {episode.explicit === true ? (
             <Icon
               style={{ verticalAlign: 'middle' }}
               as={ExplicitIcon}
               size="smallMedium"
             />
           ) : null}{' '}
-          {currentChapter?.title ?? episode?.title}
+          {currentChapter?.title ?? episode.title}
         </Typography>
       </Stack>
       {currentChapter?.url && (

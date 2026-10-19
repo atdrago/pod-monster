@@ -1,6 +1,4 @@
-import { captureMessage } from '@sentry/nextjs';
-import type { PIApiEpisodeDetail } from 'podcastdx-client/src/types';
-
+import type { PodcastEpisode } from 'types/PodcastFeed';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 import { request } from 'utils/request';
 
@@ -12,6 +10,8 @@ export interface TranscriptItem {
 }
 
 type TranscriptType = 'text/vtt' | 'application/srt' | 'text/html';
+
+type Transcript = NonNullable<PodcastEpisode['transcripts']>[number];
 
 export type TranscriptDocument = {
   content: Array<TranscriptItem> | string;
@@ -28,41 +28,30 @@ export const supportedTranscriptTypes = [
   'text/html',
 ];
 
-export const fetchPodcastEpisodeTranscript = async (
-  transcripts: PIApiEpisodeDetail['transcripts'],
-  duration: number,
-): Promise<TranscriptDocument> => {
-  if (!transcripts) {
-    throw new Error('`transcripts` is required');
-  }
-
-  const sortedTranscripts = supportedTranscriptTypes
+/**
+ * The transcript of the first supported type in `supportedTranscriptTypes`, or
+ * `undefined` when the episode has no transcript of a supported type.
+ */
+export const getPreferredTranscript = (
+  transcripts: PodcastEpisode['transcripts'] = [],
+): Transcript | undefined =>
+  supportedTranscriptTypes
     .map((supportedType) =>
       transcripts.find(({ type }) => type === supportedType),
     )
-    .filter(notNullOrUndefined);
+    .find(notNullOrUndefined);
 
-  const targetTranscript = sortedTranscripts[0];
-
-  if (!targetTranscript) {
-    const requestedTranscriptTypes = transcripts
-      .map(({ type }) => `"${type}"`)
-      .join(', ');
-
-    const message = `None of the requested transcript types are supported: ${requestedTranscriptTypes}`;
-
-    captureMessage(message);
-
-    throw new Error(message);
-  }
-
+export const fetchPodcastEpisodeTranscript = async (
+  transcript: Pick<Transcript, 'type' | 'url'>,
+  duration: number,
+): Promise<TranscriptDocument> => {
   const transcriptProxyUrl = new URL(
     '/api/podcasts/transcript',
     process.env.NEXT_PUBLIC_BASE_URL,
   );
 
-  transcriptProxyUrl.searchParams.set('type', targetTranscript.type);
-  transcriptProxyUrl.searchParams.set('url', targetTranscript.url);
+  transcriptProxyUrl.searchParams.set('type', transcript.type);
+  transcriptProxyUrl.searchParams.set('url', transcript.url);
   transcriptProxyUrl.searchParams.set('duration', `${duration}`);
 
   return await request(transcriptProxyUrl.toString(), {

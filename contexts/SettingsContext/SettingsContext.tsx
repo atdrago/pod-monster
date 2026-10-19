@@ -46,7 +46,6 @@ type EpisodeReference = FeedReference & {
 
 type MediaPlayerSettings = {
   chaptersUrl: string | null;
-  dateCrawled: number | null;
   episodeIdentity: string | null;
   episodeImage: string | null;
   episodeImageDimensions: { height: number; width: number } | null;

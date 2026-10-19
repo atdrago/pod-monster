@@ -4,12 +4,17 @@ import { openDB } from 'idb';
 import type { PropsWithChildren } from 'react';
 
 import { SettingsProvider, useSettingsContext } from 'contexts/SettingsContext';
+import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 
 import { MediaProvider, useMediaContext } from './MediaContext';
 
 vi.mock('@sentry/nextjs', () => ({
   captureException: vi.fn(),
   captureMessage: vi.fn(),
+}));
+
+vi.mock('rest/fetchPodcastEpisodeChapters', () => ({
+  fetchPodcastEpisodeChapters: vi.fn(),
 }));
 
 const DATABASE_NAME = 'pod.monster';
@@ -242,6 +247,31 @@ describe('MediaContext', () => {
       await waitForDebounce();
 
       expect(await readEpisodeSettingsKeys()).toEqual([]);
+    });
+  });
+
+  describe('chapters', () => {
+    it('should load the chapters of an episode with a chapters URL and no `dateCrawled`', async () => {
+      vi.mocked(fetchPodcastEpisodeChapters).mockResolvedValue([
+        { startTime: 0, title: 'Introduction' },
+      ]);
+
+      const { result } = await renderHydratedContexts();
+
+      act(() => {
+        result.current.media.setChaptersUrl(
+          'https://example.com/chapters.json',
+        );
+      });
+
+      await waitFor(() =>
+        expect(result.current.media.chapters).toEqual([
+          { startTime: 0, title: 'Introduction' },
+        ]),
+      );
+      expect(fetchPodcastEpisodeChapters).toHaveBeenCalledWith(
+        'https://example.com/chapters.json',
+      );
     });
   });
 });

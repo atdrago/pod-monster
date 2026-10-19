@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import {
   type FunctionComponent,
   type PropsWithChildren,
@@ -29,7 +29,6 @@ interface MediaContext {
   currentChapter: Chapter | null;
   currentChapterIndex: number;
   currentTime: number;
-  dateCrawled: number | null;
   didError: boolean;
   duration: number;
   episodeIdentity: string | null;
@@ -54,7 +53,6 @@ interface MediaContext {
   seekForward: (details: Partial<MediaSessionActionDetails>) => void;
   setChaptersUrl: Dispatch<SetStateAction<string | null>>;
   setCurrentTime: Dispatch<SetStateAction<number>>;
-  setDateCrawled: Dispatch<SetStateAction<number | null>>;
   setDidError: Dispatch<SetStateAction<boolean>>;
   setDuration: Dispatch<SetStateAction<number>>;
   setEpisodeIdentity: Dispatch<SetStateAction<string | null>>;
@@ -92,7 +90,6 @@ const mediaContextDefaults: MediaContext = {
   currentChapter: null,
   currentChapterIndex: -1,
   currentTime: 0,
-  dateCrawled: null,
   didError: false,
   duration: 0,
   episodeIdentity: null,
@@ -117,7 +114,6 @@ const mediaContextDefaults: MediaContext = {
   seekForward: () => {},
   setChaptersUrl: (_) => {},
   setCurrentTime: (_) => {},
-  setDateCrawled: (_) => {},
   setDidError: (_) => {},
   setDuration: (_) => {},
   setEpisodeIdentity: (_) => {},
@@ -174,9 +170,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     useState(mediaContextDefaults.progressEventBufferedTuples);
   const [currentTime, setCurrentTime] = useState(
     mediaContextDefaults.currentTime,
-  );
-  const [dateCrawled, setDateCrawled] = useState<number | null>(
-    mediaContextDefaults.dateCrawled,
   );
   const [duration, setDuration] = useState<number>(
     mediaContextDefaults.duration,
@@ -244,7 +237,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
       setChaptersUrl(hydratedMediaPlayerSettings.chaptersUrl);
       setCurrentTime(hydratedCurrentTime);
-      setDateCrawled(hydratedMediaPlayerSettings.dateCrawled);
       setEpisodeIdentity(hydratedMediaPlayerSettings.episodeIdentity);
       setEpisodeImage(hydratedMediaPlayerSettings.episodeImage);
       setEpisodeImageDimensions(
@@ -268,13 +260,14 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     }
   }
 
+  // `EpisodePage` uses the same key and function, so the page and the player
+  // share one cache entry.
   const { data: chapters } = useQuery({
-    enabled:
-      typeof dateCrawled === 'number' &&
-      typeof chaptersUrl === 'string' &&
-      chaptersUrl.length > 0,
-    queryFn: async () => await fetchPodcastEpisodeChapters(chaptersUrl),
-    queryKey: ['chapters', chaptersUrl, dateCrawled],
+    queryFn:
+      chaptersUrl === null
+        ? skipToken
+        : async () => await fetchPodcastEpisodeChapters(chaptersUrl),
+    queryKey: ['chapters', chaptersUrl],
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
@@ -300,7 +293,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     }
 
     setChaptersUrl(mediaContextDefaults.chaptersUrl);
-    setDateCrawled(mediaContextDefaults.dateCrawled);
     setDidError(mediaContextDefaults.didError);
     setEpisodeIdentity(mediaContextDefaults.episodeIdentity);
     setEpisodeImage(mediaContextDefaults.episodeImage);
@@ -455,7 +447,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
     setMediaPlayerSettings({
       chaptersUrl,
-      dateCrawled,
       episodeIdentity,
       episodeImage,
       episodeImageDimensions,
@@ -474,7 +465,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     });
   }, [
     chaptersUrl,
-    dateCrawled,
     episodeIdentity,
     episodeImage,
     episodeImageDimensions,
@@ -598,7 +588,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         currentChapter,
         currentChapterIndex,
         currentTime,
-        dateCrawled,
         didError,
         duration,
         episodeIdentity,
@@ -623,7 +612,6 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         seekForward,
         setChaptersUrl,
         setCurrentTime,
-        setDateCrawled,
         setDidError,
         setDuration,
         setEpisodeIdentity,
