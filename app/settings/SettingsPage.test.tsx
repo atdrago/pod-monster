@@ -78,7 +78,12 @@ describe('SettingsPage', () => {
 
   it('should merge the imported shows, keyed by feed URL, into the library, and list the shows that were not imported', async () => {
     vi.mocked(fetchOpmlImport).mockResolvedValue({
-      errors: [{ title: 'Member Show' }],
+      errors: [
+        {
+          feedUrl: 'https://www.patreon.com/rss/show?auth=Token123',
+          title: 'Member Show',
+        },
+      ],
       feedSettings: {
         'HTTPS://EXAMPLE.COM/imported.xml?format=mp3':
           IMPORTED_FEED_SETTINGS_ITEM,
@@ -112,6 +117,54 @@ describe('SettingsPage', () => {
       await screen.findByText('All feeds except the following were imported:'),
     ).toBeVisible();
     expect(screen.getByText('Member Show')).toBeVisible();
+  });
+
+  it('should keep a subscription that the file lists but the import did not add, when the import replaces the library', async () => {
+    const privateFeedUrl = 'https://www.patreon.com/rss/show?auth=Token123';
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    vi.mocked(fetchOpmlImport).mockResolvedValue({
+      errors: [
+        {
+          feedUrl: 'HTTPS://WWW.PATREON.COM/rss/show?auth=Token123',
+          title: 'Member Show',
+        },
+      ],
+      feedSettings: { [IMPORTED_FEED_URL]: IMPORTED_FEED_SETTINGS_ITEM },
+    });
+
+    const { result } = await renderSettingsPage();
+
+    await act(async () => {
+      await result.current.setFeedSettingsItem(
+        { feedUrl: EXISTING_FEED_URL },
+        { subscribedAt: SUBSCRIBED_AT, title: 'Existing Show' },
+      );
+      await result.current.setFeedSettingsItem(
+        { feedUrl: privateFeedUrl },
+        { subscribedAt: SUBSCRIBED_AT, title: 'Member Show' },
+      );
+    });
+
+    fireEvent.click(
+      screen.getByText('Merge imported podcasts with existing subscriptions'),
+    );
+    chooseOpmlFile();
+
+    await waitFor(() =>
+      expect(
+        result.current.getFeedSettingsItem({ feedUrl: IMPORTED_FEED_URL }),
+      ).toEqual(IMPORTED_FEED_SETTINGS_ITEM),
+    );
+    expect(confirmSpy).toHaveBeenCalledOnce();
+    expect(
+      result.current.getFeedSettingsItem({ feedUrl: privateFeedUrl }),
+    ).toEqual({ subscribedAt: SUBSCRIBED_AT, title: 'Member Show' });
+    expect(
+      result.current.getFeedSettingsItem({ feedUrl: EXISTING_FEED_URL }),
+    ).toBeUndefined();
+
+    confirmSpy.mockRestore();
   });
 
   it('should not start a second import while an import is pending', async () => {

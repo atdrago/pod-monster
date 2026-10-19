@@ -113,7 +113,7 @@ describe('OPML import route', () => {
     expect(response.status).toBe(200);
     expect(fetchSpy).not.toHaveBeenCalled();
     await expect(response.json()).resolves.toEqual({
-      errors: [{ title: 'Member Show' }],
+      errors: [{ feedUrl: PATREON_FEED_URL, title: 'Member Show' }],
       feedSettings: {},
     });
     expectNoFeedUrlInLogs(PATREON_FEED_URL);
@@ -166,7 +166,9 @@ describe('OPML import route', () => {
     const responseJson = await response.json();
 
     expect(Object.keys(responseJson.feedSettings)).toEqual([FEED_URL]);
-    expect(responseJson.errors).toEqual([{ title: 'Member Show' }]);
+    expect(responseJson.errors).toEqual([
+      { feedUrl: PATREON_FEED_URL, title: 'Member Show' },
+    ]);
   });
 
   it('should report a feed that Podcast Index does not know as not imported', async () => {
@@ -185,7 +187,7 @@ describe('OPML import route', () => {
     );
 
     await expect(response.json()).resolves.toEqual({
-      errors: [{ title: 'OPML Show' }],
+      errors: [{ feedUrl: FEED_URL, title: 'OPML Show' }],
       feedSettings: {},
     });
   });
@@ -200,7 +202,7 @@ describe('OPML import route', () => {
     );
 
     await expect(response.json()).resolves.toEqual({
-      errors: [{ title: 'OPML Show' }],
+      errors: [{ feedUrl: FEED_URL, title: 'OPML Show' }],
       feedSettings: {},
     });
     expect(captureMessage).toHaveBeenCalledWith(

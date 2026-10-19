@@ -13,6 +13,7 @@ import {
   podcastsByFeedUrl,
 } from '@atdrago/podcast-index';
 import type { FeedSettings } from 'contexts/SettingsContext';
+import type { OpmlImportResponse } from 'rest/fetchOpmlImport';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
@@ -134,11 +135,12 @@ export async function POST(request: NextRequest) {
   );
 
   const feedSettings: FeedSettings = {};
-  const feedSettingsErrors: Array<{ title: string }> = [];
+  const feedSettingsErrors: OpmlImportResponse['errors'] = [];
 
   importResults.forEach(({ feedSettingsItem, opmlFeed }) => {
     if (feedSettingsItem === undefined) {
       feedSettingsErrors.push({
+        feedUrl: opmlFeed.xmlurl,
         title: opmlFeed.title ?? opmlFeed.text ?? 'Unknown',
       });
 

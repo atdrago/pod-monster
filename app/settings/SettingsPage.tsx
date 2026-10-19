@@ -8,7 +8,10 @@ import { Checkbox } from 'components/atoms/Checkbox';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { FileField } from 'components/molecules/FileField';
-import { useSettingsContext } from 'contexts/SettingsContext';
+import {
+  type FeedSettings,
+  useSettingsContext,
+} from 'contexts/SettingsContext';
 import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport, type OpmlImportResponse } from 'rest/fetchOpmlImport';
@@ -18,7 +21,8 @@ import { ApiErrorResponse } from 'utils/createApiErrorResponse';
 export function SettingsPage() {
   const opmlFileUrl = useOpmlFileUrl();
   const [shouldMergeOpmlImport, setShouldMergeOpmlImport] = useState(true);
-  const { feedSettings, setAllFeedSettings } = useSettingsContext();
+  const { feedSettings, getFeedSettingsItem, setAllFeedSettings } =
+    useSettingsContext();
   const hasExistingSubscriptions = Object.keys(feedSettings).length > 0;
 
   const {
@@ -35,7 +39,23 @@ export function SettingsPage() {
     onSuccess: async (successData) => {
       if (successData?.feedSettings) {
         if (!shouldMergeOpmlImport) {
-          await setAllFeedSettings(successData.feedSettings);
+          // The import adds only the shows that Podcast Index knows. A replace
+          // keeps the subscription of each other show that the file lists, for
+          // example an RSS-only show or a private show from an export.
+          const keptFeedSettings: FeedSettings = {};
+
+          successData.errors.forEach(({ feedUrl }) => {
+            const feedSettingsItem = getFeedSettingsItem({ feedUrl });
+
+            if (feedSettingsItem !== undefined) {
+              keptFeedSettings[feedUrl] = feedSettingsItem;
+            }
+          });
+
+          await setAllFeedSettings({
+            ...keptFeedSettings,
+            ...successData.feedSettings,
+          });
         } else {
           await setAllFeedSettings({
             ...feedSettings,
