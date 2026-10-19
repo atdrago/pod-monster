@@ -4,26 +4,26 @@ import { Artwork, type ArtworkComponentProps } from 'components/atoms/Artwork';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useEffect } from 'react';
 
-interface FeedArtworkProps extends ArtworkComponentProps {
-  feedId: number | string;
-  src: string;
-}
+import type { PodcastEpisode } from 'types/PodcastFeed';
+
+type FeedArtworkProps = ArtworkComponentProps & Pick<PodcastEpisode, 'feedUrl'>;
 
 /**
- * A component to be used for Feed artwork. Renders an Artwork component and
- * updates the feed settings with the image source if it has changed.
+ * Renders the artwork of a show. When the show is in the library, it also
+ * saves a changed image to the library record. A visit to a show that is not
+ * in the library writes nothing, so a private feed URL does not go to storage.
  */
-export const FeedArtwork = ({ feedId, ...props }: FeedArtworkProps) => {
-  const { feedSettings, setFeedSettingsItem } = useSettingsContext();
+export const FeedArtwork = ({ feedUrl, ...props }: FeedArtworkProps) => {
+  const { getFeedSettingsItem, setFeedSettingsItem } = useSettingsContext();
+  const { src } = props;
 
   useEffect(() => {
-    if (props.src !== feedSettings[feedId]?.image) {
-      setFeedSettingsItem(`${feedId}`, {
-        ...feedSettings[feedId],
-        image: props.src,
-      });
+    const existing = getFeedSettingsItem({ feedUrl });
+
+    if (src !== undefined && existing !== undefined && existing.image !== src) {
+      setFeedSettingsItem({ feedUrl }, { ...existing, image: src });
     }
-  }, [feedId, feedSettings, props.src, setFeedSettingsItem]);
+  }, [feedUrl, getFeedSettingsItem, setFeedSettingsItem, src]);
 
   return <Artwork {...props} />;
 };

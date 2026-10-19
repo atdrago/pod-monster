@@ -3,32 +3,35 @@
 import { Progress } from 'components/molecules/Progress';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
+import type { PodcastEpisode } from 'types/PodcastFeed';
 import { longDateTimeFormat, secondsToFormattedTime } from 'utils/date';
 
 interface EpisodeProgressProps {
-  episodeDatePublished: number;
-  episodeDuration?: number;
-  episodeId: number;
+  episode: Pick<
+    PodcastEpisode,
+    'datePublished' | 'duration' | 'feedUrl' | 'identity'
+  >;
 }
 
-export const EpisodeProgress = ({
-  episodeDatePublished,
-  episodeDuration,
-  episodeId,
-}: EpisodeProgressProps) => {
-  const { episodeId: mediaContextEpisodeId } = useMediaContext();
-  const { episodeSettings } = useSettingsContext();
-  const currentEpisodeSettings = episodeSettings[episodeId];
+export const EpisodeProgress = ({ episode }: EpisodeProgressProps) => {
+  const { episodeIdentity, feedUrl } = useMediaContext();
+  const { getEpisodeSettingsItem } = useSettingsContext();
+  const currentEpisodeSettings = getEpisodeSettingsItem({
+    episodeIdentity: episode.identity,
+    feedUrl: episode.feedUrl,
+  });
 
   const currentEpisodeDuration =
-    currentEpisodeSettings?.duration ?? episodeDuration ?? 0;
+    currentEpisodeSettings?.duration ?? episode.duration ?? 0;
   const currentEpisodeTime = currentEpisodeSettings?.currentTime ?? 0;
 
   return (
     <Progress
-      topLeftTitle={longDateTimeFormat.format(
-        new Date(episodeDatePublished * 1000),
-      )}
+      topLeftTitle={
+        episode.datePublished === undefined
+          ? undefined
+          : longDateTimeFormat.format(new Date(episode.datePublished * 1000))
+      }
       percent={
         currentEpisodeDuration > 0
           ? currentEpisodeTime / currentEpisodeDuration
@@ -47,7 +50,9 @@ export const EpisodeProgress = ({
             )
           : undefined
       }
-      isHighlighted={episodeId === mediaContextEpisodeId}
+      isHighlighted={
+        episode.identity === episodeIdentity && episode.feedUrl === feedUrl
+      }
     />
   );
 };

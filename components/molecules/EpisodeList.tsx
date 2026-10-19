@@ -1,6 +1,5 @@
 'use client';
 
-import { Episode } from '@atdrago/podcast-index';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -14,14 +13,27 @@ import { EpisodeProgress } from 'components/molecules/EpisodeProgress';
 import { EpisodeUnlistenedDot } from 'components/molecules/EpisodeUnlistenedDot';
 import ExplicitIcon from 'icons/explicit.svg';
 import { nonUnderlinedLink } from 'styles';
+import type { PodcastEpisode } from 'types/PodcastFeed';
 import { getEpisodePath } from 'utils/paths';
 
 interface EpisodeListProps {
-  episodes: Array<Episode>;
-  feedId: string | number;
+  episodes: Array<
+    Pick<
+      PodcastEpisode,
+      | 'datePublished'
+      | 'duration'
+      | 'episodeType'
+      | 'explicit'
+      | 'feedImage'
+      | 'feedUrl'
+      | 'identity'
+      | 'image'
+      | 'title'
+    >
+  >;
 }
 
-export const EpisodeList = ({ episodes, feedId }: EpisodeListProps) => {
+export const EpisodeList = ({ episodes }: EpisodeListProps) => {
   const [shouldIncludeTrailers, setShouldIncludeTrailers] = useState(false);
 
   const hasTrailers = episodes.some(
@@ -50,77 +62,60 @@ export const EpisodeList = ({ episodes, feedId }: EpisodeListProps) => {
           </Checkbox>
         ) : null}
       </Stack>
-      {filteredEpisodes.map(
-        ({
-          datePublished,
-          duration,
-          episodeType,
-          explicit,
-          feedImage,
-          id,
-          image,
-          title,
-        }) => {
-          return (
-            <Stack
-              align="center"
-              as={Link}
-              className={nonUnderlinedLink}
-              href={getEpisodePath({
-                episodeId: id,
-                feedId,
-              })}
-              key={id}
-              kind="flexRow"
-              space="xxsmall"
-            >
-              <EpisodeUnlistenedDot
-                episodeDatePublished={datePublished}
-                episodeId={id}
-                feedId={feedId}
+      {filteredEpisodes.map((episode) => {
+        return (
+          <Stack
+            align="center"
+            as={Link}
+            className={nonUnderlinedLink}
+            href={getEpisodePath({
+              episodeIdentity: episode.identity,
+              feedUrl: episode.feedUrl,
+            })}
+            key={episode.identity}
+            kind="flexRow"
+            space="xxsmall"
+          >
+            <EpisodeUnlistenedDot episode={episode} />
+            <Stack align="center" space="small" kind="flexRow">
+              <Artwork
+                alt=""
+                height={80}
+                shadow={true}
+                src={episode.image || episode.feedImage}
+                width={80}
               />
-              <Stack align="center" space="small" kind="flexRow">
-                <Artwork
-                  alt=""
-                  height={80}
-                  shadow={true}
-                  src={image || feedImage}
-                  width={80}
-                />
-                <Stack
-                  space="xsmall"
-                  style={{ overflowY: 'hidden', padding: '4px 0' }}
-                >
-                  <Stack kind="flexRow" space="xxsmall" align="center">
-                    {explicit > 0 ? (
-                      <Icon
-                        style={{ verticalAlign: 'middle' }}
-                        as={ExplicitIcon}
-                        size="smallMedium"
-                      />
-                    ) : null}{' '}
-                    {episodeType === 'trailer' ? <Badge>Trailer</Badge> : null}
-                    <Typography
-                      as="h3"
-                      className="font-bold"
-                      size="headingSmaller"
-                      shouldUseCapsize={false}
-                      whitespace="ellipsis"
-                    >
-                      {title}
-                    </Typography>
-                  </Stack>
-                  <EpisodeProgress
-                    episodeDatePublished={datePublished}
-                    episodeId={id}
-                    episodeDuration={duration}
-                  />
+              <Stack
+                space="xsmall"
+                style={{ overflowY: 'hidden', padding: '4px 0' }}
+              >
+                <Stack kind="flexRow" space="xxsmall" align="center">
+                  {episode.explicit ? (
+                    <Icon
+                      style={{ verticalAlign: 'middle' }}
+                      as={ExplicitIcon}
+                      size="smallMedium"
+                    />
+                  ) : null}{' '}
+                  {episode.episodeType === 'trailer' ? (
+                    <Badge>Trailer</Badge>
+                  ) : null}
+                  <Typography
+                    as="h3"
+                    className="font-bold"
+                    size="headingSmaller"
+                    shouldUseCapsize={false}
+                    whitespace="ellipsis"
+                  >
+                    {episode.title}
+                  </Typography>
                 </Stack>
+                <EpisodeProgress episode={episode} />
               </Stack>
             </Stack>
-          );
-        },
-      )}
+          </Stack>
+        );
+      })}
     </Stack>
   );
 };
