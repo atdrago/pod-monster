@@ -5,6 +5,7 @@ import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useMediaContext } from 'contexts/MediaContext';
+import { useSettingsContext } from 'contexts/SettingsContext';
 import { usePlayEpisodeAt } from 'hooks/usePlayEpisodeAt';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import ExplicitIcon from 'icons/explicit.svg';
@@ -55,6 +56,7 @@ export const EpisodePlayButton = ({
     setIsPaused,
     videoRef,
   } = useMediaContext();
+  const { isDoneHydratingFromIdb } = useSettingsContext();
   const playEpisodeAt = usePlayEpisodeAt({
     episode,
     episodeImageDimensions,
@@ -69,7 +71,7 @@ export const EpisodePlayButton = ({
     isThisEpisodeInThePlayer && !isThisEpisodePaused && isLoadingAtCurrentTime;
 
   const handlePlayPauseClick = async () => {
-    if (enclosureUrl === undefined) {
+    if (enclosureUrl === undefined || !isDoneHydratingFromIdb) {
       return;
     }
 
@@ -98,7 +100,7 @@ export const EpisodePlayButton = ({
       <Stack
         aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
         as="button"
-        disabled={enclosureUrl === undefined}
+        disabled={enclosureUrl === undefined || !isDoneHydratingFromIdb}
         kind="flexRow"
         space="small"
         align="center"

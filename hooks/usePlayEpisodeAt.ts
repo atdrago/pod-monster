@@ -28,6 +28,9 @@ interface UsePlayEpisodeAtOptions {
  *   `startTime`, it loads at its saved position.
  * - An episode that is in the player seeks to `startTime`. With no
  *   `startTime`, it plays on from where it is.
+ * - Before the hydration from IndexedDB ends, the function does nothing. The
+ *   saved position is not known yet, and the hydration replaces the player
+ *   state.
  *
  * The function reads the saved position when it runs, not when the page
  * mounts, because the hydration from IndexedDB can end after the mount.
@@ -60,7 +63,8 @@ export const usePlayEpisodeAt = ({
     src,
     videoRef,
   } = useMediaContext();
-  const { getEpisodeSettingsItem } = useSettingsContext();
+  const { getEpisodeSettingsItem, isDoneHydratingFromIdb } =
+    useSettingsContext();
 
   const isThisEpisodeInThePlayer =
     episodeIdentity === episode.identity && feedUrl === episode.feedUrl;
@@ -68,7 +72,7 @@ export const usePlayEpisodeAt = ({
   return async (startTime?: number) => {
     const { enclosureUrl } = episode;
 
-    if (enclosureUrl === undefined) {
+    if (enclosureUrl === undefined || !isDoneHydratingFromIdb) {
       return;
     }
 

@@ -138,6 +138,41 @@ describe('MediaContext', () => {
       expect(result.current.media.mediaPlayerCurrentTime).toBe(120);
     });
 
+    it('should keep an episode that the visitor chose before hydration ends', async () => {
+      const firstRender = await renderHydratedContexts();
+
+      act(() => {
+        firstRender.result.current.media.setFeedUrl(FEED_URL);
+        firstRender.result.current.media.setEpisodeIdentity('episode-1');
+        firstRender.result.current.media.setSrc(
+          'https://example.com/episode-1.mp3',
+        );
+      });
+      await waitForDebounce();
+      firstRender.unmount();
+
+      const { result } = renderHook(
+        () => ({ media: useMediaContext(), settings: useSettingsContext() }),
+        { wrapper: Providers },
+      );
+
+      expect(result.current.settings.isDoneHydratingFromIdb).toBe(false);
+
+      act(() => {
+        result.current.media.setFeedUrl(FEED_URL);
+        result.current.media.setEpisodeIdentity('episode-2');
+        result.current.media.setSrc('https://example.com/episode-2.mp3');
+      });
+      await waitFor(() =>
+        expect(result.current.settings.isDoneHydratingFromIdb).toBe(true),
+      );
+
+      expect(result.current.media.episodeIdentity).toBe('episode-2');
+      expect(result.current.media.src).toBe(
+        'https://example.com/episode-2.mp3',
+      );
+    });
+
     it('should hydrate no episode from a version 5 database with a player record', async () => {
       await createDatabaseWithVersion5PlayerRecord(5);
 

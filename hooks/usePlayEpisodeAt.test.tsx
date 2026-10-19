@@ -168,6 +168,24 @@ describe('usePlayEpisodeAt', () => {
     expect(result.current.media.isPaused).toBe(false);
   });
 
+  it('should do nothing when it runs before hydration ends', async () => {
+    await seedSettings({ currentTime: 2412 });
+
+    const { result } = renderPlayEpisodeAt();
+    const playEpisodeAtBeforeHydration = result.current.playEpisodeAt;
+
+    expect(result.current.settings.isDoneHydratingFromIdb).toBe(false);
+
+    await act(() => playEpisodeAtBeforeHydration(754));
+    await waitFor(() =>
+      expect(result.current.settings.isDoneHydratingFromIdb).toBe(true),
+    );
+
+    expect(result.current.media.episodeIdentity).toBeNull();
+    expect(result.current.media.src).toBeNull();
+    expect(result.current.media.isPaused).toBe(true);
+  });
+
   it('should start an episode with no saved position at 0', async () => {
     const { result } = await renderHydratedPlayEpisodeAt();
 

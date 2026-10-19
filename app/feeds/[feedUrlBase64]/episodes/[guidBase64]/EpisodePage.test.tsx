@@ -415,6 +415,22 @@ describe('EpisodePage', () => {
       ).toBeTruthy();
     });
 
+    it('should disable "Play from" and the play button until hydration ends', async () => {
+      const { result } = renderEpisodePageWithPlayer({ t: '754' });
+
+      expect(result.current.settings.isDoneHydratingFromIdb).toBe(false);
+      expect(screen.getByText('Play from 12:34')).toBeDisabled();
+      expect(screen.getByLabelText('Play podcast')).toBeDisabled();
+      expect(screen.getByText('Not Now')).toBeEnabled();
+
+      await waitFor(() =>
+        expect(result.current.settings.isDoneHydratingFromIdb).toBe(true),
+      );
+
+      expect(screen.getByText('Play from 12:34')).toBeEnabled();
+      expect(screen.getByLabelText('Play podcast')).toBeEnabled();
+    });
+
     it('should start the episode at the time of `t` on a click of "Play from" (AE3)', async () => {
       const { result } = await renderHydratedEpisodePageWithPlayer({
         t: '754',

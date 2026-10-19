@@ -8,6 +8,7 @@ import { secondsToShortClockTime } from 'utils/date';
 
 interface StartTimePromptProps {
   className?: string;
+  isPlayFromDisabled?: boolean;
   onNotNowClick: () => void;
   onPlayFromClick: (startTime: number) => void;
   /** In seconds. */
@@ -38,6 +39,7 @@ const useIsLiveLineFilled = () => {
 /** Asks to play an episode from the time of a share link, with the copy of the app. */
 export const StartTimePrompt = ({
   className,
+  isPlayFromDisabled = false,
   onNotNowClick,
   onPlayFromClick,
   startTime,
@@ -47,6 +49,10 @@ export const StartTimePrompt = ({
   const formattedStartTime = secondsToShortClockTime(startTime);
 
   const handlePlayFromClick = () => {
+    if (isPlayFromDisabled) {
+      return;
+    }
+
     onPlayFromClick(startTime);
   };
 
@@ -67,7 +73,7 @@ export const StartTimePrompt = ({
         {isLiveLineFilled ? `Start Listening at ${formattedStartTime}?` : null}
       </Typography>
       <Stack className="sm:flex-row" space="small">
-        <Button onClick={handlePlayFromClick}>
+        <Button disabled={isPlayFromDisabled} onClick={handlePlayFromClick}>
           {`Play from ${formattedStartTime}`}
         </Button>
         <Button onClick={onNotNowClick}>Not Now</Button>

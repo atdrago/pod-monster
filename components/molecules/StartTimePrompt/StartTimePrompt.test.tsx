@@ -5,13 +5,19 @@ import { StartTimePrompt } from './StartTimePrompt';
 /** Waits for the line, which gets its text after the mount. */
 async function renderStartTimePrompt({
   className,
+  isPlayFromDisabled,
   startTime = 754,
-}: { className?: string; startTime?: number } = {}) {
+}: {
+  className?: string;
+  isPlayFromDisabled?: boolean;
+  startTime?: number;
+} = {}) {
   const onNotNowClick = vi.fn();
   const onPlayFromClick = vi.fn();
   const rendered = render(
     <StartTimePrompt
       className={className}
+      isPlayFromDisabled={isPlayFromDisabled}
       startTime={startTime}
       onNotNowClick={onNotNowClick}
       onPlayFromClick={onPlayFromClick}
@@ -41,6 +47,24 @@ describe('StartTimePrompt', () => {
 
     expect(line).toHaveTextContent('Start Listening at 1:02:05?');
     expect(screen.getByText('Play from 1:02:05')).toBeVisible();
+  });
+
+  it('should enable "Play from" when isPlayFromDisabled is not given', async () => {
+    await renderStartTimePrompt();
+
+    expect(screen.getByText('Play from 12:34')).toBeEnabled();
+  });
+
+  it('should disable "Play from", and keep "Not Now" enabled, when isPlayFromDisabled is true', async () => {
+    const { onPlayFromClick } = await renderStartTimePrompt({
+      isPlayFromDisabled: true,
+    });
+
+    fireEvent.click(screen.getByText('Play from 12:34'));
+
+    expect(screen.getByText('Play from 12:34')).toBeDisabled();
+    expect(screen.getByText('Not Now')).toBeEnabled();
+    expect(onPlayFromClick).not.toHaveBeenCalled();
   });
 
   it('should apply a custom className to the root element', async () => {

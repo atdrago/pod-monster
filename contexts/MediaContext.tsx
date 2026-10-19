@@ -224,11 +224,12 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   /**
    * Hydrate the state one time, in the first render after the settings
    * hydrate. The saved position of the episode is the one source of its time.
+   * An episode that the visitor chose before this render stays in the player.
    */
   if (isDoneHydratingFromIdb && !isMediaStateHydrated) {
     setIsMediaStateHydrated(true);
 
-    if (hydratedMediaPlayerSettings !== undefined) {
+    if (hydratedMediaPlayerSettings !== undefined && src === null) {
       const hydratedCurrentTime =
         getEpisodeSettingsItem({
           episodeIdentity: hydratedMediaPlayerSettings.episodeIdentity,

@@ -109,7 +109,8 @@ export const EpisodePage = ({
   feed,
   startTimeParam,
 }: EpisodePageProps) => {
-  const { getEpisodeSettingsItem } = useSettingsContext();
+  const { getEpisodeSettingsItem, isDoneHydratingFromIdb } =
+    useSettingsContext();
   const episodeSettingsItem = getEpisodeSettingsItem({
     episodeIdentity: episode.identity,
     feedUrl: episode.feedUrl,
@@ -166,6 +167,10 @@ export const EpisodePage = ({
   };
 
   const handlePlayFromClick = async (startTime: number) => {
+    if (!isDoneHydratingFromIdb) {
+      return;
+    }
+
     answerStartTimePrompt();
     await playEpisodeAt(startTime);
   };
@@ -314,6 +319,7 @@ export const EpisodePage = ({
         />
         {startTimePromptTime === null ? null : (
           <StartTimePrompt
+            isPlayFromDisabled={!isDoneHydratingFromIdb}
             startTime={startTimePromptTime}
             onNotNowClick={answerStartTimePrompt}
             onPlayFromClick={handlePlayFromClick}
