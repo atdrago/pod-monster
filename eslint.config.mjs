@@ -40,7 +40,7 @@ const eslintConfig = [
             '**/*.test.ts',
             'app/sitemap.ts',
             'app/manifest.ts',
-            'app/**/{global-error,layout,not-found,page}.tsx',
+            'app/**/{error,global-error,layout,not-found,page}.tsx',
             'app/**/route.ts',
             'instrumentation.ts',
             'packages/podcast-index/{constants,index}.ts',

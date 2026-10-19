@@ -10,6 +10,18 @@ const withBundleAnalyzer = bundleAnalyzer({
 const withVanillaExtract = createVanillaExtractPlugin();
 
 const nextConfig = {
+  // A page sends its full URL as the `Referer` of each request, and a log
+  // drain records that header. The path of a `/feeds/` page can hold the token
+  // of a private feed. A client navigation keeps the policy of the first
+  // document, so the rule covers every path.
+  async headers() {
+    return [
+      {
+        headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }],
+        source: '/:path*',
+      },
+    ];
+  },
   images: {
     minimumCacheTTL: 31536000,
   },

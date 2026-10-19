@@ -239,6 +239,38 @@ describe('loadFeed', () => {
       );
     });
 
+    it('should keep only the first Podcast Index episode of each identity', async () => {
+      stubPodcastIndex({
+        episodesByFeedId: async () =>
+          Response.json({
+            count: 3,
+            items: [
+              {
+                ...createPodcastIndexEpisodeJson('episode-1'),
+                title: 'First copy',
+              },
+              createPodcastIndexEpisodeJson('episode-2'),
+              {
+                ...createPodcastIndexEpisodeJson(' episode-1 '),
+                title: 'Second copy',
+              },
+            ],
+            status: 'true',
+          }),
+        podcastsByFeedUrl: createPodcastIndexFeedAnswer(),
+      });
+
+      const result = await loadShow(encodeBase64Url(FEED_URL));
+
+      expect(
+        result.kind === 'found' &&
+          result.episodes.map(({ identity, title }) => ({ identity, title })),
+      ).toEqual([
+        { identity: 'episode-1', title: 'First copy' },
+        { identity: 'episode-2', title: 'Podcast Index episode-2' },
+      ]);
+    });
+
     it('should read the RSS feed when Podcast Index answers with an empty feed (AE1)', async () => {
       stubPodcastIndex({ podcastsByFeedUrl: PODCAST_INDEX_FEED_MISS });
       stubRssFeed([{ guid: 'episode-1' }]);

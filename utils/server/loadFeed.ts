@@ -273,9 +273,21 @@ async function fetchPodcastIndexEpisodes(
       return undefined;
     }
 
-    const episodes = response.items.flatMap(
-      (item) => mapPodcastIndexEpisode(item, feed) ?? [],
-    );
+    const seenIdentities = new Set<string>();
+    // The first episode of each identity wins, the same as in the RSS parser.
+    // Two episodes with one identity have one path, and they give duplicate
+    // React keys in the episode list.
+    const episodes = response.items.flatMap((item) => {
+      const episode = mapPodcastIndexEpisode(item, feed);
+
+      if (episode === undefined || seenIdentities.has(episode.identity)) {
+        return [];
+      }
+
+      seenIdentities.add(episode.identity);
+
+      return [episode];
+    });
 
     return episodes.length > 0 ? episodes : undefined;
   } catch (error) {
