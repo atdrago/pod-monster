@@ -42,7 +42,7 @@ function deleteDatabase() {
 
 async function renderEpisodePlayButton(
   episode: PodcastEpisode,
-  episodeCurrentTime = 0,
+  { onPlay, startTime }: { onPlay?: () => void; startTime?: number } = {},
 ) {
   const rendered = renderHook(
     () => ({ media: useMediaContext(), settings: useSettingsContext() }),
@@ -55,7 +55,8 @@ async function renderEpisodePlayButton(
               <EpisodePlayButton
                 currentChapter={null}
                 episode={episode}
-                episodeCurrentTime={episodeCurrentTime}
+                startTime={startTime}
+                onPlay={onPlay}
               />
             </MediaProvider>
           </SettingsProvider>
@@ -77,7 +78,9 @@ describe('EpisodePlayButton', () => {
   });
 
   it('should put the feed URL and the identity of the episode in the player', async () => {
-    const { result } = await renderEpisodePlayButton(EPISODE, 42);
+    const { result } = await renderEpisodePlayButton(EPISODE, {
+      startTime: 42,
+    });
 
     fireEvent.click(screen.getByLabelText('Play podcast'));
 
@@ -122,6 +125,44 @@ describe('EpisodePlayButton', () => {
 
     expect(result.current.media.episodeIdentity).toBeNull();
     expect(result.current.media.src).toBeNull();
+  });
+
+  it('should start an episode with no start time from its saved position', async () => {
+    const seeded = await renderEpisodePlayButton(EPISODE);
+
+    await act(() =>
+      seeded.result.current.settings.setEpisodeSettingsItem(
+        { episodeIdentity: EPISODE.identity, feedUrl: EPISODE.feedUrl },
+        { currentTime: 2412, duration: 3600 },
+      ),
+    );
+
+    fireEvent.click(screen.getByLabelText('Play podcast'));
+
+    await waitFor(() =>
+      expect(seeded.result.current.media.episodeIdentity).toBe('episode-1'),
+    );
+    expect(seeded.result.current.media.currentTime).toBe(2412);
+  });
+
+  it('should call `onPlay` when a click starts the episode, and not when a click pauses it', async () => {
+    const onPlay = vi.fn();
+
+    await renderEpisodePlayButton(EPISODE, { onPlay });
+
+    fireEvent.click(screen.getByLabelText('Play podcast'));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Pause podcast')).toBeVisible(),
+    );
+    expect(onPlay).toHaveBeenCalledOnce();
+
+    fireEvent.click(screen.getByLabelText('Pause podcast'));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Play podcast')).toBeVisible(),
+    );
+    expect(onPlay).toHaveBeenCalledOnce();
   });
 
   it('should show the explicit icon only for an explicit episode', async () => {

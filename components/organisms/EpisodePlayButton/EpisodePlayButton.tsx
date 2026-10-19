@@ -5,6 +5,7 @@ import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useMediaContext } from 'contexts/MediaContext';
+import { usePlayEpisodeAt } from 'hooks/usePlayEpisodeAt';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import ExplicitIcon from 'icons/explicit.svg';
 import type { Chapter, ImageDimensions } from 'types';
@@ -25,42 +26,40 @@ interface EpisodePlayButtonProps {
     | 'image'
     | 'title'
   >;
-  episodeCurrentTime: number;
   episodeImageDimensions?: ImageDimensions;
   isVideo?: boolean;
+  /** Runs when a click starts this episode, and not when a click pauses it. */
+  onPlay?: () => void;
+  /**
+   * The time that the visitor picked on the page, for example a chapter, for
+   * an episode that is not in the player. With no time, the episode starts
+   * from its saved position.
+   */
+  startTime?: number;
 }
 
 export const EpisodePlayButton = ({
   currentChapter,
   episode,
-  episodeCurrentTime,
   episodeImageDimensions,
   isVideo,
+  onPlay,
+  startTime,
 }: EpisodePlayButtonProps) => {
   const {
     audioRef,
-    didError,
     episodeIdentity,
     feedUrl,
     isLoadingAtCurrentTime,
     isPaused,
-    setChaptersUrl,
-    setCurrentTime,
-    setDidError,
-    setEpisodeIdentity,
-    setEpisodeImage,
-    setEpisodeImageDimensions,
-    setEpisodeTitle,
-    setFeedImage,
-    setFeedTitle,
-    setFeedUrl,
     setIsPaused,
-    setSize,
-    setSrc,
-    setSrcType,
-    src,
     videoRef,
   } = useMediaContext();
+  const playEpisodeAt = usePlayEpisodeAt({
+    episode,
+    episodeImageDimensions,
+    isVideo,
+  });
 
   const { enclosureUrl } = episode;
   const isThisEpisodeInThePlayer =
@@ -74,52 +73,18 @@ export const EpisodePlayButton = ({
       return;
     }
 
-    const nextIsPaused = !isThisEpisodePaused;
+    if (isThisEpisodePaused) {
+      onPlay?.();
+      // An episode in the player plays on from where it is. The time of the
+      // page applies only when the episode loads.
+      await playEpisodeAt(isThisEpisodeInThePlayer ? undefined : startTime);
 
-    // Two episodes can share an enclosure URL, so a match of `src` alone does
-    // not show that this episode is in the player.
-    if (!nextIsPaused && (!isThisEpisodeInThePlayer || enclosureUrl !== src)) {
-      setChaptersUrl(episode.chaptersUrl ?? null);
-      setCurrentTime(episodeCurrentTime);
-      setEpisodeIdentity(episode.identity);
-      setEpisodeImage(episode.image ?? null);
-      setEpisodeImageDimensions(episodeImageDimensions ?? null);
-      setEpisodeTitle(episode.title);
-      setFeedImage(episode.feedImage ?? null);
-      setFeedTitle(episode.feedTitle);
-      setFeedUrl(episode.feedUrl);
-      setSrc(enclosureUrl);
-      setSrcType(episode.enclosureType ?? null);
-      setSize(isVideo ? 2 : 1);
+      return;
     }
 
-    setIsPaused(nextIsPaused);
-
-    if (audioRef.current) {
-      if (nextIsPaused) {
-        audioRef.current.pause();
-      } else {
-        if (didError) {
-          setDidError(false);
-          audioRef.current.load();
-        }
-
-        await audioRef.current.play();
-      }
-    }
-
-    if (videoRef.current) {
-      if (nextIsPaused) {
-        videoRef.current.pause();
-      } else {
-        if (didError) {
-          setDidError(false);
-          videoRef.current.load();
-        }
-
-        await videoRef.current.play();
-      }
-    }
+    setIsPaused(true);
+    audioRef.current?.pause();
+    videoRef.current?.pause();
   };
 
   return (

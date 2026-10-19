@@ -19,11 +19,13 @@ import { Stack } from 'components/layouts/Stack';
 import { Funding } from 'components/molecules/Funding';
 import { Header } from 'components/molecules/Header';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
+import { StartTimePrompt } from 'components/molecules/StartTimePrompt';
 import { TimedList, type TimedListItem } from 'components/molecules/TimedList';
 import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useChapterIndex } from 'hooks/useChapterIndex';
+import { usePlayEpisodeAt } from 'hooks/usePlayEpisodeAt';
 import ExternalLinkIcon from 'icons/arrow-up-right2.svg';
 import TvIcon from 'icons/tv.svg';
 import VideoCameraIcon from 'icons/video-camera.svg';
@@ -35,8 +37,10 @@ import {
 } from 'rest/fetchPodcastEpisodeTranscript';
 import type { Chapter, ImageDimensions } from 'types';
 import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
+import { checkShareTime } from 'utils/checkShareTime';
 import { longDateTimeFormat } from 'utils/date';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
+import { parseTimecode } from 'utils/parseTimecode';
 import { toTitleCase } from 'utils/toTitleCase';
 
 interface EpisodePageProps {
@@ -44,7 +48,6 @@ interface EpisodePageProps {
   episodeImageDimensions?: ImageDimensions;
   feed: PodcastFeed;
   /** The raw `t` value of the URL, when the URL has one. */
-  // TODO: Ask to play from `t` when `t` is valid for the episode.
   t?: string;
 }
 
@@ -82,19 +85,37 @@ const toDisplayPersons = (persons: PodcastEpisode['persons'] = []) =>
       return personA.role === 'Host' ? -1 : 1;
     });
 
+/**
+ * `router.replace` runs the server loader of the page again. A history replace
+ * changes only the URL, and Next.js syncs its router with it.
+ */
+const removeStartTimeFromUrl = () => {
+  const url = new URL(window.location.href);
+
+  if (!url.searchParams.has('t')) {
+    return;
+  }
+
+  url.searchParams.delete('t');
+  window.history.replaceState(null, '', url);
+};
+
 export const EpisodePage = ({
   episode,
   episodeImageDimensions,
   feed,
+  t,
 }: EpisodePageProps) => {
   const { getEpisodeSettingsItem } = useSettingsContext();
   const episodeSettingsItem = getEpisodeSettingsItem({
     episodeIdentity: episode.identity,
     feedUrl: episode.feedUrl,
   });
-  const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
-    episodeSettingsItem?.currentTime ?? 0,
-  );
+  // The time of a chapter or a transcript line that the visitor picked while
+  // the episode is not in the player.
+  const [pickedStartTime, setPickedStartTime] = useState<number>();
+  const episodeCurrentTime =
+    pickedStartTime ?? episodeSettingsItem?.currentTime ?? 0;
   const episodeDuration =
     episode.duration || episodeSettingsItem?.duration || 0;
   const {
@@ -109,6 +130,48 @@ export const EpisodePage = ({
   const isVideo = episode.enclosureType?.includes('video') ?? false;
   const isThisEpisodeInThePlayer =
     episodeIdentity === episode.identity && feedUrl === episode.feedUrl;
+  const playEpisodeAt = usePlayEpisodeAt({
+    episode,
+    episodeImageDimensions,
+    isVideo,
+  });
+
+  // The key resets the prompt when a client navigation brings a new episode or
+  // a new `t`.
+  const startTimePromptKey = JSON.stringify([
+    episode.feedUrl,
+    episode.identity,
+    t ?? null,
+  ]);
+  const [answeredStartTimePromptKey, setAnsweredStartTimePromptKey] = useState<
+    string | null
+  >(null);
+  const startTimeCheck = checkShareTime(
+    t === undefined ? null : parseTimecode(t),
+    episodeDuration,
+  );
+  const startTimePromptTime =
+    startTimeCheck.isValid &&
+    episode.enclosureUrl !== undefined &&
+    answeredStartTimePromptKey !== startTimePromptKey
+      ? startTimeCheck.seconds
+      : null;
+
+  const answerStartTimePrompt = () => {
+    setAnsweredStartTimePromptKey(startTimePromptKey);
+    removeStartTimeFromUrl();
+  };
+
+  const handlePlayFromClick = async (startTime: number) => {
+    answerStartTimePrompt();
+    await playEpisodeAt(startTime);
+  };
+
+  const handlePlay = () => {
+    if (startTimePromptTime !== null) {
+      answerStartTimePrompt();
+    }
+  };
 
   // Derive the current time based on whether this episode is in the player
   // If it's in the player, use the debounced media player time; otherwise use local state
@@ -220,7 +283,7 @@ export const EpisodePage = ({
       if (isThisEpisodeInThePlayer) {
         setCurrentTime(item.from);
       } else {
-        setEpisodeCurrentTime(item.from);
+        setPickedStartTime(item.from);
       }
     }
   };
@@ -246,12 +309,20 @@ export const EpisodePage = ({
           subtitle={currentTranscriptItemText}
           width={episodeImageDimensions?.width}
         />
+        {startTimePromptTime === null ? null : (
+          <StartTimePrompt
+            startTime={startTimePromptTime}
+            onNotNowClick={answerStartTimePrompt}
+            onPlayFromClick={handlePlayFromClick}
+          />
+        )}
         <EpisodePlayButton
           currentChapter={currentChapter}
           episode={episode}
-          episodeCurrentTime={episodeCurrentTime}
           episodeImageDimensions={episodeImageDimensions}
           isVideo={isVideo}
+          startTime={pickedStartTime}
+          onPlay={handlePlay}
         />
         <Stack space="medium">
           {episode.seasonNumber || episode.episodeNumber ? (
