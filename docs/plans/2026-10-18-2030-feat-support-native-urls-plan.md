@@ -221,7 +221,7 @@ Product Contract preservation: restructured, no scope change. The Outstanding Qu
 
   Governs R5, R6, R13.
 
-- KTD2. **Any Podcast Index answer other than a clear hit falls back to the RSS feed.** A miss is a non-2xx status, a network error, a timeout, `status` other than `"true"`, a `feed` that is empty or an array, or no `episode` with a guid. A 400 or 401 status also logs a configuration error. Each Podcast Index call has a 5-second deadline, because `request()` has none today and a hung call blocks the fallback. The page then works when Podcast Index is down or late. Governs R5, R6.
+- KTD2. **Any Podcast Index answer other than a clear hit falls back to the RSS feed.** A miss is a non-2xx status, a network error, a timeout, `status` other than `"true"`, a `feed` that is empty or an array, an empty episode list for a known show, or no `episode` with a guid. A 400 or 401 status also logs a configuration error. Each Podcast Index call has a 5-second deadline, because `request()` has none today and a hung call blocks the fallback. The page then works when Podcast Index is down or late. Governs R5, R6.
 - KTD3. **The server reads a feed through a port of the native SSRF guard, on `undici`.** The visitor controls the URL, and global `fetch` cannot pin DNS. `undici` is the Node.js HTTP client under global `fetch`, and the native guard uses it. With the same transport, the native tests port with little change. The port keeps these parts:
   1. A DNS check of each address with a `node:dns` `Resolver` that has its own deadline, not `dns.lookup`. The native code records a crawler hang of 4 days 21 hours with `dns.lookup`.
   2. A new `undici` `Agent` for each hop, with its `connect.lookup` pinned to the checked addresses.
