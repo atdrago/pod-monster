@@ -1,42 +1,132 @@
+import { captureMessage } from '@sentry/nextjs';
 import { NextRequest, NextResponse } from 'next/server';
-import type { Chapter, PodcastIndexChapterResponse } from 'types';
-import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+import type { Chapter } from 'types';
+import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
+import { safeFetchFeedResource } from 'utils/server/safeFetchFeed';
+
+type GuardFailureReason = Extract<
+  Awaited<ReturnType<typeof safeFetchFeedResource>>,
+  { kind: 'error' }
+>['reason'];
+
+type ChaptersErrorCode = GuardFailureReason | 'invalid_body' | 'missing_url';
+
+interface ChaptersErrorResponse {
+  error: { code: ChaptersErrorCode };
+}
+
+const GUARD_FAILURE_STATUSES: Record<GuardFailureReason, number> = {
+  blocked: 400,
+  http_status: 502,
+  network: 502,
+  timeout: 504,
+  too_large: 502,
+};
+const PUBLIC_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=3600';
+const PRIVATE_CACHE_CONTROL = 'private, no-store';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention -- Next.js routes a request by the name of the HTTP method.
 export async function GET(
   request: NextRequest,
-): Promise<NextResponse<Array<Chapter> | { error: unknown }>> {
-  const url = request.nextUrl.searchParams.get('url');
+): Promise<NextResponse<Array<Chapter> | ChaptersErrorResponse>> {
+  const chaptersUrl = request.nextUrl.searchParams.get('url');
 
-  if (!url) {
-    return NextResponse.json({ error: '`url` is required' }, { status: 400 });
+  if (!chaptersUrl) {
+    return createErrorResponse('missing_url', 400);
   }
+
+  // The request URL holds the chapters URL, and a private chapters URL can
+  // hold a member token. Thus, no shared cache keeps such an answer.
+  const isPrivateTarget = isPrivateFeedUrl(chaptersUrl);
+  const errorHeaders = isPrivateTarget
+    ? { 'Cache-Control': PRIVATE_CACHE_CONTROL }
+    : undefined;
+  const result = await safeFetchFeedResource(chaptersUrl);
+
+  if (result.kind === 'error') {
+    return createErrorResponse(
+      result.reason,
+      GUARD_FAILURE_STATUSES[result.reason],
+      errorHeaders,
+    );
+  }
+
+  const chapters = parseChapters(result.body);
+
+  if (chapters === null) {
+    return createErrorResponse('invalid_body', 502, errorHeaders);
+  }
+
+  return NextResponse.json(chapters, {
+    headers: {
+      'Cache-Control': isPrivateTarget
+        ? PRIVATE_CACHE_CONTROL
+        : PUBLIC_CACHE_CONTROL,
+    },
+    status: 200,
+  });
+}
+
+function createErrorResponse(
+  code: ChaptersErrorCode,
+  status: number,
+  headers?: Record<string, string>,
+): NextResponse<ChaptersErrorResponse> {
+  return NextResponse.json({ error: { code } }, { headers, status });
+}
+
+/**
+ * Returns the chapters that have a start time, sorted by it, or `null` for a
+ * body that is not a chapters document. The logs never hold the body text,
+ * because the parse error of `JSON.parse` quotes the body.
+ */
+function parseChapters(body: string): Array<Chapter> | null {
+  let chaptersDocument: unknown;
 
   try {
-    const chaptersResponse = await fetch(url, {
-      method: 'GET',
+    chaptersDocument = JSON.parse(body);
+  } catch {
+    captureMessage('chapters_proxy_invalid_body', {
+      extra: { reason: 'invalid_json' },
+      level: 'warning',
     });
 
-    if (!chaptersResponse.ok) {
-      throw new Error(`Failed to get chapters: ${chaptersResponse.statusText}`);
-    }
-
-    const { chapters }: PodcastIndexChapterResponse =
-      await chaptersResponse.json();
-
-    const chaptersSorted = chapters
-      .filter((chapter): chapter is Chapter =>
-        notNullOrUndefined(chapter.startTime),
-      )
-      .sort((chapterA, chapterB) => chapterA.startTime - chapterB.startTime);
-
-    return NextResponse.json(chaptersSorted, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=3600',
-      },
-      status: 200,
-    });
-  } catch (err) {
-    return NextResponse.json({ error: err }, { status: 500 });
+    return null;
   }
+
+  if (
+    !isRecord(chaptersDocument) ||
+    !Array.isArray(chaptersDocument.chapters)
+  ) {
+    captureMessage('chapters_proxy_invalid_body', {
+      extra: { reason: 'invalid_shape' },
+      level: 'warning',
+    });
+
+    return null;
+  }
+
+  return chaptersDocument.chapters
+    .filter(isChapter)
+    .sort((chapterA, chapterB) => chapterA.startTime - chapterB.startTime);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isOptionalOfType(value: unknown, type: 'boolean' | 'string'): boolean {
+  return value === undefined || value === null || typeof value === type;
+}
+
+function isChapter(value: unknown): value is Chapter {
+  return (
+    isRecord(value) &&
+    typeof value.startTime === 'number' &&
+    isOptionalOfType(value.img, 'string') &&
+    isOptionalOfType(value.title, 'string') &&
+    isOptionalOfType(value.toc, 'boolean') &&
+    isOptionalOfType(value.url, 'string')
+  );
 }

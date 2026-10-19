@@ -1,122 +1,153 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parse } from '@plussub/srt-vtt-parser';
+import { captureMessage } from '@sentry/nextjs';
 
 import {
   supportedTranscriptTypes,
   type TranscriptDocument,
   type TranscriptItem,
 } from 'rest/fetchPodcastEpisodeTranscript';
-import {
-  createApiErrorResponse,
-  type ApiErrorResponse,
-} from 'utils/createApiErrorResponse';
+import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
+import { safeFetchFeedResource } from 'utils/server/safeFetchFeed';
 import { tryConvertTextOrHtmlToVtt } from 'utils/tryConvertTextOrHtmlToVtt';
-import { ReactElement } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+type GuardFailureReason = Extract<
+  Awaited<ReturnType<typeof safeFetchFeedResource>>,
+  { kind: 'error' }
+>['reason'];
+
+type TranscriptErrorCode =
+  | GuardFailureReason
+  | 'invalid_body'
+  | 'missing_type'
+  | 'missing_url'
+  | 'unsupported_type';
+
+interface TranscriptErrorResponse {
+  error: { code: TranscriptErrorCode };
+}
+
+const GUARD_FAILURE_STATUSES: Record<GuardFailureReason, number> = {
+  blocked: 400,
+  http_status: 502,
+  network: 502,
+  timeout: 504,
+  too_large: 502,
+};
+const PUBLIC_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=3600';
+const PRIVATE_CACHE_CONTROL = 'private, no-store';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention -- Next.js routes a request by the name of the HTTP method.
 export async function GET(
   request: NextRequest,
-): Promise<
-  NextResponse<TranscriptDocument | ApiErrorResponse | ReactElement<any, any>>
-> {
-  const url = request.nextUrl.searchParams.get('url');
-  let type = request.nextUrl.searchParams.get('type');
+): Promise<NextResponse<TranscriptDocument | TranscriptErrorResponse>> {
+  const transcriptUrl = request.nextUrl.searchParams.get('url');
+  const type = request.nextUrl.searchParams.get('type');
   const durationString = request.nextUrl.searchParams.get('duration');
   const duration = durationString ? parseFloat(durationString) : null;
 
-  if (!url) {
-    return NextResponse.json(createApiErrorResponse('`url` is required'), {
-      status: 400,
-    });
+  if (!transcriptUrl) {
+    return createErrorResponse('missing_url', 400);
   }
 
   if (!type) {
-    return NextResponse.json(createApiErrorResponse('`type` is required'), {
-      status: 400,
-    });
+    return createErrorResponse('missing_type', 400);
   }
 
   if (!supportedTranscriptTypes.includes(type)) {
-    return NextResponse.json(
-      createApiErrorResponse(`The transcript type "${type}" is not supported.`),
-      { status: 501 },
+    return createErrorResponse('unsupported_type', 501);
+  }
+
+  // The request URL holds the transcript URL, and a private transcript URL
+  // can hold a member token. Thus, no shared cache keeps such an answer.
+  const isPrivateTarget = isPrivateFeedUrl(transcriptUrl);
+  const errorHeaders = isPrivateTarget
+    ? { 'Cache-Control': PRIVATE_CACHE_CONTROL }
+    : undefined;
+  const result = await safeFetchFeedResource(transcriptUrl);
+
+  if (result.kind === 'error') {
+    return createErrorResponse(
+      result.reason,
+      GUARD_FAILURE_STATUSES[result.reason],
+      errorHeaders,
     );
   }
 
+  let transcript: TranscriptDocument | null;
+
   try {
-    const transcriptResponse = await fetch(url, {
-      method: 'GET',
+    transcript = await toTranscriptDocument(result.body, type, duration);
+  } catch {
+    // The parse error quotes the transcript text, so the log holds the type
+    // only.
+    captureMessage('transcript_proxy_parse_failed', {
+      extra: { type },
+      level: 'warning',
     });
 
-    if (!transcriptResponse.ok) {
-      throw new Error(
-        `Failed to fetch transcript: ${transcriptResponse.statusText}`,
+    return createErrorResponse('invalid_body', 502, errorHeaders);
+  }
+
+  if (transcript === null) {
+    return createErrorResponse('unsupported_type', 501, errorHeaders);
+  }
+
+  return NextResponse.json(transcript, {
+    headers: {
+      'Cache-Control': isPrivateTarget
+        ? PRIVATE_CACHE_CONTROL
+        : PUBLIC_CACHE_CONTROL,
+    },
+    status: 200,
+  });
+}
+
+function createErrorResponse(
+  code: TranscriptErrorCode,
+  status: number,
+  headers?: Record<string, string>,
+): NextResponse<TranscriptErrorResponse> {
+  return NextResponse.json({ error: { code } }, { headers, status });
+}
+
+async function toTranscriptDocument(
+  body: string,
+  requestedType: string,
+  duration: number | null,
+): Promise<TranscriptDocument | null> {
+  let type = requestedType;
+  let text = body;
+
+  if (type === 'text/html') {
+    const vtt = await tryConvertTextOrHtmlToVtt(text, duration);
+
+    if (vtt) {
+      type = 'text/vtt';
+      text = vtt;
+    }
+  }
+
+  switch (type) {
+    case 'application/srt':
+    case 'text/vtt': {
+      const entries = parse(text).entries.map(
+        ({ from, id, text: entryText, to }): TranscriptItem => ({
+          // Convert from ms to seconds
+          from: from / 1000,
+          id,
+          text: entryText,
+          to: to / 1000,
+        }),
       );
+
+      return { content: entries, type };
     }
-
-    let transcriptResponseText = await transcriptResponse.text();
-
-    if (type === 'text/html') {
-      const vtt = await tryConvertTextOrHtmlToVtt(
-        transcriptResponseText,
-        duration,
-      );
-
-      if (vtt) {
-        type = 'text/vtt';
-        transcriptResponseText = vtt;
-      }
+    case 'text/html': {
+      return { content: text, type };
     }
-
-    switch (type) {
-      case 'application/srt':
-      case 'text/vtt': {
-        const entries = parse(transcriptResponseText).entries.map(
-          ({ from, id, text, to }): TranscriptItem => ({
-            // Convert from ms to seconds
-            from: from / 1000,
-            id,
-            text,
-            to: to / 1000,
-          }),
-        );
-
-        return NextResponse.json(
-          { content: entries, type },
-          {
-            headers: {
-              'Cache-Control':
-                'public, s-maxage=60, stale-while-revalidate=3600',
-            },
-            status: 200,
-          },
-        );
-      }
-      case 'text/html': {
-        return NextResponse.json(
-          {
-            content: transcriptResponseText,
-            type,
-          },
-          {
-            headers: {
-              'Cache-Control':
-                'public, s-maxage=60, stale-while-revalidate=3600',
-            },
-            status: 200,
-          },
-        );
-      }
-      default: {
-        return NextResponse.json(
-          createApiErrorResponse(
-            `The transcript type "${type}" is not supported.`,
-          ),
-          { status: 501 },
-        );
-      }
+    default: {
+      return null;
     }
-  } catch (err) {
-    return NextResponse.json(createApiErrorResponse(err), { status: 500 });
   }
 }
