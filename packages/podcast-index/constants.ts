@@ -7,6 +7,7 @@ export const PATH_EPISODES_BY_FEED_ID = 'episodes/byfeedid';
 export const PATH_EPISODES_BY_FEED_URL = 'episodes/byfeedurl';
 export const PATH_EPISODES_BY_ITUNES_ID = 'episodes/byitunesid';
 export const PATH_EPISODES_BY_ID = 'episodes/byid';
+export const PATH_EPISODES_BY_GUID = 'episodes/byguid';
 export const PATH_EPISODES_RANDOM = 'episodes/random';
 export const PATH_PODCASTS_BY_FEED_URL = 'podcasts/byfeedurl';
 export const PATH_PODCASTS_BY_FEED_ID = 'podcasts/byfeedid';
