@@ -8,6 +8,7 @@ import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
 import { nonUnderlinedLink } from 'styles';
+import { getEpisodeIdentity } from 'utils/getEpisodeIdentity';
 import { getPodcastPath } from 'utils/paths';
 
 import { subscriptionItemClassName } from './subscriptionItem.css';
@@ -24,14 +25,6 @@ interface SubscriptionItemProps {
   image?: string;
   title: string;
 }
-
-/**
- * The same identity rule as the feed mappers: the trimmed guid, else the
- * trimmed enclosure URL.
- */
-const getEpisodeIdentity = ({ enclosureUrl, guid }: SubscriptionEpisode) =>
-  (typeof guid === 'string' ? guid.trim() : '') ||
-  (typeof enclosureUrl === 'string' ? enclosureUrl.trim() : '');
 
 export const SubscriptionItem = ({
   className,
@@ -53,10 +46,13 @@ export const SubscriptionItem = ({
   // user has not listened to that were published after the user subscribed and
   // within the last 30 days.
   const hasUnlistenedEpisodes = !!feedEpisodesData?.find((episode) => {
-    const episodeIdentity = getEpisodeIdentity(episode);
+    const episodeIdentity = getEpisodeIdentity(
+      episode.guid,
+      episode.enclosureUrl,
+    );
 
     return (
-      episodeIdentity !== '' &&
+      episodeIdentity !== undefined &&
       getEpisodeSettingsItem({ episodeIdentity, feedUrl }) === undefined &&
       new Date(episode.datePublished * 1000) >
         new Date(subscribedAt ?? Infinity)

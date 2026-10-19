@@ -3,28 +3,26 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import type { Chapter } from 'types';
 import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
-import { safeFetchFeedResource } from 'utils/server/safeFetchFeed';
+import { isRecord } from 'utils/server/podcastIndex';
+import {
+  safeFetchFeedResource,
+  type SafeFetchFailureReason,
+} from 'utils/server/safeFetchFeed';
 
-type GuardFailureReason = Extract<
-  Awaited<ReturnType<typeof safeFetchFeedResource>>,
-  { kind: 'error' }
->['reason'];
+import {
+  GUARD_FAILURE_STATUSES,
+  PRIVATE_CACHE_CONTROL,
+  PUBLIC_CACHE_CONTROL,
+} from '../proxyResponse';
 
-type ChaptersErrorCode = GuardFailureReason | 'invalid_body' | 'missing_url';
+type ChaptersErrorCode =
+  | SafeFetchFailureReason
+  | 'invalid_body'
+  | 'missing_url';
 
 interface ChaptersErrorResponse {
   error: { code: ChaptersErrorCode };
 }
-
-const GUARD_FAILURE_STATUSES: Record<GuardFailureReason, number> = {
-  blocked: 400,
-  http_status: 502,
-  network: 502,
-  timeout: 504,
-  too_large: 502,
-};
-const PUBLIC_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=3600';
-const PRIVATE_CACHE_CONTROL = 'private, no-store';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention -- Next.js routes a request by the name of the HTTP method.
 export async function GET(
@@ -110,10 +108,6 @@ function parseChapters(body: string): Array<Chapter> | null {
   return chaptersDocument.chapters
     .filter(isChapter)
     .sort((chapterA, chapterB) => chapterA.startTime - chapterB.startTime);
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function isOptionalOfType(value: unknown, type: 'boolean' | 'string'): boolean {

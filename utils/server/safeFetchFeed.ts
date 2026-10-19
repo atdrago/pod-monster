@@ -8,7 +8,7 @@ import { Agent, fetch as undiciFetch } from 'undici';
 
 import { raceAgainstDeadline } from 'utils/server/raceAgainstDeadline';
 
-type SafeFetchFailureReason =
+export type SafeFetchFailureReason =
   | 'blocked'
   | 'http_status'
   | 'network'
@@ -25,7 +25,7 @@ type SafeFetchEvent =
   | 'safe_fetch_timeout'
   | 'safe_fetch_too_large';
 
-interface SafeFetchFailure {
+export interface SafeFetchFailure {
   kind: 'error';
   reason: SafeFetchFailureReason;
   status?: number;

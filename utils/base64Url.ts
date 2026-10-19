@@ -1,3 +1,5 @@
+import { toHttpUrl } from 'utils/toHttpUrl';
+
 // TODO: Use `Uint8Array.fromBase64` and `Uint8Array.prototype.toBase64` with the `base64url`
 // alphabet when every supported version of Node.js and Safari has them.
 
@@ -68,18 +70,11 @@ export function decodeBase64UrlSegment(segment: string): string | null {
 export function decodeFeedUrlSegment(segment: string): string | null {
   const feedUrl = decodeBase64UrlSegment(segment);
 
-  if (
-    feedUrl === null ||
-    feedUrl === '' ||
-    feedUrl.length > MAX_FEED_URL_LENGTH ||
-    !URL.canParse(feedUrl)
-  ) {
+  if (feedUrl === null || feedUrl.length > MAX_FEED_URL_LENGTH) {
     return null;
   }
 
-  const { protocol } = new URL(feedUrl);
-
-  return protocol === 'http:' || protocol === 'https:' ? feedUrl : null;
+  return toHttpUrl(feedUrl) ?? null;
 }
 
 /**

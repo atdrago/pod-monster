@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { connection } from 'next/server';
+import type { ComponentProps } from 'react';
 import rehypeParse from 'rehype-parse';
 import rehypeStripHtml from 'rehype-strip-html';
 import { unified } from 'unified';
@@ -12,13 +13,13 @@ import {
   isCanonicalBase64UrlSegment,
 } from 'utils/base64Url';
 import { createMetadata } from 'utils/createMetadata';
-import { getEpisodePath } from 'utils/paths';
+import { getEpisodePath, type SearchParams, toQueryString } from 'utils/paths';
 import { loadEpisode } from 'utils/server/loadFeed';
 import { probeImage } from 'utils/server/probeImage';
 
 import { EpisodePage } from './EpisodePage';
 
-type SearchParams = Record<string, string | Array<string> | undefined>;
+type EpisodePageFeed = ComponentProps<typeof EpisodePage>['feed'];
 
 interface PageProps {
   params: Promise<{ feedUrlBase64: string; guidBase64: string }>;
@@ -31,15 +32,25 @@ const SQUARE_IMAGE_DIMENSIONS: ImageDimensions = { height: 512, width: 512 };
 // each of the two Podcast Index calls has a deadline of 5 seconds.
 export const maxDuration = 60;
 
-function toQueryString(searchParams: SearchParams): string {
-  const query = new URLSearchParams(
-    Object.entries(searchParams).flatMap(([key, value]) =>
-      [value ?? []].flat().map((item) => [key, item]),
-    ),
-  ).toString();
-
-  return query === '' ? '' : `?${query}`;
-}
+// The client page gets only the fields of the feed that it reads. Thus, the
+// RSC payload does not hold the rest of the feed.
+const toEpisodePageFeed = ({
+  format,
+  funding,
+  image,
+  link,
+  podcastIndexId,
+  title,
+  url,
+}: EpisodePageFeed): EpisodePageFeed => ({
+  format,
+  funding,
+  image,
+  link,
+  podcastIndexId,
+  title,
+  url,
+});
 
 /**
  * Returns the segments when each one is the canonical base64url form of its
@@ -134,7 +145,7 @@ export default async function Page(props: PageProps) {
   }
 
   const { episode, feed } = result;
-  const { t: startTime } = await props.searchParams;
+  const { t: startTimeParam } = await props.searchParams;
   const imageUrl = episode.image ?? episode.feedImage;
   const imageSize = imageUrl === undefined ? null : await probeImage(imageUrl);
   // The page shows a square image at 512 by 512, the same as an image that
@@ -148,8 +159,10 @@ export default async function Page(props: PageProps) {
     <EpisodePage
       episode={episode}
       episodeImageDimensions={episodeImageDimensions}
-      feed={feed}
-      t={typeof startTime === 'string' ? startTime : undefined}
+      feed={toEpisodePageFeed(feed)}
+      startTimeParam={
+        typeof startTimeParam === 'string' ? startTimeParam : undefined
+      }
     />
   );
 }

@@ -8,16 +8,20 @@ import {
   type TranscriptItem,
 } from 'rest/fetchPodcastEpisodeTranscript';
 import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
-import { safeFetchFeedResource } from 'utils/server/safeFetchFeed';
+import {
+  safeFetchFeedResource,
+  type SafeFetchFailureReason,
+} from 'utils/server/safeFetchFeed';
 import { tryConvertTextOrHtmlToVtt } from 'utils/tryConvertTextOrHtmlToVtt';
 
-type GuardFailureReason = Extract<
-  Awaited<ReturnType<typeof safeFetchFeedResource>>,
-  { kind: 'error' }
->['reason'];
+import {
+  GUARD_FAILURE_STATUSES,
+  PRIVATE_CACHE_CONTROL,
+  PUBLIC_CACHE_CONTROL,
+} from '../proxyResponse';
 
 type TranscriptErrorCode =
-  | GuardFailureReason
+  | SafeFetchFailureReason
   | 'invalid_body'
   | 'missing_type'
   | 'missing_url'
@@ -26,16 +30,6 @@ type TranscriptErrorCode =
 interface TranscriptErrorResponse {
   error: { code: TranscriptErrorCode };
 }
-
-const GUARD_FAILURE_STATUSES: Record<GuardFailureReason, number> = {
-  blocked: 400,
-  http_status: 502,
-  network: 502,
-  timeout: 504,
-  too_large: 502,
-};
-const PUBLIC_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=3600';
-const PRIVATE_CACHE_CONTROL = 'private, no-store';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention -- Next.js routes a request by the name of the HTTP method.
 export async function GET(

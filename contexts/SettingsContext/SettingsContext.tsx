@@ -15,7 +15,7 @@ import {
 
 import type { DBSchema, IDBPDatabase, StoreNames } from 'idb';
 
-import type { PodcastEpisode } from 'types/PodcastFeed';
+import type { EpisodeReference, FeedReference } from 'utils/paths';
 import type { PlaybackRate } from 'utils/playbackRates';
 
 interface EpisodeSettingsItem {
@@ -37,12 +37,6 @@ interface FeedSettingsItem {
 
 /** Each key is a feed URL. */
 export type FeedSettings = Record<string, FeedSettingsItem>;
-
-type FeedReference = Pick<PodcastEpisode, 'feedUrl'>;
-
-type EpisodeReference = FeedReference & {
-  episodeIdentity: PodcastEpisode['identity'];
-};
 
 type MediaPlayerSettings = {
   chaptersUrl: string | null;
@@ -132,21 +126,33 @@ type HydrationFailureReason =
   | 'read_failed'
   | 'timeout';
 
+let lastFeedKeyInput: string | undefined;
+let lastFeedKeyResult: string | null = null;
+
 /**
  * The parse lowercases the scheme and the host, and removes a default port.
  * The path and the query keep their case, because a feed token is case
- * sensitive.
+ * sensitive. Each row of a list asks for the key of the same feed URL. Thus,
+ * the function keeps the last input and its result.
  */
 const getFeedKey = (feedUrl: string): string | null => {
-  if (!URL.canParse(feedUrl)) {
-    return null;
+  if (feedUrl === lastFeedKeyInput) {
+    return lastFeedKeyResult;
   }
 
-  const url = new URL(feedUrl);
+  let feedKey: string | null = null;
 
-  url.hash = '';
+  if (URL.canParse(feedUrl)) {
+    const url = new URL(feedUrl);
 
-  return url.href;
+    url.hash = '';
+    feedKey = url.href;
+  }
+
+  lastFeedKeyInput = feedUrl;
+  lastFeedKeyResult = feedKey;
+
+  return feedKey;
 };
 
 /**
@@ -175,6 +181,30 @@ const isHydratedMediaPlayerSettings = (
   typeof value.feedUrl === 'string' &&
   'episodeIdentity' in value &&
   typeof value.episodeIdentity === 'string';
+
+/**
+ * True when the stored item has the same fields as the next item. A state
+ * updater then returns the previous state, so React skips the render.
+ */
+const hasEqualFields = <TItem extends object>(
+  storedItem: TItem | undefined,
+  nextItem: TItem,
+): boolean => {
+  if (storedItem === undefined) {
+    return false;
+  }
+
+  const storedEntries = Object.entries(storedItem);
+  const nextFields = new Map(Object.entries(nextItem));
+
+  return (
+    storedEntries.length === nextFields.size &&
+    storedEntries.every(
+      ([key, storedValue]) =>
+        nextFields.has(key) && Object.is(nextFields.get(key), storedValue),
+    )
+  );
+};
 
 const getErrorName = (error: unknown) =>
   error instanceof Error ? error.name : 'unknown';
@@ -428,10 +458,11 @@ export const SettingsProvider: FunctionComponent<
         return;
       }
 
-      setEpisodeSettings((previousEpisodeSettings) => ({
-        ...previousEpisodeSettings,
-        [episodeKey]: value,
-      }));
+      setEpisodeSettings((previousEpisodeSettings) =>
+        hasEqualFields(previousEpisodeSettings[episodeKey], value)
+          ? previousEpisodeSettings
+          : { ...previousEpisodeSettings, [episodeKey]: value },
+      );
     },
     [],
   );
@@ -460,10 +491,11 @@ export const SettingsProvider: FunctionComponent<
         return;
       }
 
-      setFeedSettings((previousFeedSettings) => ({
-        ...previousFeedSettings,
-        [feedKey]: value,
-      }));
+      setFeedSettings((previousFeedSettings) =>
+        hasEqualFields(previousFeedSettings[feedKey], value)
+          ? previousFeedSettings
+          : { ...previousFeedSettings, [feedKey]: value },
+      );
     },
     [],
   );

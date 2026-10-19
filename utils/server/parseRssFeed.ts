@@ -10,6 +10,8 @@ import {
 } from 'feedsmith';
 
 import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
+import { getEpisodeIdentity } from 'utils/getEpisodeIdentity';
+import { toHttpUrl } from 'utils/toHttpUrl';
 
 type ParseRssFeedResult =
   | { episodes: Array<PodcastEpisode>; feed: PodcastFeed; kind: 'feed' }
@@ -74,7 +76,7 @@ export function parseRssFeed(
 
   for (const item of channel.items ?? []) {
     const enclosure = item.enclosures?.[0];
-    const identity = toEpisodeIdentity(item.guid?.value, enclosure?.url);
+    const identity = getEpisodeIdentity(item.guid?.value, enclosure?.url);
 
     if (identity === undefined || seenIdentities.has(identity)) {
       continue;
@@ -117,29 +119,6 @@ function createParseFailure(reason: ParseFailureReason): ParseRssFeedResult {
   });
 
   return { kind: 'not_a_feed' };
-}
-
-function toEpisodeIdentity(
-  guid: string | undefined,
-  enclosureUrl: string | undefined,
-): string | undefined {
-  const trimmedGuid = guid?.trim();
-
-  if (trimmedGuid) {
-    return trimmedGuid;
-  }
-
-  return enclosureUrl?.trim() || undefined;
-}
-
-function toHttpUrl(value: string | undefined): string | undefined {
-  if (value === undefined || !URL.canParse(value)) {
-    return undefined;
-  }
-
-  const { protocol } = new URL(value);
-
-  return protocol === 'http:' || protocol === 'https:' ? value : undefined;
 }
 
 function toNonNegativeNumber(value: unknown): number | undefined {

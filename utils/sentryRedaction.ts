@@ -71,8 +71,8 @@ export function createSentryRedactionHooks(
       const redactedEvent = redactSentryData(event, siteOrigin);
       const { contexts, spans } = redactedEvent;
 
-      // Sentry merges the result of `beforeSendSpan` for the root span into the event. The merge
-      // keeps each key that the hook removed, so this hook removes the keys again.
+      // `beforeSendSpan` already removes these keys from the root span. This second pass does not
+      // depend on how Sentry merges that result into the event, so an SDK change cannot undo it.
       return {
         ...redactedEvent,
         ...(contexts?.trace !== undefined && {

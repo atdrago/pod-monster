@@ -1,6 +1,6 @@
 import { decodeFeedUrlSegment } from 'utils/base64Url';
 
-import { getEpisodePath, getPodcastPath } from './paths';
+import { getEpisodePath, getPodcastPath, toQueryString } from './paths';
 
 const ATP_FEED_URL = 'https://cdn.atp.fm/rss/public?wtvryzdm';
 const ATP_CANONICAL_SEGMENT =
@@ -39,6 +39,15 @@ describe('paths', () => {
       expect(
         getEpisodePath({ episodeIdentity: GUID, feedUrl: ATP_FEED_URL }),
       ).not.toMatch(/[=+]/);
+    });
+  });
+
+  describe('toQueryString', () => {
+    it('should give each value of a repeated key, skip an undefined value, and give an empty string for no values', () => {
+      expect(
+        toQueryString({ missing: undefined, t: '90', tag: ['a b', 'c&d'] }),
+      ).toBe('?t=90&tag=a+b&tag=c%26d');
+      expect(toQueryString({})).toBe('');
     });
   });
 });

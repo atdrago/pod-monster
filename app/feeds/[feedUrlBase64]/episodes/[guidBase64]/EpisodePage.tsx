@@ -46,9 +46,12 @@ import { toTitleCase } from 'utils/toTitleCase';
 interface EpisodePageProps {
   episode: PodcastEpisode;
   episodeImageDimensions?: ImageDimensions;
-  feed: PodcastFeed;
+  feed: Pick<
+    PodcastFeed,
+    'format' | 'funding' | 'image' | 'link' | 'podcastIndexId' | 'title' | 'url'
+  >;
   /** The raw `t` value of the URL, when the URL has one. */
-  t?: string;
+  startTimeParam?: string;
 }
 
 /**
@@ -104,7 +107,7 @@ export const EpisodePage = ({
   episode,
   episodeImageDimensions,
   feed,
-  t,
+  startTimeParam,
 }: EpisodePageProps) => {
   const { getEpisodeSettingsItem } = useSettingsContext();
   const episodeSettingsItem = getEpisodeSettingsItem({
@@ -141,13 +144,13 @@ export const EpisodePage = ({
   const startTimePromptKey = JSON.stringify([
     episode.feedUrl,
     episode.identity,
-    t ?? null,
+    startTimeParam ?? null,
   ]);
   const [answeredStartTimePromptKey, setAnsweredStartTimePromptKey] = useState<
     string | null
   >(null);
   const startTimeCheck = checkShareTime(
-    t === undefined ? null : parseTimecode(t),
+    startTimeParam === undefined ? null : parseTimecode(startTimeParam),
     episodeDuration,
   );
   const startTimePromptTime =

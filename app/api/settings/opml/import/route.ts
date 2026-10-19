@@ -17,6 +17,7 @@ import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
 import { mapPodcastIndexFeed } from 'utils/server/mapPodcastIndexFeed';
+import { isRecord, isSuccess } from 'utils/server/podcastIndex';
 
 type OpmlFeedOutline = ExternalOpmlOutline & { xmlurl: string };
 
@@ -43,9 +44,6 @@ const getOpmlFeeds = (
 const getErrorName = (error: unknown) =>
   error instanceof Error ? error.name : 'unknown';
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
-
 /**
  * The library record of a feed that Podcast Index knows, or `undefined`. A feed
  * that Podcast Index does not know is `[]` or `{}`. The log holds safe fields
@@ -60,8 +58,7 @@ const fetchFeedSettingsItem = async (
     const untypedResponse: unknown = response;
 
     if (
-      !isRecord(untypedResponse) ||
-      untypedResponse.status !== 'true' ||
+      !isSuccess(untypedResponse) ||
       !isRecord(untypedResponse.feed) ||
       typeof untypedResponse.feed.id !== 'number'
     ) {

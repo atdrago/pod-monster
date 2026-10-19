@@ -162,7 +162,7 @@ function renderEpisodePageWithPlayer({
                 <EpisodePage
                   episode={episode}
                   feed={FEED}
-                  t={currentStartTime}
+                  startTimeParam={currentStartTime}
                 />
               </MediaProvider>
             </SettingsProvider>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { connection } from 'next/server';
+import type { ComponentProps } from 'react';
 
 import { Badge } from 'components/atoms/Badge';
 import { Details } from 'components/atoms/Details';
@@ -19,10 +20,16 @@ import {
   isCanonicalBase64UrlSegment,
 } from 'utils/base64Url';
 import { createMetadata } from 'utils/createMetadata';
-import { getPodcastPath } from 'utils/paths';
+import { getPodcastPath, type SearchParams, toQueryString } from 'utils/paths';
 import { loadShow } from 'utils/server/loadFeed';
 
-type SearchParams = Record<string, string | Array<string> | undefined>;
+type HeaderFeed = NonNullable<ComponentProps<typeof Header>['feed']>;
+
+type SubscribeButtonFeed = ComponentProps<typeof SubscribeButton>['feed'];
+
+type EpisodeListEpisode = ComponentProps<
+  typeof EpisodeList
+>['episodes'][number];
 
 interface PageProps {
   params: Promise<{ feedUrlBase64: string }>;
@@ -33,15 +40,50 @@ interface PageProps {
 // calls has a deadline of 5 seconds.
 export const maxDuration = 60;
 
-function toQueryString(searchParams: SearchParams): string {
-  const query = new URLSearchParams(
-    Object.entries(searchParams).flatMap(([key, value]) =>
-      [value ?? []].flat().map((item) => [key, item]),
-    ),
-  ).toString();
+// Each client component gets only the fields that it reads. Thus, the RSC
+// payload does not hold the rest of the feed or of the episodes.
+const toHeaderFeed = ({ title, url }: HeaderFeed): HeaderFeed => ({
+  title,
+  url,
+});
 
-  return query === '' ? '' : `?${query}`;
-}
+const toSubscribeButtonFeed = ({
+  format,
+  image,
+  link,
+  podcastIndexId,
+  title,
+  url,
+}: SubscribeButtonFeed): SubscribeButtonFeed => ({
+  format,
+  image,
+  link,
+  podcastIndexId,
+  title,
+  url,
+});
+
+const toEpisodeListEpisode = ({
+  datePublished,
+  duration,
+  episodeType,
+  explicit,
+  feedImage,
+  feedUrl,
+  identity,
+  image,
+  title,
+}: EpisodeListEpisode): EpisodeListEpisode => ({
+  datePublished,
+  duration,
+  episodeType,
+  explicit,
+  feedImage,
+  feedUrl,
+  identity,
+  image,
+  title,
+});
 
 /**
  * Returns the segment when it is the canonical base64url form of its feed URL.
@@ -119,7 +161,7 @@ export default async function Page(props: PageProps) {
 
   return (
     <>
-      <Header feed={feed} />
+      <Header feed={toHeaderFeed(feed)} />
       <Stack as="main" maxWidth="small">
         <Stack as="article" space="small">
           <Stack kind="flexRow" space="small" align="center">
@@ -163,7 +205,7 @@ export default async function Page(props: PageProps) {
               ))}
             </Stack>
           ) : null}
-          <SubscribeButton feed={feed} />
+          <SubscribeButton feed={toSubscribeButtonFeed(feed)} />
         </Stack>
         {feed.description ? (
           <Details
@@ -179,7 +221,7 @@ export default async function Page(props: PageProps) {
           </Details>
         ) : null}
         <Funding funding={feed.funding} />
-        <EpisodeList episodes={sortedEpisodes} />
+        <EpisodeList episodes={sortedEpisodes.map(toEpisodeListEpisode)} />
       </Stack>
     </>
   );

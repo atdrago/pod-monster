@@ -1,19 +1,15 @@
 import 'server-only';
 
-import { captureMessage } from '@sentry/nextjs';
 import { cache } from 'react';
 
 import {
   episodeByGuid,
   episodesByFeedId,
-  getAuthValues,
-  NetworkError,
   type PodcastIndexConfig,
   podcastsByFeedUrl,
 } from '@atdrago/podcast-index';
 import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
 import { decodeBase64UrlSegment, decodeFeedUrlSegment } from 'utils/base64Url';
-import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
 import { FeedUnavailableError } from 'utils/server/FeedUnavailableError';
 import {
@@ -21,7 +17,16 @@ import {
   mapPodcastIndexFeed,
 } from 'utils/server/mapPodcastIndexFeed';
 import { parseRssFeed } from 'utils/server/parseRssFeed';
-import { safeFetchFeed } from 'utils/server/safeFetchFeed';
+import {
+  createPodcastIndexConfig,
+  isRecord,
+  isSuccess,
+  logPodcastIndexFailure,
+} from 'utils/server/podcastIndex';
+import {
+  safeFetchFeed,
+  type SafeFetchFailure,
+} from 'utils/server/safeFetchFeed';
 
 type FeedSource = 'podcastIndex' | 'rss';
 
@@ -44,19 +49,8 @@ type LoadEpisodeResult = (LoadedFeed & { episode: PodcastEpisode }) | NotFound;
 
 type ParsedRssFeed = Extract<ReturnType<typeof parseRssFeed>, { kind: 'feed' }>;
 
-type SafeFetchFailure = Extract<
-  Awaited<ReturnType<typeof safeFetchFeed>>,
-  { kind: 'error' }
->;
-
-type PodcastIndexEndpoint =
-  | 'episodes/byfeedid'
-  | 'episodes/byguid'
-  | 'podcasts/byfeedurl';
-
 const NOT_FOUND: NotFound = { kind: 'not_found' };
 const RSS_SHOW_EPISODE_LIMIT = 100;
-const PODCAST_INDEX_CONFIGURATION_STATUSES = new Set([400, 401]);
 const TRANSIENT_FEED_STATUSES = new Set([408, 429]);
 
 /**
@@ -206,27 +200,6 @@ function isIdentity(value: string): boolean {
   return value !== '' && value.trim() === value;
 }
 
-function createPodcastIndexConfig(): PodcastIndexConfig | undefined {
-  const apiKey = process.env.NEXT_PUBLIC_PODCAST_INDEX_API_KEY;
-  const apiSecret = process.env.NEXT_PUBLIC_PODCAST_INDEX_API_SECRET;
-
-  // The declared type of each variable is `string`, but a deploy or a local
-  // checkout can leave it out. `getAuthValues` then throws, and the RSS
-  // fallback does not run.
-  if (!apiKey || !apiSecret) {
-    captureMessage('podcast_index_auth_failed', {
-      extra: { reason: 'missing_credentials', source: 'podcastIndex' },
-      level: 'error',
-    });
-
-    return undefined;
-  }
-
-  const [authTime, authToken] = getAuthValues(apiKey, apiSecret);
-
-  return getPodcastIndexConfig(authTime, authToken);
-}
-
 async function fetchPodcastIndexFeed(
   feedUrl: string,
   config: PodcastIndexConfig,
@@ -320,66 +293,6 @@ async function fetchPodcastIndexEpisode(
 
     return undefined;
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isSuccess(response: unknown): response is Record<string, unknown> {
-  return isRecord(response) && response.status === 'true';
-}
-
-/**
- * Logs a failed Podcast Index call with safe fields only. The error itself is
- * not logged, because the text of a native fetch error can hold the request
- * URL, and the query of that URL holds the feed URL or the guid.
- */
-function logPodcastIndexFailure(
-  endpoint: PodcastIndexEndpoint,
-  error: unknown,
-): void {
-  const status = error instanceof NetworkError ? error.status : undefined;
-  const isConfigurationError =
-    status !== undefined && PODCAST_INDEX_CONFIGURATION_STATUSES.has(status);
-
-  captureMessage(
-    isConfigurationError
-      ? 'podcast_index_auth_failed'
-      : 'podcast_index_unavailable',
-    {
-      extra: {
-        endpoint,
-        reason: toPodcastIndexFailureReason(error),
-        source: 'podcastIndex',
-        status,
-      },
-      level: isConfigurationError ? 'error' : 'warning',
-    },
-  );
-}
-
-function toPodcastIndexFailureReason(error: unknown): string {
-  if (error instanceof NetworkError) {
-    return 'http_status';
-  }
-
-  if (
-    error instanceof Error &&
-    (error.name === 'TimeoutError' || error.name === 'AbortError')
-  ) {
-    return 'timeout';
-  }
-
-  if (error instanceof TypeError) {
-    return 'network';
-  }
-
-  if (error instanceof SyntaxError) {
-    return 'invalid_response';
-  }
-
-  return 'unknown';
 }
 
 /**

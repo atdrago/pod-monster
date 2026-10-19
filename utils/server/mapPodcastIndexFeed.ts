@@ -7,6 +7,8 @@ import type {
 } from 'podcastdx-client/src/types';
 
 import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
+import { getEpisodeIdentity } from 'utils/getEpisodeIdentity';
+import { toHttpUrl } from 'utils/toHttpUrl';
 
 // The type of an `episodes/byfeedid` item has no persons and no transcripts.
 // Only the type of an `episodes/byguid` answer has them.
@@ -69,7 +71,7 @@ export function mapPodcastIndexEpisode(
   podcastIndexEpisode: PodcastIndexEpisode,
   feed: Pick<PodcastFeed, 'image' | 'title' | 'url'>,
 ): PodcastEpisode | undefined {
-  const identity = toEpisodeIdentity(
+  const identity = getEpisodeIdentity(
     podcastIndexEpisode.guid,
     podcastIndexEpisode.enclosureUrl,
   );
@@ -102,33 +104,12 @@ export function mapPodcastIndexEpisode(
   };
 }
 
-/**
- * The same rule as the RSS parser: the trimmed guid, else the trimmed
- * enclosure URL, with no change of case.
- */
-function toEpisodeIdentity(
-  guid: unknown,
-  enclosureUrl: unknown,
-): string | undefined {
-  return toText(guid)?.trim() || toText(enclosureUrl)?.trim() || undefined;
-}
-
 function toText(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() !== '' ? value : undefined;
 }
 
 function toTrimmedText(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
-}
-
-function toHttpUrl(value: unknown): string | undefined {
-  if (typeof value !== 'string' || !URL.canParse(value)) {
-    return undefined;
-  }
-
-  const { protocol } = new URL(value);
-
-  return protocol === 'http:' || protocol === 'https:' ? value : undefined;
 }
 
 // Podcast Index gives 0 or `null` for a season, an episode number, a date, or
