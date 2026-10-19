@@ -3,14 +3,13 @@ import 'styles/globals.css';
 
 import { Viewport } from 'next';
 
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
 import { CenteredPageLayout } from 'components/layouts/CenteredPageLayout';
 import { Footer } from 'components/molecules/Footer';
 import { MediaPlayer } from 'components/organisms/MediaPlayer';
 import { vars } from 'styles';
 
 import { Providers } from './Providers';
+import { VercelInsights } from './VercelInsights';
 
 export const viewport: Viewport = {
   themeColor: vars.color.background,
@@ -27,8 +26,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
             <Footer />
           </CenteredPageLayout>
         </Providers>
-        <SpeedInsights />
-        <Analytics />
+        <VercelInsights />
       </body>
     </html>
   );
