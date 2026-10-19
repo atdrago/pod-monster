@@ -2,12 +2,16 @@ import type { ApiResponse } from 'podcastdx-client/src/types';
 
 import { request } from 'utils/request';
 
+/**
+ * Takes Podcast Index feed ids only, so that no feed URL goes into the query
+ * string of the request.
+ */
 export const fetchPodcastEpisodes = async (
-  feedId: string,
+  podcastIndexFeedIds: Array<number>,
   since: number,
 ): Promise<ApiResponse.EpisodesByFeedId> => {
-  if (!feedId) {
-    throw new Error('`feedId` is required');
+  if (podcastIndexFeedIds.length === 0) {
+    throw new Error('`podcastIndexFeedIds` is required');
   }
 
   if (!since) {
@@ -19,7 +23,7 @@ export const fetchPodcastEpisodes = async (
     process.env.NEXT_PUBLIC_BASE_URL,
   );
 
-  episodesProxyUrl.searchParams.set('feedId', feedId);
+  episodesProxyUrl.searchParams.set('feedId', podcastIndexFeedIds.join(','));
   episodesProxyUrl.searchParams.set('since', `${since}`);
 
   return await request<ApiResponse.EpisodesByFeedId>(

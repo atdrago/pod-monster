@@ -18,7 +18,6 @@ import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
-import { ApiResponse } from 'podcastdx-client/src/types';
 import { fetchPodcastEpisodes } from 'rest/fetchPodcastEpisodes';
 
 interface HomePageProps {
@@ -80,22 +79,27 @@ export function HomePage({
   const hasDeadFeeds =
     searchResponse && searchResponse.feeds.some((feed) => feed.dead > 0);
 
-  const subscribedFeedIds = Array.from(
-    new Set(feedSettingsEntries.map(([feedId]) => feedId)),
-  ).join(',');
+  // The refresh sends Podcast Index feed ids only, so that no feed URL goes
+  // into a query string. A show with no id gets no new episodes dot.
+  const subscribedPodcastIndexFeedIds = Array.from(
+    new Set(
+      feedSettingsEntries.flatMap(([_, { podcastIndexId }]) =>
+        podcastIndexId === undefined ? [] : [podcastIndexId],
+      ),
+    ),
+  ).toSorted((left, right) => left - right);
 
   // -30 days
   const since = -30 * 24 * 60 * 60;
 
-  const { data: feedEpisodesData } =
-    useQuery<ApiResponse.EpisodesByFeedId | null>({
-      enabled: subscribedFeedIds.length > 0,
-      queryFn: () => fetchPodcastEpisodes(subscribedFeedIds, since),
-      queryKey: [subscribedFeedIds],
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    });
+  const { data: feedEpisodesData } = useQuery({
+    enabled: subscribedPodcastIndexFeedIds.length > 0,
+    queryFn: () => fetchPodcastEpisodes(subscribedPodcastIndexFeedIds, since),
+    queryKey: ['fetchPodcastEpisodes', subscribedPodcastIndexFeedIds, since],
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <>
@@ -138,7 +142,7 @@ export function HomePage({
                     align="center"
                   >
                     <LinkStack
-                      href={getPodcastPath({ id: `${feed.id}` })}
+                      href={getPodcastPath({ feedUrl: feed.url })}
                       kind="flexRow"
                       space="small"
                       align="center"
@@ -179,12 +183,14 @@ export function HomePage({
                       </Stack>
                     </LinkStack>
                     <SubscribeButton
-                      feedId={feed.id}
-                      feedType={feed.type === 0 ? 'rss' : 'atom'}
-                      htmlUrl={feed.link}
-                      image={feed.image}
-                      title={feed.title}
-                      xmlUrl={feed.url}
+                      feed={{
+                        format: feed.type === 0 ? 'rss' : 'atom',
+                        image: feed.image,
+                        link: feed.link,
+                        podcastIndexId: feed.id,
+                        title: feed.title,
+                        url: feed.url,
+                      }}
                     />
                   </Stack>
                 );
@@ -196,19 +202,25 @@ export function HomePage({
               <Typography as="h2" size="headingSmall" className="font-bold">
                 Subscriptions
               </Typography>
-              {feedSettingsEntries.map(([feedId, { image, title }]) => {
-                return (
-                  <SubscriptionItem
-                    key={feedId}
-                    feedId={feedId}
-                    feedEpisodesData={feedEpisodesData?.items.filter(
-                      ({ feedId: dataFeedId }) => feedId === `${dataFeedId}`,
-                    )}
-                    image={image}
-                    title={title}
-                  />
-                );
-              })}
+              {feedSettingsEntries.map(
+                ([feedUrl, { image, podcastIndexId, title }]) => {
+                  return (
+                    <SubscriptionItem
+                      key={feedUrl}
+                      feedEpisodesData={
+                        podcastIndexId === undefined
+                          ? undefined
+                          : feedEpisodesData?.items.filter(
+                              ({ feedId }) => feedId === podcastIndexId,
+                            )
+                      }
+                      feedUrl={feedUrl}
+                      image={image}
+                      title={title}
+                    />
+                  );
+                },
+              )}
             </Stack>
           )}
         </Stack>

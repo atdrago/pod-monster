@@ -2,6 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { useSettingsContext } from 'contexts/SettingsContext';
 
+const XML_ENTITIES: Record<string, string> = {
+  '"': '&quot;',
+  '&': '&amp;',
+  "'": '&apos;',
+  '<': '&lt;',
+  '>': '&gt;',
+};
+
+// A feed URL often has `&` in its query, so an unescaped value breaks the file.
+const escapeXmlAttribute = (value: string) =>
+  value.replace(/["&'<>]/g, (character) => XML_ENTITIES[character]);
+
 export const useOpmlFileUrl = () => {
   const { feedSettings } = useSettingsContext();
   const [url, setUrl] = useState<string | null>(null);
@@ -22,13 +34,13 @@ export const useOpmlFileUrl = () => {
   </head>
   <body>
     ${feedEntries
-      .map(([_feedId, feed]) => {
+      .map(([feedUrl, feed]) => {
         return `<outline
-      htmlUrl="${feed.htmlUrl ?? ''}"
-      text="${feed.title}"
-      title="${feed.title}"
+      htmlUrl="${escapeXmlAttribute(feed.htmlUrl ?? '')}"
+      text="${escapeXmlAttribute(feed.title)}"
+      title="${escapeXmlAttribute(feed.title)}"
       type="${feed.type ?? ''}"
-      xmlUrl="${feed.xmlUrl ?? ''}"
+      xmlUrl="${escapeXmlAttribute(feedUrl)}"
     />`;
       })
       .join('\n    ')}

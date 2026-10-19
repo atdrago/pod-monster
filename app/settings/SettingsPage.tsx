@@ -30,12 +30,14 @@ export function SettingsPage() {
     mutate,
   } = useMutation<OpmlImportResponse, ApiErrorResponse, { file: File }>({
     mutationFn: async ({ file }) => await fetchOpmlImport(file),
-    onSuccess: (successData) => {
+    // The import stays pending until the library write ends. Each key is a
+    // feed URL in any form, and the context normalizes it.
+    onSuccess: async (successData) => {
       if (successData?.feedSettings) {
         if (!shouldMergeOpmlImport) {
-          setAllFeedSettings(successData.feedSettings);
+          await setAllFeedSettings(successData.feedSettings);
         } else {
-          setAllFeedSettings({
+          await setAllFeedSettings({
             ...feedSettings,
             ...successData.feedSettings,
           });
@@ -47,6 +49,10 @@ export function SettingsPage() {
   const handleFileChange: ReactEventHandler<HTMLInputElement> = async (
     event,
   ) => {
+    if (isLoading) {
+      return;
+    }
+
     const file = event.currentTarget.files?.[0];
 
     if (file) {

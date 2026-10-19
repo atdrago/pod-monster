@@ -12,46 +12,63 @@ import { getPodcastPath } from 'utils/paths';
 
 import { subscriptionItemClassName } from './subscriptionItem.css';
 
+type SubscriptionEpisode = Pick<
+  PIApiEpisodeInfo,
+  'datePublished' | 'enclosureUrl' | 'guid'
+>;
+
 interface SubscriptionItemProps {
-  feedEpisodesData?: Array<PIApiEpisodeInfo>;
-  feedId: string;
-  image: string;
+  className?: string;
+  feedEpisodesData?: Array<SubscriptionEpisode>;
+  feedUrl: string;
+  image?: string;
   title: string;
 }
 
+/**
+ * The same identity rule as the feed mappers: the trimmed guid, else the
+ * trimmed enclosure URL.
+ */
+const getEpisodeIdentity = ({ enclosureUrl, guid }: SubscriptionEpisode) =>
+  (typeof guid === 'string' ? guid.trim() : '') ||
+  (typeof enclosureUrl === 'string' ? enclosureUrl.trim() : '');
+
 export const SubscriptionItem = ({
+  className,
   feedEpisodesData,
-  feedId,
+  feedUrl,
   image,
   title,
 }: SubscriptionItemProps) => {
   const baseClassName = useClassNames(
     subscriptionItemClassName,
     nonUnderlinedLink,
+    className,
   );
-  const { episodeSettings, feedSettings } = useSettingsContext();
+  const { getEpisodeSettingsItem, getFeedSettingsItem } = useSettingsContext();
 
-  const subscribedAt = feedSettings[feedId]?.subscribedAt;
+  const subscribedAt = getFeedSettingsItem({ feedUrl })?.subscribedAt;
 
   // We say that the podcast has new episodes if there are episodes that the
   // user has not listened to that were published after the user subscribed and
   // within the last 30 days.
-  const hasUnlistenedEpisodes = !!feedEpisodesData?.find(
-    ({ datePublished, id }) => {
-      return (
-        !episodeSettings[id] &&
-        new Date(datePublished * 1000) > new Date(subscribedAt ?? Infinity)
-      );
-    },
-  );
+  const hasUnlistenedEpisodes = !!feedEpisodesData?.find((episode) => {
+    const episodeIdentity = getEpisodeIdentity(episode);
+
+    return (
+      episodeIdentity !== '' &&
+      getEpisodeSettingsItem({ episodeIdentity, feedUrl }) === undefined &&
+      new Date(episode.datePublished * 1000) >
+        new Date(subscribedAt ?? Infinity)
+    );
+  });
 
   return (
     <Stack
       align="center"
       as={Link}
       className={baseClassName}
-      href={getPodcastPath({ id: `${feedId}` })}
-      key={feedId}
+      href={getPodcastPath({ feedUrl })}
       kind="flexRow"
       space="xxsmall"
     >
@@ -63,7 +80,7 @@ export const SubscriptionItem = ({
       <Stack align="center" space="small" kind="flexRow">
         <FeedArtwork
           alt=""
-          feedId={feedId}
+          feedUrl={feedUrl}
           height={80}
           shadow={true}
           src={image}
