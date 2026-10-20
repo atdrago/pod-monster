@@ -23,7 +23,8 @@ type SafeFetchEvent =
   | 'safe_fetch_redirect_failed'
   | 'safe_fetch_request_failed'
   | 'safe_fetch_timeout'
-  | 'safe_fetch_too_large';
+  | 'safe_fetch_too_large'
+  | 'safe_fetch_unknown_charset';
 
 export interface SafeFetchFailure {
   kind: 'error';
@@ -32,7 +33,12 @@ export interface SafeFetchFailure {
 }
 
 type SafeFetchBytesResult =
-  | { bytes: Uint8Array; isRangeHonored: boolean; kind: 'ok' }
+  | {
+      bytes: Uint8Array;
+      contentType: string | null;
+      isRangeHonored: boolean;
+      kind: 'ok';
+    }
   | SafeFetchFailure;
 
 type SafeFetchTextResult = { body: string; kind: 'ok' } | SafeFetchFailure;
@@ -110,6 +116,10 @@ const FEED_RESOURCE_MAX_BYTES = 5 * 1024 * 1024;
 const MAX_REDIRECT_HOPS = 5;
 const MAX_URL_LENGTH = 2048;
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
+const CHARSET_PATTERN = /;\s*charset\s*=\s*"?([^";\s]{1,40})/i;
+const XML_DECLARATION_PATTERN =
+  /^\s*<\?xml\s[^>]*?\bencoding\s*=\s*["']([^"']{1,40})["']/;
+const XML_DECLARATION_MAX_BYTES = 1024;
 const USER_AGENT = 'pod.monster (+https://pod.monster)';
 const FEED_ACCEPT =
   'application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.5';
@@ -275,7 +285,83 @@ function toTextResult(result: SafeFetchBytesResult): SafeFetchTextResult {
     return result;
   }
 
-  return { body: new TextDecoder('utf-8').decode(result.bytes), kind: 'ok' };
+  return { body: decodeText(result.bytes, result.contentType), kind: 'ok' };
+}
+
+/**
+ * Decodes the bytes in the order of RFC 7303 for an XML document: the byte
+ * order mark, then the `charset` of the `Content-Type`, then the `encoding` of
+ * the XML declaration, then UTF-8. A chapters file or a transcript has no XML
+ * declaration, so it gets the same order.
+ */
+function decodeText(bytes: Uint8Array, contentType: string | null): string {
+  const decoder =
+    createByteOrderMarkDecoder(bytes) ??
+    createLabelDecoder(contentType?.match(CHARSET_PATTERN)?.[1]) ??
+    createXmlDeclarationDecoder(bytes) ??
+    new TextDecoder('utf-8');
+
+  return decoder.decode(bytes);
+}
+
+function createByteOrderMarkDecoder(
+  bytes: Uint8Array,
+): TextDecoder | undefined {
+  if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) {
+    return new TextDecoder('utf-8');
+  }
+
+  if (bytes[0] === 0xfe && bytes[1] === 0xff) {
+    return new TextDecoder('utf-16be');
+  }
+
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) {
+    return new TextDecoder('utf-16le');
+  }
+
+  return undefined;
+}
+
+/**
+ * The declaration has only ASCII characters, and a UTF-8 read keeps ASCII.
+ * Thus, the read finds the declaration in any encoding that keeps ASCII. A
+ * declaration of UTF-16 that reads as ASCII is wrong, so the function then
+ * uses UTF-8, the same as a browser.
+ */
+function createXmlDeclarationDecoder(
+  bytes: Uint8Array,
+): TextDecoder | undefined {
+  const head = new TextDecoder('utf-8').decode(
+    bytes.subarray(0, XML_DECLARATION_MAX_BYTES),
+  );
+  const decoder = createLabelDecoder(head.match(XML_DECLARATION_PATTERN)?.[1]);
+
+  return decoder?.encoding.startsWith('utf-16')
+    ? new TextDecoder('utf-8')
+    : decoder;
+}
+
+/**
+ * A decoder for the label, or `undefined` when the label is not given or the
+ * Encoding Standard does not know it.
+ */
+function createLabelDecoder(
+  label: string | undefined,
+): TextDecoder | undefined {
+  if (label === undefined) {
+    return undefined;
+  }
+
+  try {
+    return new TextDecoder(label);
+  } catch {
+    captureMessage('safe_fetch_unknown_charset', {
+      extra: { charset: label },
+      level: 'warning',
+    });
+
+    return undefined;
+  }
 }
 
 async function safeFetch({
@@ -423,6 +509,7 @@ async function fetchHop({
 
     return {
       bytes: body.bytes,
+      contentType: response.headers.get('content-type'),
       isRangeHonored: isRanged && status === 206,
       kind: 'ok',
     };

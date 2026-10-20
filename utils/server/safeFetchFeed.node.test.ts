@@ -603,6 +603,99 @@ describe('safeFetchFeed', () => {
     });
   });
 
+  describe('text encodings', () => {
+    const TEXT = '<rss><title>Café</title></rss>';
+    const LATIN_1_DECLARATION = '<?xml version="1.0" encoding="ISO-8859-1"?>';
+
+    function toLatin1Bytes(text: string) {
+      return Uint8Array.from(text, (character) => character.charCodeAt(0));
+    }
+
+    async function fetchFeedText(
+      body: Uint8Array<ArrayBuffer>,
+      contentType?: string,
+    ) {
+      const { fetchFn } = createFakeFetch([
+        {
+          body,
+          headers:
+            contentType === undefined
+              ? undefined
+              : { 'content-type': contentType },
+          status: 200,
+        },
+      ]);
+
+      return safeFetchFeed(FEED_URL, { dnsLookup: publicDnsLookup, fetchFn });
+    }
+
+    it.each<[string, Uint8Array<ArrayBuffer>, string | undefined, string]>([
+      [
+        'the charset of the Content-Type',
+        toLatin1Bytes(TEXT),
+        'application/rss+xml; charset=ISO-8859-1',
+        TEXT,
+      ],
+      [
+        'a quoted charset of the Content-Type',
+        toLatin1Bytes(TEXT),
+        'application/rss+xml; charset="ISO-8859-1"',
+        TEXT,
+      ],
+      [
+        'the encoding of the XML declaration when the Content-Type has no charset',
+        toLatin1Bytes(`${LATIN_1_DECLARATION}${TEXT}`),
+        'application/rss+xml',
+        `${LATIN_1_DECLARATION}${TEXT}`,
+      ],
+      [
+        'the charset of the Content-Type over the XML declaration',
+        new TextEncoder().encode(`${LATIN_1_DECLARATION}${TEXT}`),
+        'application/rss+xml; charset=utf-8',
+        `${LATIN_1_DECLARATION}${TEXT}`,
+      ],
+      [
+        'the byte order mark over the charset of the Content-Type',
+        Uint8Array.from(Buffer.from(`\uFEFF${TEXT}`, 'utf16le')),
+        'application/rss+xml; charset=utf-8',
+        TEXT,
+      ],
+      [
+        'UTF-8 when no charset and no XML declaration exist',
+        new TextEncoder().encode(TEXT),
+        undefined,
+        TEXT,
+      ],
+      [
+        'UTF-8 when an XML declaration of UTF-16 reads as ASCII',
+        new TextEncoder().encode(
+          `<?xml version="1.0" encoding="UTF-16"?>${TEXT}`,
+        ),
+        'application/rss+xml',
+        `<?xml version="1.0" encoding="UTF-16"?>${TEXT}`,
+      ],
+    ])('should decode the body with %s', async (_, body, contentType, text) => {
+      expect(await fetchFeedText(body, contentType)).toEqual({
+        body: text,
+        kind: 'ok',
+      });
+      expect(captureMessage).not.toHaveBeenCalled();
+    });
+
+    it('should decode the body as UTF-8, and log the label, when the charset is not known', async () => {
+      const result = await fetchFeedText(
+        new TextEncoder().encode(TEXT),
+        'application/rss+xml; charset=x-not-an-encoding',
+      );
+
+      expect(result).toEqual({ body: TEXT, kind: 'ok' });
+      expect(captureMessage).toHaveBeenCalledWith(
+        'safe_fetch_unknown_charset',
+        { extra: { charset: 'x-not-an-encoding' }, level: 'warning' },
+      );
+    });
+  });
+
   describe('logs', () => {
     const SECRET_FEED_URL =
       'https://secret-host.example.com/private/token123.rss';
