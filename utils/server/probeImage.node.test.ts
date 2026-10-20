@@ -55,6 +55,19 @@ function createFakeFetch(response: () => Response) {
 describe('probeImage', () => {
   afterEach(() => {
     vi.mocked(captureMessage).mockClear();
+    vi.restoreAllMocks();
+  });
+
+  it('should give the image host a deadline of 3 seconds, not the 20 seconds of a feed read', async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, 'timeout');
+    const { fetchFn } = createFakeFetch(
+      () => new Response(createPngBytes(1, 1)),
+    );
+
+    await probeImage(IMAGE_URL, { dnsLookup: publicDnsLookup, fetchFn });
+
+    expect(timeoutSpy).toHaveBeenCalledWith(3000);
+    expect(timeoutSpy).not.toHaveBeenCalledWith(20_000);
   });
 
   it('should return no size and open no connection for http://169.254.169.254/latest', async () => {

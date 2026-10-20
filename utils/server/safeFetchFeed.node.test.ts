@@ -824,10 +824,14 @@ describe('safeFetchFeed', () => {
         },
       ]);
 
-      const result = await safeFetchByteRange(IMAGE_URL, 25, {
-        dnsLookup: publicDnsLookup,
-        fetchFn,
-      });
+      const result = await safeFetchByteRange(
+        IMAGE_URL,
+        { byteCount: 25, deadlineMilliseconds: 20_000 },
+        {
+          dnsLookup: publicDnsLookup,
+          fetchFn,
+        },
+      );
 
       expect(calls[0].headers.get('range')).toBe('bytes=0-24');
       expect(result.kind).toBe('ok');
@@ -844,10 +848,14 @@ describe('safeFetchFeed', () => {
         { body: createChunkedStream(fullBody, 10), status: 200 },
       ]);
 
-      const result = await safeFetchByteRange(IMAGE_URL, 25, {
-        dnsLookup: publicDnsLookup,
-        fetchFn,
-      });
+      const result = await safeFetchByteRange(
+        IMAGE_URL,
+        { byteCount: 25, deadlineMilliseconds: 20_000 },
+        {
+          dnsLookup: publicDnsLookup,
+          fetchFn,
+        },
+      );
 
       expect(result.kind).toBe('ok');
 
@@ -866,10 +874,14 @@ describe('safeFetchFeed', () => {
         },
       ]);
 
-      const result = await safeFetchByteRange(IMAGE_URL, 1000, {
-        dnsLookup: publicDnsLookup,
-        fetchFn,
-      });
+      const result = await safeFetchByteRange(
+        IMAGE_URL,
+        { byteCount: 1000, deadlineMilliseconds: 20_000 },
+        {
+          dnsLookup: publicDnsLookup,
+          fetchFn,
+        },
+      );
 
       expect(result.kind).toBe('ok');
 
@@ -884,7 +896,7 @@ describe('safeFetchFeed', () => {
 
       const result = await safeFetchByteRange(
         'http://169.254.169.254/latest',
-        MEBIBYTE,
+        { byteCount: MEBIBYTE, deadlineMilliseconds: 20_000 },
         { fetchFn },
       );
 

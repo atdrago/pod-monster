@@ -28,8 +28,8 @@ interface PageProps {
 
 const SQUARE_IMAGE_DIMENSIONS: ImageDimensions = { height: 512, width: 512 };
 
-// The RSS read and the image probe each have a deadline of 20 seconds, and
-// each of the two Podcast Index calls has a deadline of 5 seconds.
+// The RSS read has a deadline of 20 seconds, the image probe 3 seconds, and
+// each of the two Podcast Index calls 5 seconds.
 export const maxDuration = 60;
 
 // The client page gets only the fields of the feed that it reads. Thus, the

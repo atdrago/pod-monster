@@ -92,6 +92,7 @@ interface SafeFetchSeams {
 
 interface SafeFetchRequest {
   accept?: string;
+  deadlineMilliseconds: number;
   isRanged: boolean;
   maxBytes: number;
   seams?: SafeFetchSeams;
@@ -182,6 +183,7 @@ export async function safeFetchFeed(
   return toTextResult(
     await safeFetch({
       accept: FEED_ACCEPT,
+      deadlineMilliseconds: DEADLINE_MILLISECONDS,
       isRanged: false,
       maxBytes: FEED_MAX_BYTES,
       seams,
@@ -200,6 +202,7 @@ export async function safeFetchFeedResource(
 ): Promise<SafeFetchTextResult> {
   return toTextResult(
     await safeFetch({
+      deadlineMilliseconds: DEADLINE_MILLISECONDS,
       isRanged: false,
       maxBytes: FEED_RESOURCE_MAX_BYTES,
       seams,
@@ -216,10 +219,14 @@ export async function safeFetchFeedResource(
  */
 export async function safeFetchByteRange(
   resourceUrl: string,
-  byteCount: number,
+  {
+    byteCount,
+    deadlineMilliseconds,
+  }: { byteCount: number; deadlineMilliseconds: number },
   seams?: SafeFetchSeams,
 ): Promise<SafeFetchBytesResult> {
   return safeFetch({
+    deadlineMilliseconds,
     isRanged: true,
     maxBytes: byteCount,
     seams,
@@ -273,6 +280,7 @@ function toTextResult(result: SafeFetchBytesResult): SafeFetchTextResult {
 
 async function safeFetch({
   accept,
+  deadlineMilliseconds,
   isRanged,
   maxBytes,
   seams,
@@ -292,8 +300,8 @@ async function safeFetch({
     headers.range = `bytes=0-${maxBytes - 1}`;
   }
 
-  const deadlineAt = Date.now() + DEADLINE_MILLISECONDS;
-  const deadlineSignal = AbortSignal.timeout(DEADLINE_MILLISECONDS);
+  const deadlineAt = Date.now() + deadlineMilliseconds;
+  const deadlineSignal = AbortSignal.timeout(deadlineMilliseconds);
   let currentUrl = url;
 
   for (let hop = 0; hop <= MAX_REDIRECT_HOPS; hop += 1) {
