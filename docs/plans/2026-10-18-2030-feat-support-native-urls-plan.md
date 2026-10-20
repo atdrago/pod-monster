@@ -20,7 +20,7 @@ deepened: 2026-10-18
 - **Stop conditions:** Stop and report when one of these is true:
   - A session-settled decision proves unworkable.
   - The IndexedDB upgrade of U5 fails for a database at version 5 with data.
-  - Hydration does not end within its time limit when another tab holds the database open at version 5 (KTD13).
+  - The page does not hydrate after the visitor closes another tab that holds the database open at version 5 (KTD13).
   - The `apple-app-site-association` route and its rewrite fallback (KTD12) both fail to serve JSON with status 200.
   - A test shows that a feed URL reaches a Sentry event, a Vercel Analytics event, or a log line that the site writes.
 - **Open blockers:** None for implementation. The Vercel project needs the `APPLE_TEAM_ID` variable before the file of U9 serves anything (see Documentation / Operational Notes). The native share plan says that testers must not receive a build with Share before this work ships.
@@ -162,11 +162,11 @@ The diagram shows R4, R5, R6, and R13. The requirements above are the full rule.
 - Collect a real member-feed URL from Supercast, Memberful, Supporting Cast, Substack, and the private feeds of Transistor, Libsyn, and Acast, and add each one to the shared test cases in both repos. The research confirmed only the Patreon form.
 - Confirm in the native share plan that the app writes `t` in one of the forms of KTD15, and that it encodes the feed URL string that it stores.
 - Ask the user whether every page that comes from the RSS feed, public or not, gets `noindex`. A visitor can make an indexable page from any feed. The "Layered protections" Key Decision ties `noindex` to the private rule only, so this plan does not change it.
-- Escape XML values in the OPML export (`hooks/useOpmlFileUrl.ts`). A title or a URL with `&` makes a file that is not valid. This bug exists today.
+- Escape XML values in the OPML export (`hooks/useOpmlFileUrl.ts`). A title or a URL with `&` makes a file that is not valid. Done in this branch: the export escapes XML attribute values.
 - Move the Podcast Index secret out of the `NEXT_PUBLIC_` variables. A `NEXT_PUBLIC_` value goes into client bundles. This issue exists today.
 - Add logs to the `catch` blocks of the other API routes in `app/api/`, which drop errors today.
 - Keep the `subscribedAt` of a library record that an OPML merge import writes again. This bug exists today.
-- Check that client Sentry starts at all. `instrumentation-client.ts` calls `Sentry.init` inside `onClientInit`, which is not a documented Next.js hook.
+- Check that client Sentry starts at all. `instrumentation-client.ts` called `Sentry.init` inside `onClientInit`, which is not a documented Next.js hook. Done in this branch: `Sentry.init` runs at the top level of the file.
 - Cache public RSS reads across requests, if load needs it (KTD17).
 - Count page views for each show without the feed URL, if a safe key appears.
 
@@ -282,10 +282,10 @@ Product Contract preservation: restructured, no scope change. The Outstanding Qu
   1. The `upgrade` callback creates the three stores for a new database. For any older version, it deletes each store that exists and creates it again. With version 6, the guard `upgradeNewVersion <= 5` of today skips store creation, so new visitors get no stores. The callback calls only synchronous IndexedDB methods, so its transaction does not commit early.
   2. `migrateFrom0To5`, its file, and the `LocalStorageSettings` export go away. The upgrade also removes the old `pod2.settings` localStorage key.
   3. `SettingsContext` owns the key build. Its API takes `{ feedUrl }` and `{ feedUrl, episodeIdentity }`, not key strings, so no reader builds a key a second way.
-  4. The feed key is the decoded feed URL after `URL` parsing, with the fragment removed. Parsing lowercases the scheme and the host and removes a default port. The path and the query stay as they are, because a token is case sensitive.
+  4. The feed key is the decoded feed URL after `URL` parsing, with the fragment removed. Parsing lowercases the scheme and the host and removes a default port. The path and the query stay as they are, because a token is case sensitive. `utils/normalizeFeedUrl.ts` holds this rule, and the `/feeds/` pages use it too (KTD19).
   5. The episode key is the JSON array string of the feed key and the episode identity (KTD5). Rejected: IndexedDB array keys, because the in-memory mirror is a `Record` with string keys, so one string form must exist anyway.
   6. A library record keeps the Podcast Index feed id as a value when Podcast Index knows the show. The new-episode refresh sends only these ids, so no feed URL goes into a query string. A stale id gives no dot, not an error.
-  7. Open handling: the page closes the database on `versionchange` and stops later writes. A `blocked` open, a `VersionError`, or any open failure ends hydration with empty state within 5 seconds, and logs an event. An old tab that runs the version 5 code cannot close itself, so it blocks the upgrade until the visitor closes it.
+  7. Open handling: the page closes the database on `versionchange` and stops later writes. A `VersionError` or any open failure ends hydration with empty state within 5 seconds, and logs an event. An old tab that runs the version 5 code cannot close itself, so it blocks the upgrade until the visitor closes it. Thus, a `blocked` open has no time limit. The page logs an event, asks the visitor to close the other tab, and hydrates when the open completes.
   8. Each write is in a `try`/`catch`. The mirror changes only after the write succeeds, and a failure logs an event.
   9. The provider effect closes its database handle on cleanup, so React Strict Mode does not leave a second handle open.
   10. Hydration of `mediaPlayerSettings` checks the shape at runtime and drops a record without a string feed URL and a string identity.
@@ -308,7 +308,7 @@ Product Contract preservation: restructured, no scope change. The Outstanding Qu
 - KTD16. **A transient failure is an error, not a not-found, and the layout stays.** A timeout, a network error, a body over the cap, or a 5xx status from the feed host throws the fixed error class of KTD9. A new `app/feeds/error.tsx` shows it with a retry button. The only error boundary now is `app/global-error.tsx`, which replaces the root layout and so stops the player. A 429 status counts as transient too. A path that does not decode, a blocked URL, a 401, 403, 404, or 410 status from the feed host, a document that is not a feed, and an unknown episode call `notFound()`. A temporary outage then does not give a 404. Governs R4.
 - KTD17. **No cache across requests, and the `/feeds/` pages stay dynamic.** `React.cache` removes duplicate work in one request. Both `/feeds/` pages call `await connection()`, so a later `revalidate` or `generateStaticParams` cannot put a private page into the Vercel cache. Rejected: `use cache`, which needs the app-wide `cacheComponents` mode. Rejected: a `fetch` cache for Podcast Index, which does not hit because the auth headers change each second. A private feed must not go into a shared cache.
 - KTD18. **Server tests run in a second Vitest project in Node.** Browser mode cannot load `node:dns`, `node:net`, or `undici`. The Node project matches `**/*.node.test.ts`, sets `environment: 'node'`, turns browser mode off, uses no setup file, and does not inherit the root `define` of `process.env`. There, `server-only` resolves to an empty module. The browser project excludes `**/*.node.test.ts`.
-- KTD19. **A segment that is not in canonical form redirects to the canonical form.** The decoder accepts standard base64 and padding, so one episode can have many URLs. Then the `MediaPlayer` path check and `og:url` disagree. A `/feeds/` page whose segment is not `encode(decode(segment))` redirects with status 308 to the canonical path, with the query string. Governs R1, R2.
+- KTD19. **A segment that is not in canonical form redirects to the canonical form.** The decoder accepts standard base64 and padding, so one episode can have many URLs. Then the `MediaPlayer` path check and `og:url` disagree. A `/feeds/` page whose segment is not `encode(decode(segment))` redirects with status 308 to the canonical path, with the query string. The decode of a feed segment also normalizes the feed URL with the rule of the library key (KTD13, item 4). Thus, a feed URL that is not normalized redirects too, and the path, `og:url`, and the library key agree. Governs R1, R2.
 - KTD20. **Every server fetch of a URL from a feed goes through the KTD3 guard.**
   - The episode image probe sends `Range: bytes=0-1048575` through the ranged mode of the guard, and gives those bytes to `probe-image-size`. In ranged mode, as in the native `safeFetch`, a `content-length` over the cap does not fail the read, and the body stops at the cap.
   - The chapters and transcript proxy routes fetch through the guard with a cap of 5 MiB, and return fixed error codes with no message and no stack.
@@ -375,7 +375,9 @@ stateDiagram-v2
   Opening --> Upgrading: older version
   Opening --> Ready: version 6
   Upgrading --> Ready: stores deleted and created
-  Opening --> Empty: blocked, VersionError, or time limit
+  Opening --> Waiting: blocked by an old tab, message shown
+  Waiting --> Upgrading: the old tab closes
+  Opening --> Empty: VersionError or time limit
   Upgrading --> Empty: upgrade fails, database stays at version 5
   Ready --> Closed: versionchange from a newer tab
   Closed --> [*]: writes stop
@@ -402,7 +404,8 @@ stateDiagram-v2
   - A not-found goes to the root `app/not-found.tsx`.
   - A failed image probe logs an event, and the page renders with no image size.
   - A Podcast Index error on an old route gives 503.
-  - A blocked or failed database open ends hydration with empty state. The library shows nothing, and the subscribe button and position writes do nothing until a reload.
+  - A failed database open ends hydration with empty state. The library shows nothing, and the subscribe button and position writes do nothing until a reload.
+  - A blocked database open waits for the old tab. The page asks the visitor to close that tab, and the play and subscribe buttons stay disabled until the open completes.
 - **State lifecycle:**
   - IndexedDB moves from version 5 to version 6. The three stores are deleted and created again, and `mediaPlayerSettings` goes with them.
   - Old tabs block the upgrade until the visitor closes them.
@@ -440,7 +443,7 @@ These are planning guesses that the user did not confirm. Review them in the pul
 | The Vercel scripts send the raw path in a field that `beforeSend` does not cover.                              | The preview check of U11. If it finds a segment, `beforeSend` drops every `/feeds/` event (KTD7).                                                      |
 | A visitor uses up the Podcast Index quota, or makes the server read large bodies, with random `/feeds/` paths. | A Vercel Firewall rate limit (Documentation / Operational Notes), the 10 MiB cap, and the 20-second deadline.                                          |
 | An XSS bug reads private feed URLs from IndexedDB.                                                             | One safe HTML pipeline (KTD22), with tests for script, event handler, and `javascript:` input.                                                         |
-| An old tab blocks the database upgrade.                                                                        | Bounded hydration with empty state (KTD13, item 7).                                                                                                    |
+| An old tab blocks the database upgrade.                                                                        | A message asks the visitor to close the old tab, and the page hydrates when the tab closes (KTD13, item 7).                                            |
 | Apple caches the `apple-app-site-association` file. Devices take up to a week to see a change.                 | Deploy the file before the TestFlight build that adds Share.                                                                                           |
 | `feedsmith` types mark spec-required fields as possibly absent.                                                | The mapper checks each field at runtime, with no `as` and no `!`.                                                                                      |
 | The clean break deletes the library of every web visitor.                                                      | This is R18. AE10 is the test. A visitor can export OPML before the deploy, and the user chose to give no notice.                                      |
@@ -723,7 +726,7 @@ Units run in the order of this table. U5, U6, U13, U12, and U7 form one type-che
 - A new browser with no database opens at version 6 with three stores.
 - A version 5 database with one store missing opens at version 6 with all three stores.
 - A second connection at version 5 that closes on `versionchange` lets the upgrade finish.
-- A second connection at version 5 that ignores `versionchange` blocks the upgrade, and hydration ends with empty state within the time limit.
+- A second connection at version 5 that ignores `versionchange` blocks the upgrade. The page waits with no time limit, and hydrates when that connection closes.
 - A write after `versionchange` does nothing, and the mirror does not change.
 - The `pod2.settings` localStorage key is gone after the upgrade.
 - The same feed URL with an uppercase host and with a fragment gives one feed key. Two URLs that differ only in the query case give two keys.

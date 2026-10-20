@@ -249,7 +249,7 @@ A text scrub finds only the forms that its pattern knows. The segment appears wi
 - An upgrade to `@sentry/nextjs` v11. The `TODO(v11)` at `node_modules/@sentry/core/build/esm/integrations/requestdata.js:5` can change the defaults of point 2. Run `npx vitest run --project node utils/sentryRedaction.node.test.ts` after each Sentry upgrade.
 - The site adds Edge code. Now the site has no `middleware.ts`, no `proxy.ts`, and no `export const runtime` in `app/`. The Edge SDK has its own fetch integration (`node_modules/@sentry/vercel-edge/build/esm/index.js:4972`), and `instrumentation.ts:21-30` adds the Node.js options only for `nodejs`.
 
-A related open item: `instrumentation-client.ts:14-15` calls `Sentry.init` inside `onClientInit`. A search of `node_modules/next` (16.0.7) and `node_modules/@sentry` finds no reference to that name. Thus the client SDK can be inactive now. The plan lists this check as deferred work (`docs/plans/2026-10-18-2030-feat-support-native-urls-plan.md:169`). When someone moves the client `Sentry.init` to a hook that Next.js calls, the client hooks start to run. Keep `createSentryRedactionHooks(window.location.origin)` and keep Replay out at that time.
+A related trap: Next.js does not call a function named `onClientInit`, so a `Sentry.init` inside it never runs. A search of `node_modules/next` (16.0.7) and `node_modules/@sentry` finds no reference to that name. `instrumentation-client.ts` now calls `Sentry.init` at the top level of the file, which Next.js loads in the browser, so the client hooks run. Keep `createSentryRedactionHooks(window.location.origin)` in that call, and keep Replay out. `instrumentation-client.test.ts` checks both.
 
 ## Examples
 
