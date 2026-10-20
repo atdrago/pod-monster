@@ -295,6 +295,7 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
     setChaptersUrl(mediaContextDefaults.chaptersUrl);
     setDidError(mediaContextDefaults.didError);
+    setDuration(mediaContextDefaults.duration);
     setEpisodeIdentity(mediaContextDefaults.episodeIdentity);
     setEpisodeImage(mediaContextDefaults.episodeImage);
     setEpisodeImageDimensions(mediaContextDefaults.episodeImageDimensions);
@@ -391,7 +392,8 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
    * in the player when the time changed. After a change of episode, the time
    * can still belong to the last episode until the media element reports
    * again. Thus, a change of episode only flushes the pending write of the
-   * last episode.
+   * last episode. A new file has a duration of 0 until its metadata loads, so
+   * a write before then keeps the saved duration.
    */
   useEffect(() => {
     if (!isMediaStateHydrated) {
@@ -430,12 +432,19 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
 
     setEpisodeSettingsItemDebounced(
       { episodeIdentity, feedUrl },
-      { currentTime: mediaPlayerCurrentTime, duration },
+      {
+        currentTime: mediaPlayerCurrentTime,
+        duration:
+          duration > 0
+            ? duration
+            : getEpisodeSettingsItem({ episodeIdentity, feedUrl })?.duration,
+      },
     );
   }, [
     duration,
     episodeIdentity,
     feedUrl,
+    getEpisodeSettingsItem,
     isMediaStateHydrated,
     mediaPlayerCurrentTime,
     setEpisodeSettingsItemDebounced,

@@ -285,6 +285,23 @@ describe('MediaContext', () => {
     });
   });
 
+  describe('reset', () => {
+    it('should reset the duration with the rest of the player', async () => {
+      const { result } = await renderHydratedContexts();
+
+      act(() => {
+        result.current.media.setFeedUrl(FEED_URL);
+        result.current.media.setEpisodeIdentity('episode-a');
+        result.current.media.setSrc('https://example.com/episode-a.mp3');
+        result.current.media.setDuration(3600);
+      });
+      act(() => result.current.media.resetMediaContext());
+
+      expect(result.current.media.src).toBeNull();
+      expect(result.current.media.duration).toBe(0);
+    });
+  });
+
   describe('chapters', () => {
     it('should load the chapters of an episode with a chapters URL and no `dateCrawled`', async () => {
       vi.mocked(fetchPodcastEpisodeChapters).mockResolvedValue([

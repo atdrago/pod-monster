@@ -244,6 +244,50 @@ describe('usePlayEpisodeAt', () => {
     expect(result.current.media.isPaused).toBe(false);
   });
 
+  it('should save the position of a new episode with its saved duration, not the duration of the last episode', async () => {
+    await seedSettings({ currentTime: 120 });
+
+    const { result } = await renderHydratedPlayEpisodeAt();
+
+    act(() => {
+      result.current.media.setFeedUrl(EPISODE.feedUrl);
+      result.current.media.setEpisodeIdentity('episode-0');
+      result.current.media.setSrc('https://example.com/episode-0.mp3');
+      result.current.media.setDuration(1800);
+    });
+    await act(() => result.current.playEpisodeAt());
+
+    expect(result.current.media.duration).toBe(0);
+
+    await act(() => new Promise((resolve) => setTimeout(resolve, 700)));
+
+    expect(
+      result.current.settings.getEpisodeSettingsItem(EPISODE_REFERENCE),
+    ).toEqual({ currentTime: 120, duration: 3600 });
+
+    act(() => result.current.media.setDuration(3601));
+    await act(() => new Promise((resolve) => setTimeout(resolve, 700)));
+
+    expect(
+      result.current.settings.getEpisodeSettingsItem(EPISODE_REFERENCE),
+    ).toEqual({ currentTime: 120, duration: 3601 });
+  });
+
+  it('should keep the duration when the new episode has the same file as the last episode', async () => {
+    const { result } = await renderHydratedPlayEpisodeAt();
+
+    act(() => {
+      result.current.media.setFeedUrl(EPISODE.feedUrl);
+      result.current.media.setEpisodeIdentity('episode-0');
+      result.current.media.setSrc(EPISODE.enclosureUrl ?? null);
+      result.current.media.setDuration(3600);
+    });
+    await act(() => result.current.playEpisodeAt());
+
+    expect(result.current.media.episodeIdentity).toBe(EPISODE.identity);
+    expect(result.current.media.duration).toBe(3600);
+  });
+
   it('should do nothing for an episode with no enclosure URL', async () => {
     const { result } = await renderHydratedPlayEpisodeAt({
       ...EPISODE,

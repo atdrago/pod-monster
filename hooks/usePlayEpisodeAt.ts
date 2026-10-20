@@ -48,6 +48,7 @@ export const usePlayEpisodeAt = ({
     setChaptersUrl,
     setCurrentTime,
     setDidError,
+    setDuration,
     setEpisodeIdentity,
     setEpisodeImage,
     setEpisodeImageDimensions,
@@ -83,6 +84,12 @@ export const usePlayEpisodeAt = ({
         episodeIdentity: episode.identity,
         feedUrl: episode.feedUrl,
       })?.currentTime;
+
+      // The media element reports the duration of a new file only after it
+      // loads the metadata, and it does not report the same file again.
+      if (enclosureUrl !== src) {
+        setDuration(0);
+      }
 
       setChaptersUrl(episode.chaptersUrl ?? null);
       setCurrentTime(startTime ?? savedCurrentTime ?? 0);
