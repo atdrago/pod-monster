@@ -232,24 +232,35 @@ describe('SettingsContext', () => {
     });
   });
 
-  describe('open failures', () => {
-    it('should end hydration with empty state when an old connection blocks the upgrade', async () => {
+  describe('a blocked open', () => {
+    it('should wait for an old tab to close, then hydrate with no reload', async () => {
       const oldConnection = await createVersion5Database();
+      let isOldConnectionOpen = true;
 
       try {
         const { result } = renderSettingsContext();
 
-        await waitFor(
-          () => expect(result.current.isDoneHydratingFromIdb).toBe(true),
-          { timeout: 5000 },
+        await waitFor(() =>
+          expect(result.current.isBlockedByAnotherTab).toBe(true),
         );
 
-        expect(result.current.feedSettings).toEqual({});
+        expect(result.current.isDoneHydratingFromIdb).toBe(false);
         expect(captureMessage).toHaveBeenCalledWith(
+          'settings_db_open_blocked',
+          { level: 'warning' },
+        );
+
+        oldConnection.close();
+        isOldConnectionOpen = false;
+
+        await waitFor(() =>
+          expect(result.current.isDoneHydratingFromIdb).toBe(true),
+        );
+
+        expect(result.current.isBlockedByAnotherTab).toBe(false);
+        expect(captureMessage).not.toHaveBeenCalledWith(
           'settings_db_open_failed',
-          expect.objectContaining({
-            extra: expect.objectContaining({ reason: 'blocked' }),
-          }),
+          expect.anything(),
         );
 
         await act(() =>
@@ -259,12 +270,48 @@ describe('SettingsContext', () => {
           ),
         );
 
-        expect(result.current.feedSettings).toEqual({});
+        expect(
+          result.current.getFeedSettingsItem({ feedUrl: FEED_URL }),
+        ).toEqual(FEED_SETTINGS_ITEM);
+        expect(await readDatabase()).toEqual({
+          counts: [0, 1, 0],
+          storeNames: STORE_NAMES,
+          version: 6,
+        });
       } finally {
-        oldConnection.close();
+        if (isOldConnectionOpen) {
+          oldConnection.close();
+        }
       }
     });
 
+    it('should keep the wait past the time limit of 5 seconds', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+
+      const openRequest = Object.setPrototypeOf(
+        new EventTarget(),
+        IDBOpenDBRequest.prototype,
+      );
+
+      vi.spyOn(indexedDB, 'open').mockReturnValue(openRequest);
+
+      const { result } = renderSettingsContext();
+
+      act(() => {
+        openRequest.dispatchEvent(new Event('blocked'));
+      });
+      await act(() => vi.advanceTimersByTimeAsync(60_000));
+
+      expect(result.current.isBlockedByAnotherTab).toBe(true);
+      expect(result.current.isDoneHydratingFromIdb).toBe(false);
+      expect(captureMessage).not.toHaveBeenCalledWith(
+        'settings_db_open_failed',
+        expect.anything(),
+      );
+    });
+  });
+
+  describe('open failures', () => {
     it('should end hydration with empty state when the open does not settle within 5 seconds', async () => {
       vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
       vi.spyOn(indexedDB, 'open').mockReturnValue(

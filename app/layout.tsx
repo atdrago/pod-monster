@@ -4,6 +4,7 @@ import 'styles/globals.css';
 import { Viewport } from 'next';
 
 import { CenteredPageLayout } from 'components/layouts/CenteredPageLayout';
+import { AnotherTabNotice } from 'components/molecules/AnotherTabNotice';
 import { Footer } from 'components/molecules/Footer';
 import { MediaPlayer } from 'components/organisms/MediaPlayer';
 import { vars } from 'styles';
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
       <body>
         <Providers>
           <CenteredPageLayout>
+            <AnotherTabNotice />
             {children}
             <MediaPlayer />
             <Footer />

@@ -85,6 +85,12 @@ interface SettingsContext {
   ) => FeedSettingsItem | undefined;
   /** The player state that the database held when hydration ended. */
   hydratedMediaPlayerSettings?: HydratedMediaPlayerSettings;
+  /**
+   * True while a tab with an old version of the site keeps the database open,
+   * and so blocks the upgrade. Hydration ends when the visitor closes that
+   * tab.
+   */
+  isBlockedByAnotherTab: boolean;
   isDoneHydratingFromIdb: boolean;
   /** Replaces the library. Each key of `nextFeedSettings` is a feed URL. */
   setAllFeedSettings: (nextFeedSettings: FeedSettings) => Promise<void>;
@@ -103,6 +109,7 @@ const SettingsContext = createContext<SettingsContext>({
   feedSettings: {},
   getEpisodeSettingsItem: (_) => undefined,
   getFeedSettingsItem: (_) => undefined,
+  isBlockedByAnotherTab: false,
   isDoneHydratingFromIdb: false,
   setAllFeedSettings: async (_) => {},
   setEpisodeSettingsItem: async (_) => {},
@@ -121,11 +128,7 @@ const STORE_NAMES: Array<StoreNames<PodMonsterDb>> = [
   'mediaPlayerSettings',
 ];
 
-type HydrationFailureReason =
-  | 'blocked'
-  | 'open_failed'
-  | 'read_failed'
-  | 'timeout';
+type HydrationFailureReason = 'open_failed' | 'read_failed' | 'timeout';
 
 let lastFeedKeyInput: string | undefined;
 let lastFeedKeyResult: string | null = null;
@@ -289,15 +292,17 @@ export const SettingsProvider: FunctionComponent<
   const [feedSettings, setFeedSettings] = useState<FeedSettings>({});
   const [hydratedMediaPlayerSettings, setHydratedMediaPlayerSettings] =
     useState<HydratedMediaPlayerSettings | undefined>();
+  const [isBlockedByAnotherTab, setIsBlockedByAnotherTab] = useState(false);
   const [isDoneHydratingFromIdb, setIsDoneHydratingFromIdb] = useState(false);
   const databaseRef = useRef<IDBPDatabase<PodMonsterDb> | null>(null);
 
   /**
    * Open the database and hydrate the state. Hydration ends within the time
-   * limit. A blocked open, an open failure, or the time limit ends it with
-   * empty state, and writes then do nothing until a reload. An old tab that
-   * runs the version 5 code cannot close its connection, so it blocks the
-   * upgrade until the visitor closes it.
+   * limit. An open failure or the time limit ends it with empty state, and
+   * writes then do nothing until a reload. An old tab that runs the version 5
+   * code cannot close its connection, so it blocks the upgrade until the
+   * visitor closes it. A blocked open thus has no time limit: the page asks
+   * the visitor to close the old tab, and hydrates when the open completes.
    */
   useEffect(() => {
     let database: IDBPDatabase<PodMonsterDb> | null = null;
@@ -336,7 +341,18 @@ export const SettingsProvider: FunctionComponent<
             : { errorName: getErrorName(error), reason },
         level: 'warning',
       });
+      setIsBlockedByAnotherTab(false);
       setIsDoneHydratingFromIdb(true);
+    };
+
+    const waitForAnotherTab = () => {
+      if (hasHydrationEnded || isUnmounted) {
+        return;
+      }
+
+      clearTimeout(hydrationTimeoutId);
+      captureMessage('settings_db_open_blocked', { level: 'warning' });
+      setIsBlockedByAnotherTab(true);
     };
 
     const openAndHydrate = async () => {
@@ -347,7 +363,7 @@ export const SettingsProvider: FunctionComponent<
           DATABASE_NAME,
           SETTINGS_VERSION,
           {
-            blocked: () => endHydrationWithEmptyState('blocked'),
+            blocked: waitForAnotherTab,
             // Another tab opens a newer version. Close, so that its upgrade
             // can go on, and stop the writes of this tab.
             blocking: closeDatabase,
@@ -391,6 +407,7 @@ export const SettingsProvider: FunctionComponent<
       setEpisodeSettings(settings.episodeSettings);
       setFeedSettings(settings.feedSettings);
       setHydratedMediaPlayerSettings(settings.hydratedMediaPlayerSettings);
+      setIsBlockedByAnotherTab(false);
       setIsDoneHydratingFromIdb(true);
     };
 
@@ -566,6 +583,7 @@ export const SettingsProvider: FunctionComponent<
         getEpisodeSettingsItem,
         getFeedSettingsItem,
         hydratedMediaPlayerSettings,
+        isBlockedByAnotherTab,
         isDoneHydratingFromIdb,
         setAllFeedSettings,
         setEpisodeSettingsItem,
