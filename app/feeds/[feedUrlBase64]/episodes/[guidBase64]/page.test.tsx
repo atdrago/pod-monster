@@ -89,6 +89,22 @@ describe('feeds episode page', () => {
     expect(loadEpisode).not.toHaveBeenCalled();
   });
 
+  it('should redirect a feed URL that is not normalized to the path of the normalized URL, and keep `t`', async () => {
+    await expect(
+      Page(
+        createProps(
+          encodeBase64Url('HTTPS://Example.com:443/feed.xml#top'),
+          encodeBase64Url(EPISODE_IDENTITY),
+          { t: '90' },
+        ),
+      ),
+    ).rejects.toThrow('NEXT_REDIRECT');
+    expect(permanentRedirect).toHaveBeenCalledWith(
+      `${getEpisodePath({ episodeIdentity: EPISODE_IDENTITY, feedUrl: FEED_URL })}?t=90`,
+    );
+    expect(loadEpisode).not.toHaveBeenCalled();
+  });
+
   it('should answer an episode segment that does not decode with not found, and load nothing', async () => {
     await expect(
       Page(createProps(encodeBase64Url(FEED_URL), 'not*base64')),

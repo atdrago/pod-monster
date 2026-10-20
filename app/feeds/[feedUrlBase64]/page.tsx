@@ -15,10 +15,7 @@ import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { Funding } from 'components/molecules/Funding';
 import { Header } from 'components/molecules/Header';
 import { headingLink } from 'styles';
-import {
-  decodeFeedUrlSegment,
-  isCanonicalBase64UrlSegment,
-} from 'utils/base64Url';
+import { decodeFeedUrlSegment, encodeBase64Url } from 'utils/base64Url';
 import { createMetadata } from 'utils/createMetadata';
 import { getPodcastPath, type SearchParams, toQueryString } from 'utils/paths';
 import { loadShow } from 'utils/server/loadFeed';
@@ -86,10 +83,11 @@ const toEpisodeListEpisode = ({
 });
 
 /**
- * Returns the segment when it is the canonical base64url form of its feed URL.
- * Else, redirects to the canonical path. The decoder also accepts standard
- * base64 and padding, but one show must have one path, so that `og:url` and
- * the path check of the player agree with the address bar.
+ * Returns the segment when it is the canonical base64url form of its
+ * normalized feed URL. Else, redirects to the canonical path. The decoder also
+ * accepts standard base64, padding, and a feed URL that is not normalized, but
+ * one show must have one path. Thus, `og:url`, the library key, and the path
+ * check of the player agree with the address bar.
  */
 async function getCanonicalSegment({
   params,
@@ -98,15 +96,14 @@ async function getCanonicalSegment({
   // Next.js passes each param through `encodeURIComponent`, so the padding of
   // standard base64 arrives as `%3D`.
   const feedUrlBase64 = decodeURIComponent((await params).feedUrlBase64);
-
-  if (isCanonicalBase64UrlSegment(feedUrlBase64)) {
-    return feedUrlBase64;
-  }
-
   const feedUrl = decodeFeedUrlSegment(feedUrlBase64);
 
   if (feedUrl === null) {
     notFound();
+  }
+
+  if (encodeBase64Url(feedUrl) === feedUrlBase64) {
+    return feedUrlBase64;
   }
 
   permanentRedirect(

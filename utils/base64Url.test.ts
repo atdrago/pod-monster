@@ -2,7 +2,6 @@ import {
   decodeBase64UrlSegment,
   decodeFeedUrlSegment,
   encodeBase64Url,
-  isCanonicalBase64UrlSegment,
 } from './base64Url';
 
 const ATP_FEED_URL = 'https://cdn.atp.fm/rss/public?wtvryzdm';
@@ -132,6 +131,22 @@ describe('base64Url', () => {
       expect(decodeFeedUrlSegment('%%%')).toBeNull();
     });
 
+    it('should return the normalized form of the feed URL', () => {
+      expect(
+        decodeFeedUrlSegment(
+          encodeBase64Url('HTTPS://Example.com:443/Feed.xml?auth=AbC#top'),
+        ),
+      ).toBe('https://example.com/Feed.xml?auth=AbC');
+    });
+
+    it('should return null when the normalized feed URL is over 2048 characters', () => {
+      const prefix = 'https://example.com/';
+      // The decoded value has 2048 characters, but each space becomes `%20`.
+      const feedUrl = `${prefix}${' '.repeat(2047 - prefix.length)}a`;
+
+      expect(decodeFeedUrlSegment(encodeBase64Url(feedUrl))).toBeNull();
+    });
+
     it('should accept a decoded value of 2048 characters', () => {
       const prefix = 'https://example.com/';
       const feedUrl = prefix + 'a'.repeat(2048 - prefix.length);
@@ -144,27 +159,6 @@ describe('base64Url', () => {
       const feedUrl = prefix + 'a'.repeat(2049 - prefix.length);
 
       expect(decodeFeedUrlSegment(encodeBase64Url(feedUrl))).toBeNull();
-    });
-  });
-
-  describe('isCanonicalBase64UrlSegment', () => {
-    it('should return true for a segment from the encoder', () => {
-      expect(isCanonicalBase64UrlSegment(ATP_CANONICAL_SEGMENT)).toBe(true);
-    });
-
-    it('should return false for the standard base64 form and the padded form', () => {
-      expect(isCanonicalBase64UrlSegment(ATP_STANDARD_BASE64)).toBe(false);
-      expect(isCanonicalBase64UrlSegment(ATP_PADDED_BASE64_URL)).toBe(false);
-    });
-
-    it('should return false for a segment with extra bits in its last character', () => {
-      expect(decodeBase64UrlSegment('QR')).toBe('A');
-      expect(isCanonicalBase64UrlSegment('QR')).toBe(false);
-    });
-
-    it('should return false for a segment that does not decode', () => {
-      expect(isCanonicalBase64UrlSegment('%%%')).toBe(false);
-      expect(isCanonicalBase64UrlSegment('')).toBe(false);
     });
   });
 });

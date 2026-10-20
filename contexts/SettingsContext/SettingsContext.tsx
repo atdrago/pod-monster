@@ -15,6 +15,7 @@ import {
 
 import type { DBSchema, IDBPDatabase, StoreNames } from 'idb';
 
+import { normalizeFeedUrl } from 'utils/normalizeFeedUrl';
 import type { EpisodeReference, FeedReference } from 'utils/paths';
 import type { PlaybackRate } from 'utils/playbackRates';
 
@@ -130,24 +131,15 @@ let lastFeedKeyInput: string | undefined;
 let lastFeedKeyResult: string | null = null;
 
 /**
- * The parse lowercases the scheme and the host, and removes a default port.
- * The path and the query keep their case, because a feed token is case
- * sensitive. Each row of a list asks for the key of the same feed URL. Thus,
- * the function keeps the last input and its result.
+ * Each row of a list asks for the key of the same feed URL. Thus, the function
+ * keeps the last input and its result.
  */
 const getFeedKey = (feedUrl: string): string | null => {
   if (feedUrl === lastFeedKeyInput) {
     return lastFeedKeyResult;
   }
 
-  let feedKey: string | null = null;
-
-  if (URL.canParse(feedUrl)) {
-    const url = new URL(feedUrl);
-
-    url.hash = '';
-    feedKey = url.href;
-  }
+  const feedKey = normalizeFeedUrl(feedUrl);
 
   lastFeedKeyInput = feedUrl;
   lastFeedKeyResult = feedKey;

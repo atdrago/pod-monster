@@ -73,13 +73,36 @@ describe('feeds show page', () => {
     expect(loadShow).not.toHaveBeenCalled();
   });
 
-  it('should answer a segment that does not decode with not found, and load nothing', async () => {
-    await expect(Page(createProps('not*base64'))).rejects.toThrow(
-      'NEXT_NOT_FOUND',
+  it('should redirect a feed URL that is not normalized to the path of the normalized URL, and keep the query', async () => {
+    await expect(
+      Page(
+        createProps(encodeBase64Url('HTTPS://Example.com:443/feed.xml#top'), {
+          ref: 'share',
+        }),
+      ),
+    ).rejects.toThrow('NEXT_REDIRECT');
+    expect(permanentRedirect).toHaveBeenCalledWith(
+      `${getPodcastPath({ feedUrl: FEED_URL })}?ref=share`,
     );
-    expect(notFound).toHaveBeenCalledOnce();
     expect(loadShow).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ['does not decode', 'not*base64'],
+    [
+      'holds a URL of another protocol',
+      encodeBase64Url('ftp://example.com/feed.xml'),
+    ],
+  ])(
+    'should answer a segment that %s with not found, and load nothing',
+    async (_, feedUrlBase64) => {
+      await expect(Page(createProps(feedUrlBase64))).rejects.toThrow(
+        'NEXT_NOT_FOUND',
+      );
+      expect(notFound).toHaveBeenCalledOnce();
+      expect(loadShow).not.toHaveBeenCalled();
+    },
+  );
 
   it('should answer a show that neither source knows with not found', async () => {
     vi.mocked(loadShow).mockResolvedValue({ kind: 'not_found' });

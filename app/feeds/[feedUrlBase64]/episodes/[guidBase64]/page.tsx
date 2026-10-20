@@ -10,7 +10,7 @@ import type { ImageDimensions } from 'types';
 import {
   decodeBase64UrlSegment,
   decodeFeedUrlSegment,
-  isCanonicalBase64UrlSegment,
+  encodeBase64Url,
 } from 'utils/base64Url';
 import { createMetadata } from 'utils/createMetadata';
 import { getEpisodePath, type SearchParams, toQueryString } from 'utils/paths';
@@ -54,9 +54,10 @@ const toEpisodePageFeed = ({
 
 /**
  * Returns the segments when each one is the canonical base64url form of its
- * value. Else, redirects to the canonical path. The decoder also accepts
- * standard base64 and padding, but one episode must have one path, so that
- * `og:url` and the path check of the player agree with the address bar.
+ * value, and the feed URL is normalized. Else, redirects to the canonical
+ * path. The decoder also accepts standard base64, padding, and a feed URL that
+ * is not normalized, but one episode must have one path. Thus, `og:url`, the
+ * library key, and the path check of the player agree with the address bar.
  */
 async function getCanonicalSegments({
   params,
@@ -67,19 +68,18 @@ async function getCanonicalSegments({
   // standard base64 arrives as `%3D`.
   const feedUrlBase64 = decodeURIComponent(encodedSegments.feedUrlBase64);
   const guidBase64 = decodeURIComponent(encodedSegments.guidBase64);
-
-  if (
-    isCanonicalBase64UrlSegment(feedUrlBase64) &&
-    isCanonicalBase64UrlSegment(guidBase64)
-  ) {
-    return { feedUrlBase64, guidBase64 };
-  }
-
   const feedUrl = decodeFeedUrlSegment(feedUrlBase64);
   const episodeIdentity = decodeBase64UrlSegment(guidBase64);
 
   if (feedUrl === null || episodeIdentity === null) {
     notFound();
+  }
+
+  if (
+    encodeBase64Url(feedUrl) === feedUrlBase64 &&
+    encodeBase64Url(episodeIdentity) === guidBase64
+  ) {
+    return { feedUrlBase64, guidBase64 };
   }
 
   permanentRedirect(

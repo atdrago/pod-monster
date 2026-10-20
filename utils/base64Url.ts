@@ -1,3 +1,4 @@
+import { normalizeFeedUrl } from 'utils/normalizeFeedUrl';
 import { toHttpUrl } from 'utils/toHttpUrl';
 
 // TODO: Use `Uint8Array.fromBase64` and `Uint8Array.prototype.toBase64` with the `base64url`
@@ -64,25 +65,18 @@ export function decodeBase64UrlSegment(segment: string): string | null {
 }
 
 /**
- * The feed URL of a `/feeds/` segment, or `null` when the value is not an `http:` or `https:` URL
- * of at most 2048 characters.
+ * The normalized feed URL of a `/feeds/` segment, or `null` when the value is not an `http:` or
+ * `https:` URL of at most 2048 characters. The function checks the length of the normalized URL,
+ * so the segment of the result decodes to the same URL.
  */
 export function decodeFeedUrlSegment(segment: string): string | null {
-  const feedUrl = decodeBase64UrlSegment(segment);
+  const decodedValue = decodeBase64UrlSegment(segment);
+  const feedUrl =
+    decodedValue === null || toHttpUrl(decodedValue) === undefined
+      ? null
+      : normalizeFeedUrl(decodedValue);
 
-  if (feedUrl === null || feedUrl.length > MAX_FEED_URL_LENGTH) {
-    return null;
-  }
-
-  return toHttpUrl(feedUrl) ?? null;
-}
-
-/**
- * True only for the one segment that `encodeBase64Url` gives for the value. A page redirects any
- * other form of the same value to this segment.
- */
-export function isCanonicalBase64UrlSegment(segment: string): boolean {
-  const value = decodeBase64UrlSegment(segment);
-
-  return value !== null && encodeBase64Url(value) === segment;
+  return feedUrl === null || feedUrl.length > MAX_FEED_URL_LENGTH
+    ? null
+    : feedUrl;
 }
