@@ -1,5 +1,7 @@
 import { captureMessage } from '@sentry/nextjs';
 import { Resolver } from 'node:dns/promises';
+import net from 'node:net';
+import tls from 'node:tls';
 
 import {
   type DnsLookup,
@@ -903,6 +905,72 @@ describe('safeFetchFeed', () => {
       expect(result).toEqual({ kind: 'error', reason: 'blocked' });
       expect(fetchFn).not.toHaveBeenCalled();
     });
+  });
+
+  // Every other test gives a fake fetch, which does not pin the connection.
+  // These tests run the default undici fetch and stop it at the socket, so
+  // that a later undici version that drops `connect.lookup` fails here.
+  describe('the default fetch', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it.each([
+      {
+        connectModule: net,
+        feedUrl: 'http://feeds.example.com/feed.xml',
+        name: 'net.connect',
+      },
+      {
+        connectModule: tls,
+        feedUrl: 'https://feeds.example.com/feed.xml',
+        name: 'tls.connect',
+      },
+    ])(
+      'should give $name only the checked address of the host',
+      async ({ connectModule, feedUrl }) => {
+        const connectOptions: Array<net.TcpNetConnectOpts> = [];
+        const connectSpy = vi
+          .spyOn(connectModule, 'connect')
+          .mockImplementation(((options: net.TcpNetConnectOpts) => {
+            connectOptions.push(options);
+
+            const socket = new net.Socket();
+
+            process.nextTick(() => {
+              socket.destroy(new Error('The test opens no connection'));
+            });
+
+            return socket;
+          }) as typeof connectModule.connect);
+
+        const result = await safeFetchFeed(feedUrl, {
+          dnsLookup: publicDnsLookup,
+        });
+
+        expect(result.kind).toBe('error');
+        expect(connectSpy).toHaveBeenCalledOnce();
+
+        const [options] = connectOptions;
+
+        expect(options.host).toBe('feeds.example.com');
+        expect(options.lookup).toBeTypeOf('function');
+
+        const resolvedAddress = await new Promise((resolve, reject) => {
+          options.lookup?.('feeds.example.com', {}, (error, address) => {
+            if (error) {
+              reject(error);
+
+              return;
+            }
+
+            resolve(address);
+          });
+        });
+
+        expect(resolvedAddress).toBe(PUBLIC_IPV4);
+      },
+    );
   });
 
   describe('pinLookup', () => {
