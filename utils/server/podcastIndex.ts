@@ -6,6 +6,8 @@ import {
   getAuthValues,
   NetworkError,
   type PodcastIndexConfig,
+  podcastsByFeedId,
+  podcastsByFeedUrl,
 } from '@atdrago/podcast-index';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 
@@ -15,6 +17,14 @@ type PodcastIndexEndpoint =
   | 'episodes/byid'
   | 'podcasts/byfeedid'
   | 'podcasts/byfeedurl';
+
+export type PodcastIndexFeed = Awaited<
+  ReturnType<typeof podcastsByFeedId>
+>['feed'];
+
+type PodcastIndexFeedByUrl = Awaited<
+  ReturnType<typeof podcastsByFeedUrl>
+>['feed'];
 
 export const PODCAST_INDEX_ID_PATTERN = /^\d+$/;
 
@@ -48,6 +58,40 @@ export function isSuccess(
   response: unknown,
 ): response is Record<string, unknown> {
   return isRecord(response) && response.status === 'true';
+}
+
+/**
+ * A feed that Podcast Index does not know is `[]` or `{}`.
+ */
+export async function fetchPodcastIndexFeedById(
+  feedId: string,
+  config: PodcastIndexConfig,
+): Promise<PodcastIndexFeed | undefined> {
+  const response = await podcastsByFeedId(feedId, config);
+  const untypedResponse: unknown = response;
+
+  return isSuccess(untypedResponse) &&
+    isRecord(untypedResponse.feed) &&
+    typeof untypedResponse.feed.id === 'number'
+    ? response.feed
+    : undefined;
+}
+
+/**
+ * A feed that Podcast Index does not know is `[]` or `{}`.
+ */
+export async function fetchPodcastIndexFeedByUrl(
+  feedUrl: string,
+  config: PodcastIndexConfig,
+): Promise<PodcastIndexFeedByUrl | undefined> {
+  const response = await podcastsByFeedUrl(feedUrl, config);
+  const untypedResponse: unknown = response;
+
+  return isSuccess(untypedResponse) &&
+    isRecord(untypedResponse.feed) &&
+    typeof untypedResponse.feed.id === 'number'
+    ? response.feed
+    : undefined;
 }
 
 /**

@@ -119,6 +119,26 @@ describe('OPML import route', () => {
     expectNoFeedUrlInLogs(PATREON_FEED_URL);
   });
 
+  it.each([
+    { name: 'not a URL', xmlUrl: 'not a feed url' },
+    { name: 'not an http URL', xmlUrl: 'ftp://example.com/feed.xml' },
+  ])(
+    'should make no Podcast Index call for an xmlUrl that is $name, and report it as not imported',
+    async ({ xmlUrl }) => {
+      const fetchSpy = stubPodcastIndex(PODCAST_INDEX_FEED_HIT);
+
+      const response = await POST(
+        createImportRequest(createOpml([{ title: 'OPML Show', xmlUrl }])),
+      );
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      await expect(response.json()).resolves.toEqual({
+        errors: [{ feedUrl: xmlUrl, title: 'OPML Show' }],
+        feedSettings: {},
+      });
+    },
+  );
+
   it('should key a feed that Podcast Index knows by the OPML xmlurl, with the Podcast Index feed id as a value', async () => {
     const fetchSpy = stubPodcastIndex(PODCAST_INDEX_FEED_HIT);
 
@@ -206,9 +226,39 @@ describe('OPML import route', () => {
       feedSettings: {},
     });
     expect(captureMessage).toHaveBeenCalledWith(
-      'opml_import_podcast_index_failed',
+      'podcast_index_unavailable',
       expect.objectContaining({
-        extra: expect.objectContaining({ status: 500 }),
+        extra: expect.objectContaining({
+          endpoint: 'podcasts/byfeedurl',
+          status: 500,
+        }),
+        level: 'warning',
+      }),
+    );
+    expectNoFeedUrlInLogs(FEED_URL);
+  });
+
+  it('should log a Podcast Index 401 as an auth failure at level error, and report the feed as not imported', async () => {
+    stubPodcastIndex(async () => new Response('Unauthorized', { status: 401 }));
+
+    const response = await POST(
+      createImportRequest(
+        createOpml([{ title: 'OPML Show', xmlUrl: FEED_URL }]),
+      ),
+    );
+
+    await expect(response.json()).resolves.toEqual({
+      errors: [{ feedUrl: FEED_URL, title: 'OPML Show' }],
+      feedSettings: {},
+    });
+    expect(captureMessage).toHaveBeenCalledWith(
+      'podcast_index_auth_failed',
+      expect.objectContaining({
+        extra: expect.objectContaining({
+          endpoint: 'podcasts/byfeedurl',
+          status: 401,
+        }),
+        level: 'error',
       }),
     );
     expectNoFeedUrlInLogs(FEED_URL);

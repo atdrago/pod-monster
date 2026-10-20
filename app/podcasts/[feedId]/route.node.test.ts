@@ -86,6 +86,10 @@ describe('podcasts show route', () => {
   it.each([
     { feed: [], name: 'an array' },
     { feed: {}, name: 'an empty object' },
+    {
+      feed: { url: 'https://example.com/feed.xml' },
+      name: 'a record with no numeric id',
+    },
   ])(
     'should answer a feed id that Podcast Index does not know, with $name as the feed, with 404',
     async ({ feed }) => {

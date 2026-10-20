@@ -1,21 +1,15 @@
-import {
-  type PodcastIndexConfig,
-  podcastsByFeedId,
-} from '@atdrago/podcast-index';
 import { getPodcastPath } from 'utils/paths';
 import {
   createPodcastIndexConfig,
-  isRecord,
-  isSuccess,
+  fetchPodcastIndexFeedById,
   logPodcastIndexFailure,
   PODCAST_INDEX_ID_PATTERN,
+  type PodcastIndexFeed,
 } from 'utils/server/podcastIndex';
 
 interface ShowRouteContext {
   params: Promise<{ feedId: string }>;
 }
-
-type PodcastIndexFeed = Awaited<ReturnType<typeof podcastsByFeedId>>['feed'];
 
 /**
  * Redirects an old `/podcasts/<feedId>` link to the `/feeds/` path of the same
@@ -42,7 +36,7 @@ export async function GET(
   let feed: PodcastIndexFeed | undefined;
 
   try {
-    feed = await fetchFeed(feedId, config);
+    feed = await fetchPodcastIndexFeedById(feedId, config);
   } catch (error) {
     logPodcastIndexFailure('podcasts/byfeedid', error);
 
@@ -58,19 +52,4 @@ export async function GET(
   redirectUrl.pathname = getPodcastPath({ feedUrl: feed.url });
 
   return Response.redirect(redirectUrl, 308);
-}
-
-/**
- * A feed that Podcast Index does not know is `[]` or `{}`.
- */
-async function fetchFeed(
-  feedId: string,
-  config: PodcastIndexConfig,
-): Promise<PodcastIndexFeed | undefined> {
-  const response = await podcastsByFeedId(feedId, config);
-  const untypedResponse: unknown = response;
-
-  return isSuccess(untypedResponse) && isRecord(untypedResponse.feed)
-    ? response.feed
-    : undefined;
 }

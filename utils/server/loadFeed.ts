@@ -6,7 +6,6 @@ import {
   episodeByGuid,
   episodesByFeedId,
   type PodcastIndexConfig,
-  podcastsByFeedUrl,
 } from '@atdrago/podcast-index';
 import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
 import { decodeBase64UrlSegment, decodeFeedUrlSegment } from 'utils/base64Url';
@@ -19,6 +18,7 @@ import {
 import { parseRssFeed } from 'utils/server/parseRssFeed';
 import {
   createPodcastIndexConfig,
+  fetchPodcastIndexFeedByUrl,
   isRecord,
   isSuccess,
   logPodcastIndexFailure,
@@ -205,15 +205,11 @@ async function fetchPodcastIndexFeed(
   config: PodcastIndexConfig,
 ): Promise<PodcastFeed | undefined> {
   try {
-    const response = await podcastsByFeedUrl(feedUrl, config);
-    const untypedResponse: unknown = response;
+    const podcastIndexFeed = await fetchPodcastIndexFeedByUrl(feedUrl, config);
 
-    // A feed that Podcast Index does not know is `[]` or `{}`.
-    return isSuccess(untypedResponse) &&
-      isRecord(untypedResponse.feed) &&
-      typeof untypedResponse.feed.id === 'number'
-      ? mapPodcastIndexFeed(response.feed, feedUrl)
-      : undefined;
+    return podcastIndexFeed === undefined
+      ? undefined
+      : mapPodcastIndexFeed(podcastIndexFeed, feedUrl);
   } catch (error) {
     logPodcastIndexFailure('podcasts/byfeedurl', error);
 

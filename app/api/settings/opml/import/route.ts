@@ -6,19 +6,18 @@ import {
   opmlToJSON,
 } from 'opml-to-json';
 
-import {
-  getAuthValues,
-  NetworkError,
-  type PodcastIndexConfig,
-  podcastsByFeedUrl,
-} from '@atdrago/podcast-index';
+import { getAuthValues, type PodcastIndexConfig } from '@atdrago/podcast-index';
 import type { FeedSettings } from 'contexts/SettingsContext';
 import type { OpmlImportResponse } from 'rest/fetchOpmlImport';
 import { createApiErrorResponse } from 'utils/createApiErrorResponse';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { isPrivateFeedUrl } from 'utils/isPrivateFeedUrl';
 import { mapPodcastIndexFeed } from 'utils/server/mapPodcastIndexFeed';
-import { isRecord, isSuccess } from 'utils/server/podcastIndex';
+import {
+  fetchPodcastIndexFeedByUrl,
+  logPodcastIndexFailure,
+} from 'utils/server/podcastIndex';
+import { toHttpUrl } from 'utils/toHttpUrl';
 
 type OpmlFeedOutline = ExternalOpmlOutline & { xmlurl: string };
 
@@ -46,27 +45,23 @@ const getErrorName = (error: unknown) =>
   error instanceof Error ? error.name : 'unknown';
 
 /**
- * The library record of a feed that Podcast Index knows, or `undefined`. A feed
- * that Podcast Index does not know is `[]` or `{}`. The log holds safe fields
- * only, because the query of the request URL holds the feed URL.
+ * The library record of a feed that Podcast Index knows, or `undefined`.
  */
 const fetchFeedSettingsItem = async (
   opmlFeed: OpmlFeedOutline,
   config: PodcastIndexConfig,
 ): Promise<FeedSettings[string] | undefined> => {
   try {
-    const response = await podcastsByFeedUrl(opmlFeed.xmlurl, config);
-    const untypedResponse: unknown = response;
+    const podcastIndexFeed = await fetchPodcastIndexFeedByUrl(
+      opmlFeed.xmlurl,
+      config,
+    );
 
-    if (
-      !isSuccess(untypedResponse) ||
-      !isRecord(untypedResponse.feed) ||
-      typeof untypedResponse.feed.id !== 'number'
-    ) {
+    if (podcastIndexFeed === undefined) {
       return undefined;
     }
 
-    const feed = mapPodcastIndexFeed(response.feed, opmlFeed.xmlurl);
+    const feed = mapPodcastIndexFeed(podcastIndexFeed, opmlFeed.xmlurl);
 
     return {
       htmlUrl: feed.link,
@@ -77,23 +72,16 @@ const fetchFeedSettingsItem = async (
       type: feed.format,
     };
   } catch (error) {
-    captureMessage('opml_import_podcast_index_failed', {
-      extra: {
-        endpoint: 'podcasts/byfeedurl',
-        errorName: getErrorName(error),
-        source: 'podcastIndex',
-        status: error instanceof NetworkError ? error.status : undefined,
-      },
-      level: 'warning',
-    });
+    logPodcastIndexFailure('podcasts/byfeedurl', error);
 
     return undefined;
   }
 };
 
 /**
- * Keys each record by the `xmlurl` of the OPML file. A private feed URL gets
- * no Podcast Index call, and the answer lists it as not imported.
+ * Keys each record by the `xmlurl` of the OPML file. A private feed URL or a
+ * URL that is not `http:` or `https:` gets no Podcast Index call, and the
+ * answer lists it as not imported.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export async function POST(request: NextRequest) {
@@ -127,9 +115,11 @@ export async function POST(request: NextRequest) {
 
   const importResults = await Promise.all(
     opmlFeeds.map(async (opmlFeed) => ({
-      feedSettingsItem: isPrivateFeedUrl(opmlFeed.xmlurl)
-        ? undefined
-        : await fetchFeedSettingsItem(opmlFeed, config),
+      feedSettingsItem:
+        isPrivateFeedUrl(opmlFeed.xmlurl) ||
+        toHttpUrl(opmlFeed.xmlurl) === undefined
+          ? undefined
+          : await fetchFeedSettingsItem(opmlFeed, config),
       opmlFeed,
     })),
   );
