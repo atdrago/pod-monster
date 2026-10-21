@@ -1,44 +1,62 @@
 'use client';
 
-import type { FunctionComponent, ReactEventHandler } from 'react';
+import { type FunctionComponent, useState } from 'react';
 
 import { Button } from 'components/atoms/Button';
 import { useSettingsContext } from 'contexts/SettingsContext';
+import type { PodcastFeed } from 'types/PodcastFeed';
 
 interface SubscribeButtonProps {
-  feedId: number;
-  feedType: 'rss' | 'atom';
-  htmlUrl: string;
-  image: string;
-  title: string;
-  xmlUrl: string;
+  feed: Pick<
+    PodcastFeed,
+    'format' | 'image' | 'link' | 'podcastIndexId' | 'title' | 'url'
+  >;
 }
 
 export const SubscribeButton: FunctionComponent<SubscribeButtonProps> = ({
-  feedId: id,
-  feedType,
-  htmlUrl,
-  image,
-  title,
-  xmlUrl,
+  feed,
 }) => {
-  const { feedSettings, setFeedSettingsItem } = useSettingsContext();
+  const { getFeedSettingsItem, isDoneHydratingFromIdb, setFeedSettingsItem } =
+    useSettingsContext();
+  const [isWritePending, setIsWritePending] = useState(false);
+  const feedSettingsItem = getFeedSettingsItem({ feedUrl: feed.url });
 
-  const handleSubscribeClick: ReactEventHandler<HTMLButtonElement> = () => {
-    setFeedSettingsItem(`${id}`, {
-      ...feedSettings[id],
-      htmlUrl,
-      image,
-      subscribedAt: feedSettings[id]?.subscribedAt ? null : new Date().toJSON(),
-      title,
-      type: feedType,
-      xmlUrl,
-    });
+  const handleSubscribeClick = async () => {
+    if (!isDoneHydratingFromIdb || isWritePending) {
+      return;
+    }
+
+    setIsWritePending(true);
+
+    try {
+      // A page from the RSS feed can lack a value that an earlier page from
+      // Podcast Index gave. The record keeps the earlier value.
+      await setFeedSettingsItem(
+        { feedUrl: feed.url },
+        {
+          ...feedSettingsItem,
+          htmlUrl: feed.link ?? feedSettingsItem?.htmlUrl,
+          image: feed.image ?? feedSettingsItem?.image,
+          podcastIndexId:
+            feed.podcastIndexId ?? feedSettingsItem?.podcastIndexId,
+          subscribedAt: feedSettingsItem?.subscribedAt
+            ? null
+            : new Date().toJSON(),
+          title: feed.title,
+          type: feed.format,
+        },
+      );
+    } finally {
+      setIsWritePending(false);
+    }
   };
 
   return (
-    <Button onClick={handleSubscribeClick}>
-      {feedSettings[id]?.subscribedAt ? 'Unsubscribe' : 'Subscribe'}
+    <Button
+      disabled={!isDoneHydratingFromIdb || isWritePending}
+      onClick={handleSubscribeClick}
+    >
+      {feedSettingsItem?.subscribedAt ? 'Unsubscribe' : 'Subscribe'}
     </Button>
   );
 };

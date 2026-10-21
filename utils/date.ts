@@ -8,6 +8,22 @@ export const longDateTimeFormat = new Intl.DateTimeFormat('default', {
   timeStyle: 'short',
 });
 
+/**
+ * @example "0:05", "12:34", or "1:02:03"
+ */
+export const secondsToShortClockTime = (seconds: number): string => {
+  const wholeSeconds = Math.floor(seconds);
+  const hours = Math.floor(wholeSeconds / 3600);
+  const minutes = Math.floor((wholeSeconds % 3600) / 60);
+  const paddedSeconds = `${wholeSeconds % 60}`.padStart(2, '0');
+
+  if (hours === 0) {
+    return `${minutes}:${paddedSeconds}`;
+  }
+
+  return `${hours}:${`${minutes}`.padStart(2, '0')}:${paddedSeconds}`;
+};
+
 export const secondsToFormattedTime = (
   seconds: number,
   { includeMilliseconds = false }: { includeMilliseconds?: boolean } = {},

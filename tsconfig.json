@@ -29,6 +29,7 @@
     "vite-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "app/.well-known/**/*.ts",
     ".next/types/**/*.ts",
     "postcss.config.mjs"
   ],

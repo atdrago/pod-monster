@@ -2,26 +2,27 @@
 
 import { Dot } from 'components/atoms/Dot';
 import { useSettingsContext } from 'contexts/SettingsContext';
+import type { PodcastEpisode } from 'types/PodcastFeed';
 
 import { dotClassName } from './episodeUnlistenedDot.css';
 
 interface EpisodeUnlistedDotProps {
-  episodeDatePublished: number;
-  episodeId: number;
-  feedId: number | string;
+  episode: Pick<PodcastEpisode, 'datePublished' | 'feedUrl' | 'identity'>;
 }
 
-export const EpisodeUnlistenedDot = ({
-  episodeDatePublished,
-  episodeId,
-  feedId,
-}: EpisodeUnlistedDotProps) => {
-  const { episodeSettings, feedSettings } = useSettingsContext();
-  const subscribedAt = feedSettings[feedId]?.subscribedAt;
-  const currentEpisodeSettings = episodeSettings[episodeId];
+export const EpisodeUnlistenedDot = ({ episode }: EpisodeUnlistedDotProps) => {
+  const { getEpisodeSettingsItem, getFeedSettingsItem } = useSettingsContext();
+  const subscribedAt = getFeedSettingsItem({
+    feedUrl: episode.feedUrl,
+  })?.subscribedAt;
+  const currentEpisodeSettings = getEpisodeSettingsItem({
+    episodeIdentity: episode.identity,
+    feedUrl: episode.feedUrl,
+  });
   const isUnlistened =
-    !currentEpisodeSettings &&
-    new Date(episodeDatePublished * 1000) > new Date(subscribedAt ?? Infinity);
+    currentEpisodeSettings === undefined &&
+    episode.datePublished !== undefined &&
+    new Date(episode.datePublished * 1000) > new Date(subscribedAt ?? Infinity);
 
   if (!isUnlistened) {
     return null;

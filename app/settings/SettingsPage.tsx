@@ -8,7 +8,10 @@ import { Checkbox } from 'components/atoms/Checkbox';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { FileField } from 'components/molecules/FileField';
-import { useSettingsContext } from 'contexts/SettingsContext';
+import {
+  type FeedSettings,
+  useSettingsContext,
+} from 'contexts/SettingsContext';
 import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport, type OpmlImportResponse } from 'rest/fetchOpmlImport';
@@ -18,7 +21,8 @@ import { ApiErrorResponse } from 'utils/createApiErrorResponse';
 export function SettingsPage() {
   const opmlFileUrl = useOpmlFileUrl();
   const [shouldMergeOpmlImport, setShouldMergeOpmlImport] = useState(true);
-  const { feedSettings, setAllFeedSettings } = useSettingsContext();
+  const { feedSettings, getFeedSettingsItem, setAllFeedSettings } =
+    useSettingsContext();
   const hasExistingSubscriptions = Object.keys(feedSettings).length > 0;
 
   const {
@@ -30,12 +34,30 @@ export function SettingsPage() {
     mutate,
   } = useMutation<OpmlImportResponse, ApiErrorResponse, { file: File }>({
     mutationFn: async ({ file }) => await fetchOpmlImport(file),
-    onSuccess: (successData) => {
+    // The import stays pending until the library write ends. Each key is a
+    // feed URL in any form, and the context normalizes it.
+    onSuccess: async (successData) => {
       if (successData?.feedSettings) {
         if (!shouldMergeOpmlImport) {
-          setAllFeedSettings(successData.feedSettings);
+          // The import adds only the shows that Podcast Index knows. A replace
+          // keeps the subscription of each other show that the file lists, for
+          // example an RSS-only show or a private show from an export.
+          const keptFeedSettings: FeedSettings = {};
+
+          successData.errors.forEach(({ feedUrl }) => {
+            const feedSettingsItem = getFeedSettingsItem({ feedUrl });
+
+            if (feedSettingsItem !== undefined) {
+              keptFeedSettings[feedUrl] = feedSettingsItem;
+            }
+          });
+
+          await setAllFeedSettings({
+            ...keptFeedSettings,
+            ...successData.feedSettings,
+          });
         } else {
-          setAllFeedSettings({
+          await setAllFeedSettings({
             ...feedSettings,
             ...successData.feedSettings,
           });
@@ -47,6 +69,10 @@ export function SettingsPage() {
   const handleFileChange: ReactEventHandler<HTMLInputElement> = async (
     event,
   ) => {
+    if (isLoading) {
+      return;
+    }
+
     const file = event.currentTarget.files?.[0];
 
     if (file) {

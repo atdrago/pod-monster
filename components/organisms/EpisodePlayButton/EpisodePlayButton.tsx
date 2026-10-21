@@ -5,110 +5,88 @@ import { PlayPauseIcon } from 'components/atoms/PlayPauseIcon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { useMediaContext } from 'contexts/MediaContext';
+import { useSettingsContext } from 'contexts/SettingsContext';
+import { usePlayEpisodeAt } from 'hooks/usePlayEpisodeAt';
 import ChapterLinkIcon from 'icons/arrow-up-right2.svg';
 import ExplicitIcon from 'icons/explicit.svg';
 import type { Chapter, ImageDimensions } from 'types';
-import type { ApiResponse } from 'podcastdx-client/src/types';
-
-type EpisodePageEpisode = ApiResponse.EpisodeById['episode'] & {
-  descriptionRaw?: string;
-};
+import type { PodcastEpisode } from 'types/PodcastFeed';
 
 interface EpisodePlayButtonProps {
   currentChapter: Chapter | null;
-  episode?: EpisodePageEpisode;
-  episodeCurrentTime: number;
+  episode: Pick<
+    PodcastEpisode,
+    | 'chaptersUrl'
+    | 'enclosureType'
+    | 'enclosureUrl'
+    | 'explicit'
+    | 'feedImage'
+    | 'feedTitle'
+    | 'feedUrl'
+    | 'identity'
+    | 'image'
+    | 'title'
+  >;
   episodeImageDimensions?: ImageDimensions;
   isVideo?: boolean;
+  /** Runs when a click starts this episode, and not when a click pauses it. */
+  onPlay?: () => void;
+  /**
+   * The time that the visitor picked on the page, for example a chapter, for
+   * an episode that is not in the player. With no time, the episode starts
+   * from its saved position.
+   */
+  startTime?: number;
 }
 
 export const EpisodePlayButton = ({
   currentChapter,
   episode,
-  episodeCurrentTime,
   episodeImageDimensions,
   isVideo,
+  onPlay,
+  startTime,
 }: EpisodePlayButtonProps) => {
   const {
     audioRef,
-    didError,
-    episodeId,
+    episodeIdentity,
+    feedUrl,
     isLoadingAtCurrentTime,
     isPaused,
-    setChaptersUrl,
-    setCurrentTime,
-    setDateCrawled,
-    setDidError,
-    setEpisodeId,
-    setEpisodeImage,
-    setEpisodeImageDimensions,
-    setEpisodeTitle,
-    setFeedId,
-    setFeedImage,
-    setFeedTitle,
     setIsPaused,
-    setSize,
-    setSrc,
-    setSrcType,
-    src,
     videoRef,
   } = useMediaContext();
+  const { isDoneHydratingFromIdb } = useSettingsContext();
+  const playEpisodeAt = usePlayEpisodeAt({
+    episode,
+    episodeImageDimensions,
+    isVideo,
+  });
 
-  const isThisEpisodeInThePlayer = episodeId === episode?.id;
+  const { enclosureUrl } = episode;
+  const isThisEpisodeInThePlayer =
+    episodeIdentity === episode.identity && feedUrl === episode.feedUrl;
   const isThisEpisodePaused = isPaused || !isThisEpisodeInThePlayer;
   const isThisEpisodeLoadingAtCurrentTime =
     isThisEpisodeInThePlayer && !isThisEpisodePaused && isLoadingAtCurrentTime;
 
   const handlePlayPauseClick = async () => {
-    if (!episode) {
+    if (enclosureUrl === undefined || !isDoneHydratingFromIdb) {
       return;
     }
 
-    const nextIsPaused = !isThisEpisodePaused;
+    if (isThisEpisodePaused) {
+      onPlay?.();
+      // An episode in the player plays on from where it is. The time of the
+      // page applies only when the episode loads.
+      await playEpisodeAt(isThisEpisodeInThePlayer ? undefined : startTime);
 
-    if (!nextIsPaused && episode.enclosureUrl !== src) {
-      setChaptersUrl(episode.chaptersUrl);
-      setCurrentTime(episodeCurrentTime);
-      setDateCrawled(episode.dateCrawled);
-      setEpisodeId(episode.id);
-      setEpisodeImage(episode.image);
-      setEpisodeImageDimensions(episodeImageDimensions ?? null);
-      setEpisodeTitle(episode.title);
-      setFeedId(episode.feedId);
-      setFeedImage(episode.feedImage);
-      setFeedTitle(episode.feedTitle);
-      setSrc(episode.enclosureUrl);
-      setSrcType(episode.enclosureType);
-      setSize(isVideo ? 2 : 1);
+      return;
     }
 
-    setIsPaused(nextIsPaused);
-
-    if (audioRef.current) {
-      if (nextIsPaused) {
-        audioRef.current.pause();
-      } else {
-        if (didError) {
-          setDidError(false);
-          audioRef.current.load();
-        }
-
-        await audioRef.current.play();
-      }
-    }
-
-    if (videoRef.current) {
-      if (nextIsPaused) {
-        videoRef.current.pause();
-      } else {
-        if (didError) {
-          setDidError(false);
-          videoRef.current.load();
-        }
-
-        await videoRef.current.play();
-      }
-    }
+    setIsPaused(true);
+    audioRef.current?.pause();
+    videoRef.current?.pause();
   };
 
   return (
@@ -122,6 +100,7 @@ export const EpisodePlayButton = ({
       <Stack
         aria-label={isThisEpisodePaused ? 'Play podcast' : 'Pause podcast'}
         as="button"
+        disabled={enclosureUrl === undefined || !isDoneHydratingFromIdb}
         kind="flexRow"
         space="small"
         align="center"
@@ -147,14 +126,14 @@ export const EpisodePlayButton = ({
           as="h3"
           whitespace={2}
         >
-          {episode && episode.explicit > 0 ? (
+          {episode.explicit === true ? (
             <Icon
               style={{ verticalAlign: 'middle' }}
               as={ExplicitIcon}
               size="smallMedium"
             />
           ) : null}{' '}
-          {currentChapter?.title ?? episode?.title}
+          {currentChapter?.title ?? episode.title}
         </Typography>
       </Stack>
       {currentChapter?.url && (

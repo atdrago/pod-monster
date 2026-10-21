@@ -9,6 +9,7 @@ import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import LogoIcon from 'icons/logo.svg';
 import { headingLink } from 'styles';
+import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
 
@@ -19,36 +20,38 @@ import {
 } from './header.css';
 
 interface HeaderProps {
-  episodeId?: number | string;
-  episodeTitle?: string;
-  feedId?: number | string;
-  feedTitle?: string;
+  /**
+   * Set on the page of an episode. The episode also gives the title and the
+   * URL of its show, so the page of an episode does not set `feed`.
+   */
+  episode?: Pick<
+    PodcastEpisode,
+    'feedTitle' | 'feedUrl' | 'identity' | 'title'
+  >;
+  /** Set on the page of a show. */
+  feed?: Pick<PodcastFeed, 'title' | 'url'>;
   isLoading?: boolean;
 }
 
 export const Header: FunctionComponent<HeaderProps> = ({
-  episodeId,
-  episodeTitle,
-  feedId,
-  feedTitle,
+  episode,
+  feed,
   isLoading = false,
 }) => {
   const pathname = usePathname() ?? '';
 
+  const feedTitle = episode?.feedTitle ?? feed?.title;
+  const feedUrl = episode?.feedUrl ?? feed?.url;
+
   const isStaticPage = ['/about', '/settings'].includes(pathname);
 
-  const isAppNameHidden = isStaticPage || isLoading || feedTitle || feedId;
+  const isAppNameHidden = isStaticPage || isLoading || feedTitle || feedUrl;
 
   const isFeedTitleVisible =
-    !isStaticPage && (isLoading || (feedId && feedTitle));
+    !isStaticPage && (isLoading || (feedUrl && feedTitle));
 
   const isEpisodeTitleVisible =
-    !isStaticPage &&
-    !isLoading &&
-    feedId &&
-    feedTitle &&
-    episodeId &&
-    episodeTitle;
+    !isStaticPage && !isLoading && feedUrl && feedTitle && episode?.title;
 
   const abbreviatedFeedTitle = isEpisodeTitleVisible
     ? feedTitle
@@ -133,11 +136,8 @@ export const Header: FunctionComponent<HeaderProps> = ({
           >
             {isLoading ? (
               'Loading...'
-            ) : feedId ? (
-              <Link
-                href={getPodcastPath({ id: feedId })}
-                className={headingLink}
-              >
+            ) : feedUrl ? (
+              <Link href={getPodcastPath({ feedUrl })} className={headingLink}>
                 {abbreviatedFeedTitle}
               </Link>
             ) : (
@@ -163,13 +163,16 @@ export const Header: FunctionComponent<HeaderProps> = ({
             whitespace="ellipsis"
             style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
             shouldUseCapsize={false}
-            title={episodeTitle}
+            title={episode.title}
           >
             <Link
-              href={getEpisodePath({ episodeId, feedId })}
+              href={getEpisodePath({
+                episodeIdentity: episode.identity,
+                feedUrl,
+              })}
               className={headingLink}
             >
-              {episodeTitle}
+              {episode.title}
             </Link>
           </Typography>
         </>

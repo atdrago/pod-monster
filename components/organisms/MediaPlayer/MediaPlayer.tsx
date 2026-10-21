@@ -100,13 +100,13 @@ export const MediaPlayer: FunctionComponent = () => {
     currentChapter,
     currentTime,
     didError,
-    episodeId,
+    episodeIdentity,
     episodeImage,
     episodeImageDimensions,
     episodeTitle,
-    feedId,
     feedImage,
     feedTitle,
+    feedUrl,
     isLoadingAtCurrentTime,
     isMuted,
     isPaused,
@@ -231,11 +231,14 @@ export const MediaPlayer: FunctionComponent = () => {
     };
   }, [src]);
 
+  const episodePath =
+    episodeIdentity === null || feedUrl === null
+      ? null
+      : getEpisodePath({ episodeIdentity, feedUrl });
+  // A `/feeds/` page redirects any other form of its segments to the
+  // canonical path. Thus, an exact match finds the page of the episode.
   const isPlayingEpisodeOfCurrentPage =
-    episodeId &&
-    feedId &&
-    // TODO: Check that this is the path name and not the route id
-    pathname?.includes(getEpisodePath({ episodeId, feedId }));
+    episodePath !== null && pathname === episodePath;
 
   const animationProperties = {
     animate: {
@@ -300,10 +303,11 @@ export const MediaPlayer: FunctionComponent = () => {
                       whitespace="ellipsis"
                       className="font-bold"
                     >
-                      {episodeId && feedId && !isPlayingEpisodeOfCurrentPage ? (
+                      {episodePath !== null &&
+                      !isPlayingEpisodeOfCurrentPage ? (
                         <Link
                           className={underlinedLink}
-                          href={getEpisodePath({ episodeId, feedId })}
+                          href={episodePath}
                           onClick={() => {
                             setSize(1);
                           }}

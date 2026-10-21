@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import {
   type FunctionComponent,
   type PropsWithChildren,
@@ -13,6 +13,7 @@ import {
   useState,
   useMemo,
 } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
@@ -28,16 +29,15 @@ interface MediaContext {
   currentChapter: Chapter | null;
   currentChapterIndex: number;
   currentTime: number;
-  dateCrawled: number | null;
   didError: boolean;
   duration: number;
-  episodeId: number | null;
+  episodeIdentity: string | null;
   episodeImage: string | null;
   episodeImageDimensions: { height: number; width: number } | null;
   episodeTitle: string | null;
-  feedId: number | null;
   feedImage: string | null;
   feedTitle: string | null;
+  feedUrl: string | null;
   isLoadingAtCurrentTime: boolean;
   isMuted: boolean;
   isPaused: boolean;
@@ -53,18 +53,17 @@ interface MediaContext {
   seekForward: (details: Partial<MediaSessionActionDetails>) => void;
   setChaptersUrl: Dispatch<SetStateAction<string | null>>;
   setCurrentTime: Dispatch<SetStateAction<number>>;
-  setDateCrawled: Dispatch<SetStateAction<number | null>>;
   setDidError: Dispatch<SetStateAction<boolean>>;
   setDuration: Dispatch<SetStateAction<number>>;
-  setEpisodeId: Dispatch<SetStateAction<number | null>>;
+  setEpisodeIdentity: Dispatch<SetStateAction<string | null>>;
   setEpisodeImage: Dispatch<SetStateAction<string | null>>;
   setEpisodeImageDimensions: Dispatch<
     SetStateAction<{ height: number; width: number } | null>
   >;
   setEpisodeTitle: Dispatch<SetStateAction<string | null>>;
-  setFeedId: Dispatch<SetStateAction<number | null>>;
   setFeedImage: Dispatch<SetStateAction<string | null>>;
   setFeedTitle: Dispatch<SetStateAction<string | null>>;
+  setFeedUrl: Dispatch<SetStateAction<string | null>>;
   setIsMuted: Dispatch<SetStateAction<boolean>>;
   setIsPaused: Dispatch<SetStateAction<boolean>>;
   setIsTranscriptVisibleAsSubtitle: Dispatch<SetStateAction<boolean>>;
@@ -91,16 +90,15 @@ const mediaContextDefaults: MediaContext = {
   currentChapter: null,
   currentChapterIndex: -1,
   currentTime: 0,
-  dateCrawled: null,
   didError: false,
   duration: 0,
-  episodeId: null,
+  episodeIdentity: null,
   episodeImage: null,
   episodeImageDimensions: null,
   episodeTitle: null,
-  feedId: null,
   feedImage: null,
   feedTitle: null,
+  feedUrl: null,
   isLoadingAtCurrentTime: false,
   isMuted: false,
   isPaused: true,
@@ -116,16 +114,15 @@ const mediaContextDefaults: MediaContext = {
   seekForward: () => {},
   setChaptersUrl: (_) => {},
   setCurrentTime: (_) => {},
-  setDateCrawled: (_) => {},
   setDidError: (_) => {},
   setDuration: (_) => {},
-  setEpisodeId: (_) => {},
+  setEpisodeIdentity: (_) => {},
   setEpisodeImage: (_) => {},
   setEpisodeImageDimensions: (_) => {},
   setEpisodeTitle: (_) => {},
-  setFeedId: (_) => {},
   setFeedImage: (_) => {},
   setFeedTitle: (_) => {},
+  setFeedUrl: (_) => {},
   setIsMuted: (_) => {},
   setIsPaused: (_) => {},
   setIsTranscriptVisibleAsSubtitle: (_) => {},
@@ -152,13 +149,12 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   children,
 }) => {
   const {
-    idbHydrationPromise,
+    getEpisodeSettingsItem,
+    hydratedMediaPlayerSettings,
     isDoneHydratingFromIdb,
-    mediaPlayerSettings,
     setEpisodeSettingsItem,
     setMediaPlayerSettings,
   } = useSettingsContext();
-  const mediaPlayerSettingsRef = useRef(mediaPlayerSettings);
 
   const [chaptersUrl, setChaptersUrl] = useState<string | null>(
     mediaContextDefaults.chaptersUrl,
@@ -175,15 +171,12 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [currentTime, setCurrentTime] = useState(
     mediaContextDefaults.currentTime,
   );
-  const [dateCrawled, setDateCrawled] = useState<number | null>(
-    mediaContextDefaults.dateCrawled,
-  );
   const [duration, setDuration] = useState<number>(
     mediaContextDefaults.duration,
   );
   const [didError, setDidError] = useState(false);
-  const [episodeId, setEpisodeId] = useState<number | null>(
-    mediaContextDefaults.episodeId,
+  const [episodeIdentity, setEpisodeIdentity] = useState(
+    mediaContextDefaults.episodeIdentity,
   );
   const [episodeImage, setEpisodeImage] = useState(
     mediaContextDefaults.episodeImage,
@@ -194,9 +187,9 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [episodeTitle, setEpisodeTitle] = useState(
     mediaContextDefaults.episodeTitle,
   );
-  const [feedId, setFeedId] = useState(mediaContextDefaults.feedId);
   const [feedImage, setFeedImage] = useState(mediaContextDefaults.feedImage);
   const [feedTitle, setFeedTitle] = useState(mediaContextDefaults.feedTitle);
+  const [feedUrl, setFeedUrl] = useState(mediaContextDefaults.feedUrl);
   const [isMuted, setIsMuted] = useState<boolean>(mediaContextDefaults.isMuted);
   const [isPaused, setIsPaused] = useState<boolean>(
     mediaContextDefaults.isPaused,
@@ -211,16 +204,71 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
   const [size, setSize] = useState<1 | 2>(mediaContextDefaults.size);
   const [volume, setVolume] = useState<number>(mediaContextDefaults.volume);
 
+  const [isMediaStateHydrated, setIsMediaStateHydrated] = useState(false);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const lastPositionRef = useRef<{
+    duration: number;
+    episodeIdentity: string | null;
+    feedUrl: string | null;
+    time: number;
+  } | null>(null);
 
+  const setEpisodeSettingsItemDebounced = useDebouncedCallback(
+    setEpisodeSettingsItem,
+    500,
+    { maxWait: 5000 },
+  );
+
+  /**
+   * Hydrate the state one time, in the first render after the settings
+   * hydrate. The saved position of the episode is the one source of its time.
+   * An episode that the visitor chose before this render stays in the player.
+   */
+  if (isDoneHydratingFromIdb && !isMediaStateHydrated) {
+    setIsMediaStateHydrated(true);
+
+    if (hydratedMediaPlayerSettings !== undefined && src === null) {
+      const hydratedCurrentTime =
+        getEpisodeSettingsItem({
+          episodeIdentity: hydratedMediaPlayerSettings.episodeIdentity,
+          feedUrl: hydratedMediaPlayerSettings.feedUrl,
+        })?.currentTime ?? 0;
+
+      setChaptersUrl(hydratedMediaPlayerSettings.chaptersUrl);
+      setCurrentTime(hydratedCurrentTime);
+      setEpisodeIdentity(hydratedMediaPlayerSettings.episodeIdentity);
+      setEpisodeImage(hydratedMediaPlayerSettings.episodeImage);
+      setEpisodeImageDimensions(
+        hydratedMediaPlayerSettings.episodeImageDimensions,
+      );
+      setEpisodeTitle(hydratedMediaPlayerSettings.episodeTitle);
+      setFeedImage(hydratedMediaPlayerSettings.feedImage);
+      setFeedTitle(hydratedMediaPlayerSettings.feedTitle);
+      setFeedUrl(hydratedMediaPlayerSettings.feedUrl);
+      setIsMuted(hydratedMediaPlayerSettings.isMuted);
+      setIsPaused(hydratedMediaPlayerSettings.isPaused);
+      setIsTranscriptVisibleAsSubtitle(
+        hydratedMediaPlayerSettings.isTranscriptVisibleAsSubtitle,
+      );
+      setMediaPlayerCurrentTime(hydratedCurrentTime);
+      setPlaybackRate(hydratedMediaPlayerSettings.playbackRate);
+      setSize(hydratedMediaPlayerSettings.size);
+      setSrc(hydratedMediaPlayerSettings.src);
+      setSrcType(hydratedMediaPlayerSettings.srcType);
+      setVolume(hydratedMediaPlayerSettings.volume);
+    }
+  }
+
+  // `EpisodePage` uses the same key and function, so the page and the player
+  // share one cache entry.
   const { data: chapters } = useQuery({
-    enabled:
-      typeof dateCrawled === 'number' &&
-      typeof chaptersUrl === 'string' &&
-      chaptersUrl.length > 0,
-    queryFn: async () => await fetchPodcastEpisodeChapters(chaptersUrl),
-    queryKey: ['chapters', chaptersUrl, dateCrawled],
+    queryFn:
+      chaptersUrl === null
+        ? skipToken
+        : async () => await fetchPodcastEpisodeChapters(chaptersUrl),
+    queryKey: ['chapters', chaptersUrl],
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
@@ -246,15 +294,15 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
     }
 
     setChaptersUrl(mediaContextDefaults.chaptersUrl);
-    setDateCrawled(mediaContextDefaults.dateCrawled);
     setDidError(mediaContextDefaults.didError);
-    setEpisodeId(mediaContextDefaults.episodeId);
+    setDuration(mediaContextDefaults.duration);
+    setEpisodeIdentity(mediaContextDefaults.episodeIdentity);
     setEpisodeImage(mediaContextDefaults.episodeImage);
     setEpisodeImageDimensions(mediaContextDefaults.episodeImageDimensions);
     setEpisodeTitle(mediaContextDefaults.episodeTitle);
-    setFeedId(mediaContextDefaults.feedId);
     setFeedImage(mediaContextDefaults.feedImage);
     setFeedTitle(mediaContextDefaults.feedTitle);
+    setFeedUrl(mediaContextDefaults.feedUrl);
     setIsMuted(mediaContextDefaults.isMuted);
     setIsPaused(mediaContextDefaults.isPaused);
     setPlaybackRate(mediaContextDefaults.playbackRate);
@@ -338,113 +386,112 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
       : 'playing';
   }, [didError, isPaused]);
 
-  useEffect(() => {
-    if (mediaPlayerSettings && !isDoneHydratingFromIdb) {
-      idbHydrationPromise?.then(() => {
-        setChaptersUrl(mediaPlayerSettings.chaptersUrl);
-        setCurrentTime(mediaPlayerSettings.currentTime);
-        setDateCrawled(mediaPlayerSettings.dateCrawled);
-        setEpisodeId(mediaPlayerSettings.episodeId);
-        setEpisodeImage(mediaPlayerSettings.episodeImage);
-        setEpisodeImageDimensions(mediaPlayerSettings.episodeImageDimensions);
-        setEpisodeTitle(mediaPlayerSettings.episodeTitle);
-        setFeedId(mediaPlayerSettings.feedId);
-        setFeedImage(mediaPlayerSettings.feedImage);
-        setFeedTitle(mediaPlayerSettings.feedTitle);
-        setIsPaused(mediaPlayerSettings.isPaused);
-        setIsMuted(mediaPlayerSettings.isMuted);
-        setIsTranscriptVisibleAsSubtitle(
-          mediaPlayerSettings.isTranscriptVisibleAsSubtitle,
-        );
-        setMediaPlayerCurrentTime(mediaPlayerSettings.currentTime);
-        setPlaybackRate(
-          mediaPlayerSettings.playbackRate ?? mediaContextDefaults.playbackRate,
-        );
-        setSize(mediaPlayerSettings.size ?? mediaContextDefaults.size);
-        setSrc(mediaPlayerSettings.src);
-        setSrcType(mediaPlayerSettings.srcType);
-        setVolume(mediaPlayerSettings.volume);
-      });
-    }
-  }, [
-    idbHydrationPromise,
-    isDoneHydratingFromIdb,
-    mediaPlayerSettings,
-    setCurrentTime,
-    setMediaPlayerCurrentTime,
-  ]);
-
   /**
-   * Update the episode settings when the audio element's `currentTime`
-   * property changes, but debounce `currentTime`. The debouncing causes the
-   * settings to only be updated if the `currentTime` stops changing for 500ms,
-   * but will never wait longer than 5 seconds to update the settings.
+   * Write the position of the episode when its time changes, after 500ms of
+   * quiet or at most every 5 seconds. Each write carries the episode that was
+   * in the player when the time changed. After a change of episode, the time
+   * can still belong to the last episode until the media element reports
+   * again. Thus, a change of episode only flushes the pending write of the
+   * last episode. A new file has a duration of 0 until its metadata loads, so
+   * a write before then keeps the saved duration.
    */
   useEffect(() => {
-    if (episodeId && isDoneHydratingFromIdb) {
-      setEpisodeSettingsItem(`${episodeId}`, {
-        currentTime: mediaPlayerCurrentTimeDebounced,
-        duration,
-      });
+    if (!isMediaStateHydrated) {
+      return;
     }
+
+    const lastPosition = lastPositionRef.current;
+
+    lastPositionRef.current = {
+      duration,
+      episodeIdentity,
+      feedUrl,
+      time: mediaPlayerCurrentTime,
+    };
+
+    if (lastPosition === null) {
+      return;
+    }
+
+    if (
+      lastPosition.episodeIdentity !== episodeIdentity ||
+      lastPosition.feedUrl !== feedUrl
+    ) {
+      setEpisodeSettingsItemDebounced.flush();
+
+      return;
+    }
+
+    const isSamePosition =
+      lastPosition.time === mediaPlayerCurrentTime &&
+      lastPosition.duration === duration;
+
+    if (isSamePosition || episodeIdentity === null || feedUrl === null) {
+      return;
+    }
+
+    setEpisodeSettingsItemDebounced(
+      { episodeIdentity, feedUrl },
+      {
+        currentTime: mediaPlayerCurrentTime,
+        duration:
+          duration > 0
+            ? duration
+            : getEpisodeSettingsItem({ episodeIdentity, feedUrl })?.duration,
+      },
+    );
   }, [
     duration,
-    episodeId,
-    isDoneHydratingFromIdb,
-    mediaPlayerCurrentTimeDebounced,
-    setEpisodeSettingsItem,
+    episodeIdentity,
+    feedUrl,
+    getEpisodeSettingsItem,
+    isMediaStateHydrated,
+    mediaPlayerCurrentTime,
+    setEpisodeSettingsItemDebounced,
   ]);
 
   useEffect(() => {
-    const isFirstRenderAfterHydration =
-      mediaPlayerSettings &&
-      !mediaPlayerSettingsRef.current &&
-      isDoneHydratingFromIdb;
-
-    if (isFirstRenderAfterHydration) {
-      setMediaPlayerSettings({
-        chaptersUrl,
-        currentTime: mediaPlayerCurrentTimeDebounced,
-        dateCrawled,
-        episodeId,
-        episodeImage,
-        episodeImageDimensions,
-        episodeTitle,
-        feedId,
-        feedImage,
-        feedTitle,
-        isMuted,
-        isPaused,
-        isTranscriptVisibleAsSubtitle,
-        playbackRate,
-        size,
-        src,
-        srcType,
-        volume,
-      });
+    if (!isMediaStateHydrated) {
+      return;
     }
+
+    setMediaPlayerSettings({
+      chaptersUrl,
+      episodeIdentity,
+      episodeImage,
+      episodeImageDimensions,
+      episodeTitle,
+      feedImage,
+      feedTitle,
+      feedUrl,
+      isMuted,
+      isPaused,
+      isTranscriptVisibleAsSubtitle,
+      playbackRate,
+      size,
+      src,
+      srcType,
+      volume,
+    });
   }, [
     chaptersUrl,
-    dateCrawled,
-    episodeId,
+    episodeIdentity,
     episodeImage,
     episodeImageDimensions,
     episodeTitle,
-    feedId,
     feedImage,
     feedTitle,
-    isDoneHydratingFromIdb,
-    isTranscriptVisibleAsSubtitle,
+    feedUrl,
+    isMediaStateHydrated,
     isMuted,
     isPaused,
-    mediaPlayerCurrentTimeDebounced,
+    isTranscriptVisibleAsSubtitle,
     playbackRate,
     setMediaPlayerSettings,
     size,
     src,
     srcType,
     volume,
-    mediaPlayerSettings,
   ]);
 
   /**
@@ -551,16 +598,15 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         currentChapter,
         currentChapterIndex,
         currentTime,
-        dateCrawled,
         didError,
         duration,
-        episodeId,
+        episodeIdentity,
         episodeImage,
         episodeImageDimensions,
         episodeTitle,
-        feedId,
         feedImage,
         feedTitle,
+        feedUrl,
         isLoadingAtCurrentTime,
         isMuted,
         isPaused,
@@ -576,16 +622,15 @@ export const MediaProvider: FunctionComponent<PropsWithChildren<unknown>> = ({
         seekForward,
         setChaptersUrl,
         setCurrentTime,
-        setDateCrawled,
         setDidError,
         setDuration,
-        setEpisodeId,
+        setEpisodeIdentity,
         setEpisodeImage,
         setEpisodeImageDimensions,
         setEpisodeTitle,
-        setFeedId,
         setFeedImage,
         setFeedTitle,
+        setFeedUrl,
         setIsMuted,
         setIsPaused,
         setIsTranscriptVisibleAsSubtitle,

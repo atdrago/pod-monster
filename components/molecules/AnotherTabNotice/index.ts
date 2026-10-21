@@ -1,0 +1,1 @@
+export { AnotherTabNotice } from './AnotherTabNotice';

@@ -1,10 +1,13 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import type { ApiResponse, PIApiPodcast } from 'podcastdx-client/src/types';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+import rehypeSanitize, {
+  defaultSchema,
+  type Options as SanitizeSchema,
+} from 'rehype-sanitize';
+import type { PluggableList } from 'unified';
 
 import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
@@ -16,59 +19,167 @@ import { Stack } from 'components/layouts/Stack';
 import { Funding } from 'components/molecules/Funding';
 import { Header } from 'components/molecules/Header';
 import { HtmlViewer } from 'components/molecules/HtmlViewer';
+import { StartTimePrompt } from 'components/molecules/StartTimePrompt';
 import { TimedList, type TimedListItem } from 'components/molecules/TimedList';
 import { EpisodePlayButton } from 'components/organisms/EpisodePlayButton';
 import { useMediaContext } from 'contexts/MediaContext';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useChapterIndex } from 'hooks/useChapterIndex';
+import { usePlayEpisodeAt } from 'hooks/usePlayEpisodeAt';
 import ExternalLinkIcon from 'icons/arrow-up-right2.svg';
 import TvIcon from 'icons/tv.svg';
 import VideoCameraIcon from 'icons/video-camera.svg';
 import { fetchPodcastEpisodeChapters } from 'rest/fetchPodcastEpisodeChapters';
 import {
   fetchPodcastEpisodeTranscript,
+  getPreferredTranscript,
   type TranscriptDocument,
 } from 'rest/fetchPodcastEpisodeTranscript';
 import type { Chapter, ImageDimensions } from 'types';
+import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
+import { checkShareTime } from 'utils/checkShareTime';
 import { longDateTimeFormat } from 'utils/date';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
-import rehypeParse from 'rehype-parse';
+import { parseTimecode } from 'utils/parseTimecode';
+import { toTitleCase } from 'utils/toTitleCase';
 
 interface EpisodePageProps {
-  episode: ApiResponse.EpisodeById['episode'];
+  episode: PodcastEpisode;
   episodeImageDimensions?: ImageDimensions;
-  feedFunding?: PIApiPodcast['funding'] | null;
-  feedLink?: string;
-  feedType?: 'rss' | 'atom';
-  feedUrl?: string;
+  feed: Pick<
+    PodcastFeed,
+    'format' | 'funding' | 'image' | 'link' | 'podcastIndexId' | 'title' | 'url'
+  >;
+  /** The raw `t` value of the URL, when the URL has one. */
+  startTimeParam?: string;
 }
+
+/**
+ * Feed HTML can hold a script, an event handler, or a `javascript:` link. The
+ * sanitize step runs after `rehypeRaw`, so that it also cleans the HTML that
+ * `rehypeRaw` parses. The schema removes the `rel` of the feed, and then adds
+ * this `rel` to each link.
+ */
+const FEED_HTML_SANITIZE_SCHEMA: SanitizeSchema = {
+  ...defaultSchema,
+  required: {
+    ...defaultSchema.required,
+    a: { rel: ['nofollow', 'ugc', 'noopener', 'noreferrer'] },
+  },
+};
+
+const FEED_HTML_REHYPE_PLUGINS: PluggableList = [
+  rehypeRaw,
+  [rehypeSanitize, FEED_HTML_SANITIZE_SCHEMA],
+];
+
+/**
+ * A person with no role is a host.
+ * @see https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md#person
+ */
+const toDisplayPersons = (persons: PodcastEpisode['persons'] = []) =>
+  persons
+    .map((person) => ({ ...person, role: toTitleCase(person.role ?? 'host') }))
+    .sort((personA, personB) => {
+      if (personA.role === personB.role) {
+        return personA.name < personB.name ? -1 : 1;
+      }
+
+      return personA.role === 'Host' ? -1 : 1;
+    });
+
+/**
+ * `router.replace` runs the server loader of the page again. A history replace
+ * changes only the URL, and Next.js syncs its router with it.
+ */
+const removeStartTimeFromUrl = () => {
+  const url = new URL(window.location.href);
+
+  if (!url.searchParams.has('t')) {
+    return;
+  }
+
+  url.searchParams.delete('t');
+  window.history.replaceState(null, '', url);
+};
 
 export const EpisodePage = ({
   episode,
   episodeImageDimensions,
-  feedFunding,
-  feedLink,
-  feedType,
-  feedUrl,
+  feed,
+  startTimeParam,
 }: EpisodePageProps) => {
-  const { episodeSettings } = useSettingsContext();
-  const [episodeCurrentTime, setEpisodeCurrentTime] = useState(
-    episode ? (episodeSettings[episode.id]?.currentTime ?? 0) : 0,
-  );
+  const { getEpisodeSettingsItem, isDoneHydratingFromIdb } =
+    useSettingsContext();
+  const episodeSettingsItem = getEpisodeSettingsItem({
+    episodeIdentity: episode.identity,
+    feedUrl: episode.feedUrl,
+  });
+  // The time of a chapter or a transcript line that the visitor picked while
+  // the episode is not in the player.
+  const [pickedStartTime, setPickedStartTime] = useState<number>();
+  const episodeCurrentTime =
+    pickedStartTime ?? episodeSettingsItem?.currentTime ?? 0;
   const episodeDuration =
-    episode?.duration ||
-    (episode && episodeSettings[episode.id]?.duration) ||
-    0;
+    episode.duration || episodeSettingsItem?.duration || 0;
   const {
-    episodeId,
+    episodeIdentity,
+    feedUrl,
     isTranscriptVisibleAsSubtitle,
     mediaPlayerCurrentTimeDebounced,
     setCurrentTime,
     setIsTranscriptVisibleAsSubtitle,
   } = useMediaContext();
 
-  const isVideo = episode?.enclosureType.includes('video');
-  const isThisEpisodeInThePlayer = episodeId === episode?.id;
+  const isVideo = episode.enclosureType?.includes('video') ?? false;
+  const isThisEpisodeInThePlayer =
+    episodeIdentity === episode.identity && feedUrl === episode.feedUrl;
+  const playEpisodeAt = usePlayEpisodeAt({
+    episode,
+    episodeImageDimensions,
+    isVideo,
+  });
+
+  // The key resets the prompt when a client navigation brings a new episode or
+  // a new `t`.
+  const startTimePromptKey = JSON.stringify([
+    episode.feedUrl,
+    episode.identity,
+    startTimeParam ?? null,
+  ]);
+  const [answeredStartTimePromptKey, setAnsweredStartTimePromptKey] = useState<
+    string | null
+  >(null);
+  const startTimeCheck = checkShareTime(
+    startTimeParam === undefined ? null : parseTimecode(startTimeParam),
+    episodeDuration,
+  );
+  const startTimePromptTime =
+    startTimeCheck.isValid &&
+    episode.enclosureUrl !== undefined &&
+    answeredStartTimePromptKey !== startTimePromptKey
+      ? startTimeCheck.seconds
+      : null;
+
+  const answerStartTimePrompt = () => {
+    setAnsweredStartTimePromptKey(startTimePromptKey);
+    removeStartTimeFromUrl();
+  };
+
+  const handlePlayFromClick = async (startTime: number) => {
+    if (!isDoneHydratingFromIdb) {
+      return;
+    }
+
+    answerStartTimePrompt();
+    await playEpisodeAt(startTime);
+  };
+
+  const handlePlay = () => {
+    if (startTimePromptTime !== null) {
+      answerStartTimePrompt();
+    }
+  };
 
   // Derive the current time based on whether this episode is in the player
   // If it's in the player, use the debounced media player time; otherwise use local state
@@ -77,23 +188,30 @@ export const EpisodePage = ({
     : episodeCurrentTime;
 
   const hasTranscripts =
-    episode && episode.transcripts && episode.transcripts.length > 0;
+    episode.transcripts !== undefined && episode.transcripts.length > 0;
+  const preferredTranscript = getPreferredTranscript(episode.transcripts);
+  const isTranscriptTypeUnsupported =
+    hasTranscripts && preferredTranscript === undefined;
 
+  // The key holds the URL of the transcript, so that two episodes with the
+  // same transcript count and duration do not share a cache entry.
   const {
     data: transcript,
     error: transcriptsError,
     isLoading: isTranscriptLoading,
   } = useQuery<TranscriptDocument, Error>({
-    enabled: !!(hasTranscripts && typeof episode.dateCrawled === 'number'),
-    queryFn: async () =>
-      await fetchPodcastEpisodeTranscript(
-        episode?.transcripts ?? null,
-        episodeDuration,
-      ),
+    queryFn:
+      preferredTranscript === undefined
+        ? skipToken
+        : async () =>
+            await fetchPodcastEpisodeTranscript(
+              preferredTranscript,
+              episodeDuration,
+            ),
     queryKey: [
       'transcript',
-      episode?.transcripts?.length,
-      episode?.dateCrawled,
+      preferredTranscript?.url,
+      preferredTranscript?.type,
       episodeDuration,
     ],
     refetchOnMount: false,
@@ -101,26 +219,30 @@ export const EpisodePage = ({
     refetchOnWindowFocus: false,
   });
 
+  // `MediaContext` uses the same key and function, so the page and the player
+  // share one cache entry.
+  const { chaptersUrl } = episode;
   const {
     data: chapters = [],
     error: chaptersError,
     isLoading: isChaptersLoading,
   } = useQuery<Array<Chapter>, Error>({
-    enabled: !!(
-      episode &&
-      typeof episode.dateCrawled === 'number' &&
-      typeof episode.chaptersUrl === 'string' &&
-      episode.chaptersUrl.length > 0
-    ),
-    queryFn: async () =>
-      await fetchPodcastEpisodeChapters(episode?.chaptersUrl),
-    queryKey: ['chapters', episode?.chaptersUrl, episode?.dateCrawled],
+    queryFn:
+      chaptersUrl === undefined
+        ? skipToken
+        : async () => await fetchPodcastEpisodeChapters(chaptersUrl),
+    queryKey: ['chapters', chaptersUrl],
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   });
 
-  const hasChaptersUrl = !!(episode && episode?.chaptersUrl);
+  const persons = useMemo(
+    () => toDisplayPersons(episode.persons),
+    [episode.persons],
+  );
+
+  const hasChaptersUrl = chaptersUrl !== undefined;
   const hasChapters = chapters.length > 0;
   const nonTocChapters = useMemo(
     () => chapters.filter(({ toc }) => toc !== false),
@@ -140,7 +262,7 @@ export const EpisodePage = ({
       ? chapters[currentChapterIndex]
       : null;
 
-  const chaptersAsTimedList = nonTocChapters?.map(
+  const chaptersAsTimedList = nonTocChapters.map(
     ({ startTime: chapterStartTime, title }) => ({
       from: chapterStartTime,
       text: title ?? 'No title',
@@ -148,7 +270,7 @@ export const EpisodePage = ({
   );
 
   const episodeArtwork =
-    currentChapter?.img || episode?.image || episode?.feedImage;
+    currentChapter?.img || episode.image || episode.feedImage;
 
   const currentTranscriptIndex =
     transcript &&
@@ -169,7 +291,7 @@ export const EpisodePage = ({
       if (isThisEpisodeInThePlayer) {
         setCurrentTime(item.from);
       } else {
-        setEpisodeCurrentTime(item.from);
+        setPickedStartTime(item.from);
       }
     }
   };
@@ -184,12 +306,7 @@ export const EpisodePage = ({
 
   return (
     <>
-      <Header
-        episodeId={episode.id}
-        feedId={episode.feedId}
-        episodeTitle={episode.title}
-        feedTitle={episode.feedTitle}
-      />
+      <Header episode={episode} />
       <Stack as="main" maxWidth="small">
         <Artwork
           alt="Podcast episode or chapter artwork"
@@ -200,28 +317,41 @@ export const EpisodePage = ({
           subtitle={currentTranscriptItemText}
           width={episodeImageDimensions?.width}
         />
+        {startTimePromptTime === null ? null : (
+          <StartTimePrompt
+            isPlayFromDisabled={!isDoneHydratingFromIdb}
+            startTime={startTimePromptTime}
+            onNotNowClick={answerStartTimePrompt}
+            onPlayFromClick={handlePlayFromClick}
+          />
+        )}
         <EpisodePlayButton
           currentChapter={currentChapter}
           episode={episode}
-          episodeCurrentTime={episodeCurrentTime}
           episodeImageDimensions={episodeImageDimensions}
           isVideo={isVideo}
+          startTime={pickedStartTime}
+          onPlay={handlePlay}
         />
         <Stack space="medium">
-          {episode && (episode.season || episode.episode) ? (
+          {episode.seasonNumber || episode.episodeNumber ? (
             <Stack kind="flexRow" space="small">
               <Icon as={TvIcon} size="xsmall" />
               <Typography as="h4" className="font-bold" size="headingSmaller">
                 {[
-                  episode.season ? `Season ${episode.season}` : null,
-                  episode.episode ? `Episode ${episode.episode}` : null,
+                  episode.seasonNumber
+                    ? `Season ${episode.seasonNumber}`
+                    : null,
+                  episode.episodeNumber
+                    ? `Episode ${episode.episodeNumber}`
+                    : null,
                 ]
                   .filter(notNullOrUndefined)
                   .join(', ')}
               </Typography>
             </Stack>
           ) : null}
-          {episode && episode.episodeType === 'trailer' ? (
+          {episode.episodeType === 'trailer' ? (
             <Stack kind="flexRow" space="small">
               <Icon as={VideoCameraIcon} size="xsmall" />
               <Typography as="h4" className="font-bold" size="headingSmaller">
@@ -229,32 +359,34 @@ export const EpisodePage = ({
               </Typography>
             </Stack>
           ) : null}
-          <Details
-            summary={
-              <Typography as="h4" className="font-bold" size="headingSmaller">
-                Description
-              </Typography>
-            }
-          >
-            <HtmlViewer
-              shouldUseCapsize={false}
-              rehypePlugins={[rehypeRaw, rehypeSanitize]}
+          {episode.description ? (
+            <Details
+              summary={
+                <Typography as="h4" className="font-bold" size="headingSmaller">
+                  Description
+                </Typography>
+              }
             >
-              {episode.description}
-            </HtmlViewer>
-          </Details>
+              <HtmlViewer
+                shouldUseCapsize={false}
+                rehypePlugins={FEED_HTML_REHYPE_PLUGINS}
+              >
+                {episode.description}
+              </HtmlViewer>
+            </Details>
+          ) : null}
           {hasChaptersUrl && (
             <TimedList
               error={chaptersError}
               hasError={!!chaptersError}
               index={currentNonTocChapterIndex}
               isLoading={isChaptersLoading}
-              list={chaptersAsTimedList ?? []}
+              list={chaptersAsTimedList}
               title="Chapters"
               onItemClick={handleTimedListItemClick}
             />
           )}
-          {episode && episode.persons && episode.persons.length ? (
+          {persons.length > 0 ? (
             <Details
               summary={
                 <Typography as="h4" className="font-bold" size="headingSmaller">
@@ -263,7 +395,7 @@ export const EpisodePage = ({
               }
             >
               <Stack space="small">
-                {episode.persons.map((person, index) => {
+                {persons.map((person, index) => {
                   return (
                     <LinkStack
                       align="center"
@@ -322,10 +454,10 @@ export const EpisodePage = ({
             </Details>
           ) : null}
           {hasTranscripts ? (
-            transcript && Array.isArray(transcript?.content) ? (
+            transcript && Array.isArray(transcript.content) ? (
               <TimedList
                 index={currentTranscriptIndex}
-                list={transcript.content ?? []}
+                list={transcript.content}
                 title="Transcript"
                 onItemClick={handleTimedListItemClick}
                 isVisibleAsSubtitle={isTranscriptVisibleAsSubtitle}
@@ -333,7 +465,7 @@ export const EpisodePage = ({
               />
             ) : (
               <Details
-                hasError={!!transcriptsError}
+                hasError={!!transcriptsError || isTranscriptTypeUnsupported}
                 isLoading={isTranscriptLoading}
                 summary={
                   <Typography
@@ -349,7 +481,10 @@ export const EpisodePage = ({
                   as="div"
                   size="paragraph"
                   style={{
-                    height: transcriptsError ? 'auto' : 48 * 5,
+                    height:
+                      transcriptsError || isTranscriptTypeUnsupported
+                        ? 'auto'
+                        : 48 * 5,
                     overflowY: 'auto',
                     padding: '4px 0',
                   }}
@@ -359,18 +494,9 @@ export const EpisodePage = ({
                   ) : typeof transcript?.content === 'string' ? (
                     <HtmlViewer
                       shouldUseCapsize={false}
-                      rehypePlugins={[
-                        [
-                          rehypeParse,
-                          {
-                            fragment: true,
-                          },
-                        ],
-                        rehypeSanitize,
-                        rehypeRaw,
-                      ]}
+                      rehypePlugins={FEED_HTML_REHYPE_PLUGINS}
                     >
-                      {transcript?.content}
+                      {transcript.content}
                     </HtmlViewer>
                   ) : (
                     'Transcript type not supported'
@@ -380,25 +506,16 @@ export const EpisodePage = ({
             )
           ) : null}
 
-          <Funding funding={feedFunding} />
+          <Funding funding={feed.funding} />
 
-          <Typography as="p" size="paragraph">
-            {episode
-              ? `Published on ${longDateTimeFormat.format(
-                  new Date(episode.datePublished * 1000),
-                )}.`
-              : null}
-          </Typography>
-          {episode && feedType && feedLink && feedUrl && (
-            <SubscribeButton
-              feedId={episode.feedId}
-              feedType={feedType}
-              htmlUrl={feedLink}
-              image={episode.feedImage}
-              title={episode.feedTitle}
-              xmlUrl={feedUrl}
-            />
+          {episode.datePublished === undefined ? null : (
+            <Typography as="p" size="paragraph">
+              {`Published on ${longDateTimeFormat.format(
+                new Date(episode.datePublished * 1000),
+              )}.`}
+            </Typography>
           )}
+          <SubscribeButton feed={feed} />
         </Stack>
       </Stack>
     </>

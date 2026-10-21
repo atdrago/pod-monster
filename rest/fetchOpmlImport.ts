@@ -2,7 +2,8 @@ import { request } from 'utils/request';
 import type { FeedSettings } from 'contexts/SettingsContext';
 
 export type OpmlImportResponse = {
-  errors: Array<{ title: string }>;
+  /** The shows of the file that the import did not add. */
+  errors: Array<{ feedUrl: string; title: string }>;
   feedSettings: FeedSettings;
 };
 

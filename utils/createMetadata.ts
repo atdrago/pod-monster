@@ -14,7 +14,7 @@ interface OgMetadata {
   /**
    * An image URL which should represent your object within the graph.
    */
-  image: string;
+  image?: string;
   /**
    * The locale these tags are marked up in. Of the format language_TERRITORY.
    * Default is en_US.
@@ -55,13 +55,20 @@ interface OgMetadata {
 }
 
 interface CreateMetadataOptions {
-  description: string;
+  description?: string;
+  /**
+   * True for the page of a private feed. The page then tells search engines
+   * not to index it or follow its links, and it leaves out each tag that holds
+   * a URL.
+   */
+  isPrivate?: boolean;
   ogMetadata?: OgMetadata;
   titles: Array<string>;
 }
 
 export async function createMetadata({
   description,
+  isPrivate = false,
   ogMetadata,
   titles,
 }: CreateMetadataOptions): Promise<Metadata> {
@@ -71,6 +78,10 @@ export async function createMetadata({
   const truncatedTitle = ogMetadata?.title?.substring(0, 60);
   const truncatedDescription = ogMetadata?.description?.substring(0, 155);
 
+  // Link-preview services cache these tags, and the page path, an image URL,
+  // or an enclosure URL of a private feed can hold a token.
+  const ogUrlMetadata = isPrivate ? undefined : ogMetadata;
+
   return {
     appleWebApp: {
       capable: true,
@@ -79,21 +90,22 @@ export async function createMetadata({
     applicationName: 'Pod Monster',
     description,
     openGraph: {
-      audio: ogMetadata?.audio,
+      audio: ogUrlMetadata?.audio,
       description: truncatedDescription,
-      images: ogMetadata?.image,
+      images: ogUrlMetadata?.image,
       locale: ogMetadata?.locale,
       siteName: 'Pod Monster',
       title: truncatedTitle,
       type: 'website',
-      url: ogMetadata?.url,
-      videos: ogMetadata?.video,
+      url: ogUrlMetadata?.url,
+      videos: ogUrlMetadata?.video,
     },
+    robots: isPrivate ? { follow: false, index: false } : undefined,
     title: titlesWithAppName.join(' - '),
     twitter: {
       card: 'summary_large_image',
       description: truncatedDescription,
-      images: ogMetadata?.image,
+      images: ogUrlMetadata?.image,
       site: 'pod.monster',
       title: truncatedTitle,
     },
