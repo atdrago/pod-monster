@@ -167,6 +167,7 @@ The diagram shows R4, R5, R6, and R13. The requirements above are the full rule.
 - Add logs to the `catch` blocks of the other API routes in `app/api/`, which drop errors today.
 - Keep the `subscribedAt` of a library record that an OPML merge import writes again. This bug exists today.
 - Check that client Sentry starts at all. `instrumentation-client.ts` called `Sentry.init` inside `onClientInit`, which is not a documented Next.js hook. Done in this branch: `Sentry.init` runs at the top level of the file.
+- Block the loopback names of RFC 6761 (`localhost` and the names under it) in the native `safeFetch` too. The site guard blocks them by name, because the DNS answer for them depends on the host. The native guard still resolves them.
 - Cache public RSS reads across requests, if load needs it (KTD17).
 - Count page views for each show without the feed URL, if a safe key appears.
 
