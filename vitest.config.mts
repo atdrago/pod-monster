@@ -31,6 +31,17 @@ export default defineConfig({
           setupFiles: './vitest.setup.ts',
           browser: {
             enabled: true,
+            // The CI runner and a local Mac render a few edge pixels of text
+            // differently. The allowance lets one set of reference images
+            // pass on both.
+            expect: {
+              toMatchScreenshot: {
+                comparatorName: 'pixelmatch',
+                comparatorOptions: {
+                  allowedMismatchedPixels: 10,
+                },
+              },
+            },
             instances: [
               {
                 browser: 'chromium',
