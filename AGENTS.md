@@ -26,6 +26,11 @@ Pod Monster is a mobile-first web app for podcasts. It supports many features of
 
 The components follow atomic design: `components/atoms/`, `components/molecules/`, `components/organisms/`, and `components/layouts/`.
 
+Two places hold project knowledge that the code does not show:
+
+- `docs/solutions/` holds documented solutions to past problems: bugs, best practices, and workflow patterns. Each doc sits in a category folder and has YAML frontmatter (`module`, `tags`, `problem_type`). The docs are relevant when you implement or debug in a documented area.
+- `CONCEPTS.md` holds the shared domain vocabulary: entities, named processes, and status concepts. It is relevant when you learn the codebase or discuss a domain concept.
+
 ## Verify Changes
 
 After each code change, run the commands below from the project root. You must fix all issues.
