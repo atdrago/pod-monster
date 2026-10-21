@@ -47,6 +47,8 @@ describe('chapters route', () => {
     vi.mocked(safeFetchFeedResource).mockClear();
   });
 
+  // `NextRequest` rewrites `127.0.0.1` in its URL to `localhost`, the query
+  // too. Thus, the route receives the loopback name, not the literal.
   it('should answer a loopback URL with the fixed blocked code and no stack', async () => {
     const response = await GET(
       createChaptersRequest('http://127.0.0.1/chapters.json'),

@@ -120,6 +120,7 @@ const CHARSET_PATTERN = /;\s*charset\s*=\s*"?([^";\s]{1,40})/i;
 const XML_DECLARATION_PATTERN =
   /^\s*<\?xml\s[^>]*?\bencoding\s*=\s*["']([^"']{1,40})["']/;
 const XML_DECLARATION_MAX_BYTES = 1024;
+const LOOPBACK_NAME_PATTERN = /(^|\.)localhost\.?$/;
 const USER_AGENT = 'pod.monster (+https://pod.monster)';
 const FEED_ACCEPT =
   'application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.5';
@@ -536,6 +537,13 @@ async function validateUrl(
     password !== '' ||
     hostname === ''
   ) {
+    return createFailure('safe_fetch_blocked', 'blocked');
+  }
+
+  // RFC 6761 reserves `localhost` and every name under it for loopback. The
+  // DNS answer for such a name depends on the host, so the guard blocks the
+  // name itself.
+  if (LOOPBACK_NAME_PATTERN.test(hostname)) {
     return createFailure('safe_fetch_blocked', 'blocked');
   }
 

@@ -317,6 +317,46 @@ describe('safeFetchFeed', () => {
       expect(result).toEqual({ kind: 'error', reason: 'blocked' });
       expect(fetchFn).not.toHaveBeenCalled();
     });
+
+    it.each([
+      'http://localhost/feed.xml',
+      'http://LocalHost:3000/feed.xml',
+      'http://localhost./feed.xml',
+      'http://feeds.localhost/feed.xml',
+    ])(
+      'should give blocked for the loopback name of %s without a DNS lookup',
+      async (url) => {
+        const dnsLookup = vi.fn(publicDnsLookup);
+        const fetchFn = createFetchThatMustNotRun();
+
+        const result = await safeFetchFeed(url, { dnsLookup, fetchFn });
+
+        expect(result).toEqual({ kind: 'error', reason: 'blocked' });
+        expect(dnsLookup).not.toHaveBeenCalled();
+        expect(fetchFn).not.toHaveBeenCalled();
+      },
+    );
+
+    it.each([
+      'https://notlocalhost/feed.xml',
+      'https://localhost.example.com/feed.xml',
+    ])(
+      'should look up the host of %s, which is not a loopback name',
+      async (url) => {
+        const dnsLookup = vi.fn(publicDnsLookup);
+        const { fetchFn } = createFakeFetch([
+          { body: '<rss version="2.0"></rss>', status: 200 },
+        ]);
+
+        const result = await safeFetchFeed(url, { dnsLookup, fetchFn });
+
+        expect(result).toEqual({
+          body: '<rss version="2.0"></rss>',
+          kind: 'ok',
+        });
+        expect(dnsLookup).toHaveBeenCalledOnce();
+      },
+    );
   });
 
   describe('redirects', () => {
