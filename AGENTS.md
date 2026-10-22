@@ -19,7 +19,7 @@ When you choose between a modern solution and a legacy solution, always choose t
 Pod Monster is a mobile-first web app for podcasts. It supports many features of the Podcasting 2.0 `podcast` namespace. The stack is:
 
 - [Next.js](https://nextjs.org/) with the App Router (`app/`), React, and TypeScript.
-- [Tailwind CSS](https://tailwindcss.com/) for styles. Some components still use [vanilla-extract](https://vanilla-extract.style/) (`*.css.ts` files).
+- [Tailwind CSS](https://tailwindcss.com/) for styles.
 - [TanStack Query](https://tanstack.com/query) for data on the client.
 - The `@atdrago/podcast-index` workspace package (`packages/podcast-index/`) for calls to the Podcast Index API.
 - [Vitest](https://vitest.dev/) in browser mode, with Playwright and Chromium, for tests.
@@ -95,7 +95,7 @@ Use [Tailwind CSS](https://tailwindcss.com/docs) utility classes for styles when
 - No Tailwind utility exists for the style.
 - The code calculates a value at runtime, and the `className` prop changes too frequently as a result.
 
-Do not add a new vanilla-extract file (`*.css.ts`). The Tailwind theme tokens are in the `@theme` block of `styles/globals.css`.
+The Tailwind theme tokens are in the `@theme` block of `styles/globals.css`. The semantic color tokens, for example `--color-background`, use `light-dark()` to follow the color scheme of the system.
 
 ### React rules
 

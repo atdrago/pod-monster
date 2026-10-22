@@ -4,7 +4,6 @@ import { configDefaults, defineConfig } from 'vitest/config';
 import type { BrowserCommand } from 'vitest/node';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { playwright } from '@vitest/browser-playwright';
 import svgr from 'vite-plugin-svgr';
 
@@ -15,12 +14,7 @@ const setColorScheme: BrowserCommand<
 };
 
 export default defineConfig({
-  plugins: [
-    tsconfigPaths(),
-    react(),
-    vanillaExtractPlugin(),
-    svgr({ include: 'icons/*.svg' }),
-  ],
+  plugins: [tsconfigPaths(), react(), svgr({ include: 'icons/*.svg' })],
   // Vitest deletes `process.env` from the `define` of an inline project before
   // the browser server reads it. Thus, this `define` stays in the root config,
   // and only the browser project extends the root config.

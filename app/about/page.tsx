@@ -255,14 +255,14 @@ export default function Page() {
             deployments with 0 project-based configuration.
           </li>
           <li>
-            <ExternalLink href="https://vanilla-extract.style/">
-              Vanilla Extract
+            <ExternalLink href="https://tailwindcss.com/">
+              Tailwind CSS
             </ExternalLink>{' '}
-            is a lovely, newer tool for writing CSS styles in TypeScript. It
-            automatically scopes classes (like CSS Modules), is type-safe, and
-            allows the creation of theme-based contracts that make things like
-            dark/light mode support a breeze. It generates all CSS at build
-            time, so there is no run time performance implication.
+            is a utility-first CSS framework, which means you style each element
+            with small, single-purpose classes right in the markup. Its theme
+            keeps colors, type sizes, and spacing in one place, which makes
+            things like light and dark mode much easier to manage. It generates
+            the CSS at build time, so there&apos;s no run time performance cost.
           </li>
           <li>
             <ExternalLink href="https://icomoon.io/">IcoMoon</ExternalLink> lets

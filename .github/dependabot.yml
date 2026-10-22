@@ -21,7 +21,6 @@ updates:
           - 'next'
           - 'eslint-config-next'
           - '@next/bundle-analyzer'
-          - '@vanilla-extract/next-plugin'
       vitest:
         patterns:
           - 'vitest'
