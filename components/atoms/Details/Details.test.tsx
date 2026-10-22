@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { commands } from 'vitest/browser';
 
 import { Details } from './Details';
@@ -56,6 +56,31 @@ describe('Details', () => {
     const { container } = render(<Details summary="No content" />);
     const element = container.querySelector('details');
     await expect(element).toMatchScreenshot('details-no-children.png');
+  });
+
+  describe('legacy sizes', () => {
+    it('should put the content 16px below the summary, with a 16px indent', () => {
+      render(
+        <Details open summary="Click to collapse">
+          Content goes here
+        </Details>,
+      );
+      expect(screen.getByText('Content goes here')).toHaveStyle({
+        marginTop: '16px',
+        paddingLeft: '16px',
+      });
+    });
+
+    it('should put the footer 16px below the content', () => {
+      render(
+        <Details open summary="Summary text" footer={<div>Footer content</div>}>
+          Main content
+        </Details>,
+      );
+      expect(screen.getByText('Footer content').parentElement).toHaveStyle({
+        marginTop: '16px',
+      });
+    });
   });
 
   describe('dark', () => {

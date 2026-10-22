@@ -60,7 +60,7 @@ export const StartTimePrompt = ({
     <Stack
       aria-labelledby={lineId}
       as="section"
-      className={`rounded-lg border border-note-border p-6 ${className ?? ''}`}
+      className={`rounded-sm border border-note-border p-4 ${className ?? ''}`}
       space="small"
     >
       <Typography

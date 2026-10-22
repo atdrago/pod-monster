@@ -20,6 +20,32 @@ describe('Checkbox', () => {
     await expect(element).toMatchScreenshot('checkbox-checked.png');
   });
 
+  describe('legacy sizes', () => {
+    it('should render a 12px box', () => {
+      const { container } = render(<Checkbox>Unchecked option</Checkbox>);
+      expect(container.querySelector('span')).toHaveStyle({
+        height: '12px',
+        width: '12px',
+      });
+    });
+
+    it('should render a 12px box and a 12px check mark when checked', () => {
+      const { container } = render(
+        <Checkbox checked={true} onChange={() => {}}>
+          Checked option
+        </Checkbox>,
+      );
+      expect(container.querySelector('span')).toHaveStyle({
+        height: '12px',
+        width: '12px',
+      });
+      expect(container.querySelector('svg')).toHaveStyle({
+        height: '12px',
+        width: '12px',
+      });
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');

@@ -11,7 +11,7 @@ export const imgClassName = style({
 
 export const listLayout = style({
   margin: 'auto',
-  maxWidth: '48rem',
+  maxWidth: '30rem',
   paddingLeft: vars.spacing.s024,
   width: '100%',
 });

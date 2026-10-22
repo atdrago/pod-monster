@@ -4,7 +4,13 @@ import { vars } from 'styles';
 
 export const audio = style({ display: 'none', width: '100%' });
 
-export const mediaBase = style({ position: 'relative' });
+export const mediaBase = style({
+  // TODO: The range input sits on a text line. This 10px text size keeps the
+  // legacy height of that line. Remove it in a unit that names the image
+  // change.
+  fontSize: '10px',
+  position: 'relative',
+});
 
 export const labelLayout = style({
   alignItems: 'center',

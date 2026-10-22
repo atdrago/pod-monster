@@ -10,8 +10,8 @@ export const Button = ({ as = 'button', className, ...rest }: ButtonProps) => (
       border border-button-border
       text-foreground
       bg-background
-      rounded-lg m-0 p-3
-      cursor-pointer text-lg
+      rounded-sm m-0 p-3
+      cursor-pointer text-base
       ${className ?? ''}
     `}
     type="button"

@@ -32,18 +32,14 @@ export const Checkbox = ({
       />
       <Stack kind="flexRow" space="xsmall">
         <span
-          // should be "h-3 w-3" after removing global font size adjustment
           className={`
-            inline-block flex-auto shrink-0 h-5 w-5 leading-0
+            inline-block flex-auto shrink-0 h-3 w-3 leading-0
             border-foreground
             ${checked ? 'bg-foreground border-0' : 'bg-background border-2'}
           `}
         >
           {checked ? (
-            <CheckedIcon
-              // should be "h-3 w-3" after removing global font size adjustment
-              className="text-background h-5 w-5 leading-0"
-            />
+            <CheckedIcon className="text-background h-3 w-3 leading-0" />
           ) : null}
         </span>
         <Typography as="span" size="paragraph">

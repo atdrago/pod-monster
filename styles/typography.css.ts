@@ -46,7 +46,7 @@ export const listItem = style({
 export const typography = style({
   color: vars.color.foreground,
   margin: '0 auto',
-  maxWidth: '48rem',
+  maxWidth: '30rem',
   width: '100%',
   wordBreak: 'break-word',
 });

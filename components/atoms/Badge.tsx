@@ -9,8 +9,8 @@ export const Badge = ({ className, label, ...spanProps }: BadgeProps) => (
     aria-label={label}
     className={`
         text-background bg-foreground
-        font-bold leading-none align-middle text-lg whitespace-nowrap
-        rounded-sm inline-block p-2 w-auto
+        font-bold leading-none align-middle text-xs whitespace-nowrap
+        rounded-sm inline-block pt-2 px-1 pb-[7px] w-auto
         ${className ?? ''}
       `}
     style={{

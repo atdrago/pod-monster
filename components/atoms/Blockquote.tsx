@@ -6,7 +6,7 @@ export const Blockquote: FunctionComponent<
   <blockquote
     className={`
       border-l-2 border-blockquote-border
-      m-auto w-full max-w-lg p-4 pr-0 text-lg
+      m-auto w-full max-w-content p-4 pr-0
       ${className ?? ''}
     `}
     {...blockquoteProps}

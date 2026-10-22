@@ -114,6 +114,29 @@ describe('Artwork', () => {
     });
   });
 
+  describe('legacy sizes', () => {
+    it('should pad the placeholder label by 16px', () => {
+      render(<Artwork alt="" height={80} label="1." width={80} />);
+      expect(screen.getByText('1.')).toHaveStyle({ padding: '16px' });
+    });
+
+    it('should inset the subtitle by 16px and pad it by 16px', () => {
+      render(
+        <Artwork
+          alt="Cover art"
+          height={320}
+          src={SQUARE_IMAGE_SRC}
+          subtitle={SUBTITLE_TEXT}
+          width={320}
+        />,
+      );
+      expect(screen.getByRole('log')).toHaveStyle({
+        margin: '16px',
+        padding: '16px',
+      });
+    });
+  });
+
   describe('className', () => {
     it('should add a custom className to the root', () => {
       const { container } = render(

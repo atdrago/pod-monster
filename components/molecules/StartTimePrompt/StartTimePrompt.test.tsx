@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { commands } from 'vitest/browser';
+import { commands, page } from 'vitest/browser';
 
 import { StartTimePrompt } from './StartTimePrompt';
 
@@ -133,6 +133,32 @@ describe('StartTimePrompt', () => {
 
     expect(onNotNowClick).toHaveBeenCalledOnce();
     expect(onPlayFromClick).not.toHaveBeenCalled();
+  });
+
+  describe('640px viewport', () => {
+    beforeAll(async () => {
+      await page.viewport(640, 896);
+    });
+
+    afterAll(async () => {
+      await page.viewport(414, 896);
+    });
+
+    it('should put the buttons in a row', async () => {
+      await renderStartTimePrompt();
+
+      const playFromButton = screen.getByRole('button', {
+        name: 'Play from 12:34',
+      });
+      const notNowButton = screen.getByRole('button', { name: 'Not Now' });
+
+      expect(playFromButton.getBoundingClientRect().right).toBeLessThanOrEqual(
+        notNowButton.getBoundingClientRect().left,
+      );
+      expect(playFromButton.getBoundingClientRect().top).toBe(
+        notNowButton.getBoundingClientRect().top,
+      );
+    });
   });
 
   describe('dark', () => {

@@ -20,10 +20,10 @@ const sizeClasses = {
 } as const;
 
 const backgroundClasses = {
-  circle: `rounded-full p-2 text-center
+  circle: `rounded-full p-4 text-center
     bg-background
     border-2 border-foreground`,
-  default: 'bg-none border-0',
+  default: 'bg-none border-0 p-0',
 } as const;
 
 export const IconButton = ({
@@ -43,7 +43,7 @@ export const IconButton = ({
       className={`
         inline-flex items-center justify-center flex-none
         cursor-pointer
-        m-0 p-0
+        m-0
         ${sizeClasses[size]}
         ${backgroundClasses[background]}
         ${className ?? ''}

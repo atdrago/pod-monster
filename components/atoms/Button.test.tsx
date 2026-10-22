@@ -34,6 +34,25 @@ describe('Button', () => {
     });
   });
 
+  describe('legacy sizes', () => {
+    it('should render 16px text', () => {
+      render(<Button>Try again</Button>);
+      expect(screen.getByText('Try again')).toHaveStyle({ fontSize: '16px' });
+    });
+
+    it('should pad the button by 12px', () => {
+      render(<Button>Try again</Button>);
+      expect(screen.getByText('Try again')).toHaveStyle({ padding: '12px' });
+    });
+
+    it('should round the corners by 4px', () => {
+      render(<Button>Try again</Button>);
+      expect(screen.getByText('Try again')).toHaveStyle({
+        borderRadius: '4px',
+      });
+    });
+  });
+
   describe('className', () => {
     it('should write no undefined class when no className is given', () => {
       render(<Button>Try again</Button>);

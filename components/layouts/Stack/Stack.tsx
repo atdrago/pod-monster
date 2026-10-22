@@ -30,7 +30,7 @@ export const Stack = forwardRef<HTMLElement, StackProps>(function StackRef(
 
   const maxWidthClasses = {
     none: 'max-w-none',
-    small: 'max-w-3xl', // 48rem
+    small: 'max-w-content',
   };
 
   const kindClasses = {

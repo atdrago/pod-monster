@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { commands } from 'vitest/browser';
 
 import { Dot } from './Dot';
@@ -44,6 +44,14 @@ describe('Dot', () => {
     const { container } = render(<Dot color="blue" label="Status indicator" />);
     const element = container.querySelector('span');
     await expect(element).toMatchScreenshot('dot-with-label.png');
+  });
+
+  it('should render an 8px dot', () => {
+    render(<Dot color="blue" label="Status indicator" />);
+    expect(screen.getByRole('status')).toHaveStyle({
+      height: '8px',
+      width: '8px',
+    });
   });
 
   describe('dark', () => {

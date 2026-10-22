@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { commands, page } from 'vitest/browser';
 
 import { Blockquote } from './Blockquote';
@@ -15,6 +15,19 @@ describe('Blockquote', () => {
     );
     const element = container.querySelector('blockquote');
     await expect(element).toMatchScreenshot('blockquote-default.png');
+  });
+
+  describe('legacy sizes', () => {
+    it('should pad the quote by 16px on the top, the bottom, and the left', () => {
+      render(
+        <Blockquote>
+          <p>{QUOTE_TEXT}</p>
+        </Blockquote>,
+      );
+      expect(screen.getByText(QUOTE_TEXT).parentElement).toHaveStyle({
+        padding: '16px 0px 16px 16px',
+      });
+    });
   });
 
   describe('className', () => {
@@ -66,6 +79,7 @@ describe('Blockquote', () => {
         </Blockquote>,
       );
       const element = container.querySelector('blockquote');
+      expect(element?.getBoundingClientRect().width).toBe(480);
       await expect(element).toMatchScreenshot('blockquote-default-wide.png');
     });
   });

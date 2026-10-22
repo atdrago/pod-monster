@@ -10,6 +10,27 @@ describe('Badge', () => {
     await expect(element).toMatchScreenshot('badge-default.png');
   });
 
+  describe('legacy sizes', () => {
+    it('should render 12px text', () => {
+      render(<Badge>Explicit</Badge>);
+      expect(screen.getByText('Explicit')).toHaveStyle({ fontSize: '12px' });
+    });
+
+    it('should pad the badge by 8px 4px 7px', () => {
+      render(<Badge>Explicit</Badge>);
+      expect(screen.getByText('Explicit')).toHaveStyle({
+        padding: '8px 4px 7px',
+      });
+    });
+
+    it('should round the corners by 4px', () => {
+      render(<Badge>Explicit</Badge>);
+      expect(screen.getByText('Explicit')).toHaveStyle({
+        borderRadius: '4px',
+      });
+    });
+  });
+
   describe('className', () => {
     it('should apply custom className', async () => {
       const { container } = render(

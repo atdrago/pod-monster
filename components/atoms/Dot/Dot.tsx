@@ -22,7 +22,7 @@ export const Dot = ({ className, color, label, ...spanProps }: DotProps) => {
       aria-label={label}
       className={`
         rounded-full inline-block flex-none
-        h-[0.8rem] w-[0.8rem] m-0 p-0
+        h-2 w-2 m-0 p-0
         ${colorClasses[color]}
         ${className ?? ''}
       `}

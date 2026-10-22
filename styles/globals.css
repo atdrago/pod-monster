@@ -61,6 +61,8 @@
       light-dark(hsl(0 0% 50% / 0.34), hsl(70 14% 5% / 0.34));
 
   --animate-spin-1s: spin 1s linear infinite;
+
+  --container-content: 30rem;
 }
 
 @layer base {
@@ -79,7 +81,7 @@
 }
 
 .list-layout {
-  @apply flex flex-col gap-8 pl-10;
+  @apply flex flex-col gap-8 pl-6;
 
   ul& {
     @apply list-disc;

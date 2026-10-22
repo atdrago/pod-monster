@@ -189,7 +189,10 @@ export default async function Page(props: PageProps) {
                 </Typography>
               ) : null}
               {feed.explicit ? (
-                <div>
+                // TODO: The badge sits on a text line. This 10px text size
+                // keeps the legacy height of that line. Remove it in a unit
+                // that names the change.
+                <div className="text-[10px]">
                   <Badge>Explicit</Badge>
                 </div>
               ) : null}

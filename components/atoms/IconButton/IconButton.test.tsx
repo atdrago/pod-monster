@@ -87,6 +87,32 @@ describe('IconButton', () => {
         borderColor: 'rgb(39, 40, 34)',
       });
     });
+
+    it('should pad the circle by 16px', () => {
+      render(
+        <IconButton label="Settings" background="circle">
+          <Icon size="small">
+            <CogIcon />
+          </Icon>
+        </IconButton>,
+      );
+      expect(screen.getByRole('button', { name: 'Settings' })).toHaveStyle({
+        padding: '16px',
+      });
+    });
+
+    it('should not pad the default background', () => {
+      render(
+        <IconButton label="Settings" background="default">
+          <Icon size="small">
+            <CogIcon />
+          </Icon>
+        </IconButton>,
+      );
+      expect(screen.getByRole('button', { name: 'Settings' })).toHaveStyle({
+        padding: '0px',
+      });
+    });
   });
 
   describe('polymorphic', () => {

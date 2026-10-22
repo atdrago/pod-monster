@@ -52,6 +52,14 @@ describe('listLayout', () => {
     await expect(element).toMatchScreenshot('listLayout-ordered.png');
   });
 
+  it('should space the items by 32px and indent them by 24px', () => {
+    const { container } = render(<UnorderedList />);
+    expect(container.querySelector('ul')).toHaveStyle({
+      gap: '32px',
+      paddingLeft: '24px',
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');
