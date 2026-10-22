@@ -5,14 +5,6 @@ import { Checkbox } from 'components/atoms/Checkbox';
 import { Details } from 'components/atoms/Details';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { useClassNames } from 'hooks/useClassNames';
-
-import {
-  paragraph,
-  transcriptItem,
-  transcriptItemHighlight,
-  transcriptItemOuter,
-} from './timedList.css';
 
 export interface TimedListItem {
   from: number;
@@ -20,6 +12,7 @@ export interface TimedListItem {
 }
 
 interface TimedListProps<TListItem extends TimedListItem = TimedListItem> {
+  className?: string;
   error?: Error | null;
   hasError?: boolean;
   index: number;
@@ -38,26 +31,30 @@ const ListItemComponent = function Row({
 }: ListChildComponentProps) {
   const { text } = data.list[listItemIndex];
   const isCurrentTranscriptItem = data.index === listItemIndex;
-  const outerClassName = useClassNames(
-    transcriptItemOuter,
-    isCurrentTranscriptItem ? transcriptItemHighlight : undefined,
-  );
 
   return (
     <span
       role="button"
       key={listItemIndex}
-      className={outerClassName}
+      className={`
+        flex min-h-12 cursor-pointer items-center border-0
+        supports-[scroll-behavior:smooth]:transition-colors
+        supports-[scroll-behavior:smooth]:duration-250
+        ${isCurrentTranscriptItem ? 'bg-background-highlight' : 'bg-transparent'}
+      `}
       style={style}
       onClick={() => data.onItemClick(data.list[listItemIndex])}
     >
-      <span className={transcriptItem}>{text}</span>
+      <span className="line-clamp-2 px-2 text-paragraph text-foreground wrap-anywhere">
+        {text}
+      </span>
     </span>
   );
 };
 
 export const TimedList: FunctionComponent<TimedListProps> = memo(
   function TimedListMemo({
+    className,
     error,
     hasError,
     index,
@@ -82,6 +79,7 @@ export const TimedList: FunctionComponent<TimedListProps> = memo(
 
     return (
       <Details
+        className={className}
         isLoading={isLoading}
         hasError={hasError}
         footer={
@@ -121,7 +119,7 @@ export const TimedList: FunctionComponent<TimedListProps> = memo(
           </Typography>
         }
       >
-        <Typography className={paragraph} as="div" size="paragraph">
+        <Typography className="-ml-2 py-2" as="div" size="paragraph">
           {hasError && error ? error.message : null}
           {list.length > 0 ? (
             <List

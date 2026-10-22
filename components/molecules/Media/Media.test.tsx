@@ -96,6 +96,15 @@ async function renderMedia(props: Partial<MediaWithContextRefsProps> = {}) {
   return rendered;
 }
 
+// The title text sits in an inner span, so the title label is the heading.
+function getTimeLabels() {
+  return [
+    screen.getByText('00:00:00'),
+    screen.getByRole('heading', { name: TITLE }),
+    screen.getByText('00:00:03'),
+  ];
+}
+
 describe('Media', () => {
   beforeEach(async () => {
     await deleteDatabase();
@@ -116,6 +125,35 @@ describe('Media', () => {
       const { container } = await renderMedia();
 
       expect(container.querySelector('audio')).not.toBeVisible();
+    });
+
+    it('should render the time labels white', async () => {
+      await renderMedia();
+
+      for (const label of getTimeLabels()) {
+        expect(label).toHaveStyle({
+          color: 'rgb(255, 255, 255)',
+          mixBlendMode: 'difference',
+        });
+      }
+    });
+
+    it('should center the title and align the remaining time to the right', async () => {
+      await renderMedia();
+
+      expect(screen.getByText('00:00:00')).toHaveStyle({ textAlign: 'left' });
+      expect(screen.getByRole('heading', { name: TITLE })).toHaveStyle({
+        textAlign: 'center',
+      });
+      expect(screen.getByText('00:00:03')).toHaveStyle({ textAlign: 'right' });
+    });
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the audio element', async () => {
+      const { container } = await renderMedia({ className: 'custom-class' });
+
+      expect(container.querySelector('audio')).toHaveClass('custom-class');
     });
   });
 
@@ -153,6 +191,17 @@ describe('Media', () => {
       const { container } = await renderMedia();
       const element = container.querySelector('audio + div');
       await expect(element).toMatchScreenshot('media-default-dark.png');
+    });
+
+    it('should render the time labels white', async () => {
+      await renderMedia();
+
+      for (const label of getTimeLabels()) {
+        expect(label).toHaveStyle({
+          color: 'rgb(255, 255, 255)',
+          mixBlendMode: 'difference',
+        });
+      }
     });
   });
 });
