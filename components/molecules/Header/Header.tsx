@@ -71,7 +71,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
         as="h1"
         size="headingSmall"
         style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-        shouldUseCapsize={false}
+        shouldTrimTextBox={false}
         className="font-bold"
       >
         <Link aria-label="Pod Monster" href="/" className={homeLinkClassName}>
@@ -87,7 +87,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
             as="span"
             size="headingSmall"
             style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
           >
             {' / '}
           </Typography>
@@ -101,7 +101,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
               margin: 0,
               width: 'auto',
             }}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
             title={feedTitle}
           >
             <Link href={pathname} className="no-underline hover:underline">
@@ -116,7 +116,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
             as="span"
             size="headingSmall"
             style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
           >
             {' / '}
           </Typography>
@@ -130,7 +130,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
               margin: 0,
               width: 'auto',
             }}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
             title={feedTitle}
           >
             {isLoading ? (
@@ -154,7 +154,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
             as="span"
             size="headingSmall"
             style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
           >
             {' / '}
           </Typography>
@@ -164,7 +164,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
             size="headingSmall"
             whitespace="ellipsis"
             style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
             title={episode.title}
           >
             <Link

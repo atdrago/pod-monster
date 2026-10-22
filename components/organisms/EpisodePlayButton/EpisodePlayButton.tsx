@@ -122,6 +122,7 @@ export const EpisodePlayButton = ({
         </IconButton>
         <Typography
           className="font-bold"
+          shouldTrimTextBox={false}
           size="headingSmaller"
           as="h3"
           whitespace={2}

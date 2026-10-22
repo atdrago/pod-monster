@@ -229,7 +229,7 @@ export const Media = function MediaRef({
             as="span"
             size="paragraph"
             className={timeLabel}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
           >
             {duration === 0 ? '...' : secondsToFormattedTime(currentTime)}
           </Typography>
@@ -239,7 +239,7 @@ export const Media = function MediaRef({
               size="paragraph"
               className={timeLabelCenter + ' font-bold'}
               whitespace="ellipsis"
-              shouldUseCapsize={false}
+              shouldTrimTextBox={false}
             >
               {title}
             </Typography>
@@ -248,7 +248,7 @@ export const Media = function MediaRef({
             as="span"
             size="paragraph"
             className={timeLabelRight}
-            shouldUseCapsize={false}
+            shouldTrimTextBox={false}
           >
             {duration === 0
               ? '...'

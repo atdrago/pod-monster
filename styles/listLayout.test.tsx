@@ -9,7 +9,7 @@ function UnorderedList() {
       as="ul"
       className="list-layout"
       size="paragraph"
-      shouldUseCapsize={false}
+      shouldTrimTextBox={false}
     >
       <li>It is available for public testing and use.</li>
       <li>You can expect all changes that land to be stable.</li>
@@ -27,7 +27,7 @@ function OrderedList() {
       as="ol"
       className="list-layout"
       size="paragraph"
-      shouldUseCapsize={false}
+      shouldTrimTextBox={false}
     >
       <li>The Podcast Index provides all the podcast data.</li>
       <li>TypeScript allows you to write statically-typed JavaScript.</li>

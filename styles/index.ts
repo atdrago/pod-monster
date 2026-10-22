@@ -3,4 +3,3 @@
 // declared yet.
 export * from './theme.css';
 export * from './animation.css';
-export * from './typography.css';

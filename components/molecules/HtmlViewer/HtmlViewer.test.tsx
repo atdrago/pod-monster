@@ -58,19 +58,31 @@ async function renderHtmlViewer(
 }
 
 describe('HtmlViewer', () => {
-  describe('shouldUseCapsize', () => {
-    it('should render each element with capsize by default', async () => {
+  describe('shouldTrimTextBox', () => {
+    it('should render each element with the trim by default', async () => {
       const { container } = await renderHtmlViewer();
       const element = container.firstElementChild;
-      await expect(element).toMatchScreenshot('htmlViewer-capsize-on.png');
+      await expect(element).toMatchScreenshot('htmlViewer-trim-on.png');
     });
 
-    it('should render each element without capsize', async () => {
+    it('should render each element without the trim', async () => {
       const { container } = await renderHtmlViewer({
-        shouldUseCapsize: false,
+        shouldTrimTextBox: false,
       });
       const element = container.firstElementChild;
-      await expect(element).toMatchScreenshot('htmlViewer-capsize-off.png');
+      await expect(element).toMatchScreenshot('htmlViewer-trim-off.png');
+    });
+  });
+
+  describe('lists', () => {
+    it('should render each list item with its full line box', async () => {
+      await renderHtmlViewer();
+
+      const first = screen.getByText('First item').getBoundingClientRect();
+      const second = screen.getByText('Second item').getBoundingClientRect();
+
+      expect(first.height).toBe(24);
+      expect(second.top - first.top).toBe(24);
     });
   });
 
@@ -105,10 +117,10 @@ describe('HtmlViewer', () => {
       await commands.setColorScheme('light');
     });
 
-    it('should render each element with capsize by default', async () => {
+    it('should render each element with the trim by default', async () => {
       const { container } = await renderHtmlViewer();
       const element = container.firstElementChild;
-      await expect(element).toMatchScreenshot('htmlViewer-capsize-on-dark.png');
+      await expect(element).toMatchScreenshot('htmlViewer-trim-on-dark.png');
     });
   });
 
@@ -121,14 +133,12 @@ describe('HtmlViewer', () => {
       await page.viewport(414, 896);
     });
 
-    it('should render each element without capsize', async () => {
+    it('should render each element without the trim', async () => {
       const { container } = await renderHtmlViewer({
-        shouldUseCapsize: false,
+        shouldTrimTextBox: false,
       });
       const element = container.firstElementChild;
-      await expect(element).toMatchScreenshot(
-        'htmlViewer-capsize-off-wide.png',
-      );
+      await expect(element).toMatchScreenshot('htmlViewer-trim-off-wide.png');
     });
   });
 });

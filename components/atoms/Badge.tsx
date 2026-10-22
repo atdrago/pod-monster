@@ -11,11 +11,9 @@ export const Badge = ({ className, label, ...spanProps }: BadgeProps) => (
         text-background bg-foreground
         font-bold leading-none align-middle text-xs whitespace-nowrap
         rounded-sm inline-block pt-2 px-1 pb-[7px] w-auto
+        text-box-trim-cap
         ${className ?? ''}
       `}
-    style={{
-      textBox: 'trim-both cap',
-    }}
     {...spanProps}
   />
 );

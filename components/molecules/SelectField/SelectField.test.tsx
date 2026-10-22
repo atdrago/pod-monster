@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import { commands } from 'vitest/browser';
 
@@ -32,7 +32,31 @@ describe('SelectField', () => {
     it('should render the value when no label is given', async () => {
       const { container } = render(<PlaybackRateField />);
       const element = container.querySelector('label');
+      expect(element?.lastChild?.textContent).toBe('1');
       await expect(element).toMatchScreenshot('selectField-no-label.png');
+    });
+  });
+
+  describe('select', () => {
+    it('should stay focusable', () => {
+      render(<PlaybackRateField label="1x" />);
+      const select = screen.getByRole('combobox');
+      select.focus();
+      expect(select).toHaveFocus();
+    });
+
+    it('should call onChange when the value changes', () => {
+      const onChange = vi.fn();
+      render(
+        <SelectField onChange={onChange} value="1" label="1x">
+          <option value="1">1</option>
+          <option value="1.5">1.5</option>
+        </SelectField>,
+      );
+      fireEvent.change(screen.getByRole('combobox'), {
+        target: { value: '1.5' },
+      });
+      expect(onChange).toHaveBeenCalledTimes(1);
     });
   });
 

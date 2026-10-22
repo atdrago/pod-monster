@@ -32,6 +32,8 @@ const EPISODE: PodcastEpisode = {
   identity: 'episode-1',
   title: 'Episode 1',
 };
+const LONG_TITLE =
+  'A podcast with a very long title that wraps onto a second line, then onto a third line, and the clamp hides the third line';
 
 function deleteDatabase() {
   return new Promise<void>((resolve, reject) => {
@@ -102,6 +104,16 @@ async function renderEpisodePlayButtonForScreenshot(
 describe('EpisodePlayButton', () => {
   beforeEach(async () => {
     await deleteDatabase();
+  });
+
+  it('should clamp a long title to two lines without the trim', async () => {
+    await renderEpisodePlayButtonForScreenshot({
+      episode: { ...EPISODE, title: LONG_TITLE },
+    });
+    const heading = screen.getByRole('heading');
+
+    expect(heading).not.toHaveClass('text-box-trim-cap');
+    expect(heading.getBoundingClientRect().height).toBe(2 * 27);
   });
 
   it('should put the feed URL and the identity of the episode in the player', async () => {

@@ -368,7 +368,7 @@ export const EpisodePage = ({
               }
             >
               <HtmlViewer
-                shouldUseCapsize={false}
+                shouldTrimTextBox={false}
                 rehypePlugins={FEED_HTML_REHYPE_PLUGINS}
               >
                 {episode.description}
@@ -493,7 +493,7 @@ export const EpisodePage = ({
                     transcriptsError.message
                   ) : typeof transcript?.content === 'string' ? (
                     <HtmlViewer
-                      shouldUseCapsize={false}
+                      shouldTrimTextBox={false}
                       rehypePlugins={FEED_HTML_REHYPE_PLUGINS}
                     >
                       {transcript.content}

@@ -11,7 +11,7 @@ export const Button = ({ as = 'button', className, ...rest }: ButtonProps) => (
       text-foreground
       bg-background
       rounded-sm m-0 p-3
-      cursor-pointer text-base
+      cursor-pointer text-base text-box-trim-cap
       ${className ?? ''}
     `}
     type="button"

@@ -103,7 +103,7 @@ export const EpisodeList = ({ episodes }: EpisodeListProps) => {
                     as="h3"
                     className="font-bold"
                     size="headingSmaller"
-                    shouldUseCapsize={false}
+                    shouldTrimTextBox={false}
                     whitespace="ellipsis"
                   >
                     {episode.title}

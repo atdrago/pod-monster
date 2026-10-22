@@ -114,7 +114,7 @@ export default function Page() {
           as="ul"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>It is available for public testing and use.</li>
           <li>You can expect all changes that land to be stable.</li>
@@ -132,7 +132,7 @@ export default function Page() {
           as="ul"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>
             No account is required to subscribe to or listen to podcasts (though
@@ -169,10 +169,10 @@ export default function Page() {
           as="ul"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>
-            <Typography as="p" size="paragraph" shouldUseCapsize={false}>
+            <Typography as="p" size="paragraph" shouldTrimTextBox={false}>
               All settings, including subscriptions, are currently stored in
               LocalStorage, making them reasonably persistent. Unfortunately,
               browser processes like &ldquo;
@@ -199,7 +199,7 @@ export default function Page() {
               apps!
             </Typography>
             <br />
-            <Typography as="p" size="paragraph" shouldUseCapsize={false}>
+            <Typography as="p" size="paragraph" shouldTrimTextBox={false}>
               In the future, the plan is to fix this in two ways. First,
               migrating from LocalStorage to IndexedDB will increase storage
               limits, which should help avoid data eviction. And, second, adding
@@ -221,7 +221,7 @@ export default function Page() {
           as="ol"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>
             <ExternalLink href="https://podcastindex.org/">

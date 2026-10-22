@@ -4,11 +4,10 @@ import ReactMarkdown, { type Options } from 'react-markdown';
 import { Blockquote } from 'components/atoms/Blockquote';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
-import { listItem } from 'styles';
 
 interface HtmlViewerProps extends Options {
   className?: string;
-  shouldUseCapsize?: boolean;
+  shouldTrimTextBox?: boolean;
 }
 
 import {
@@ -21,7 +20,7 @@ export const HtmlViewer = memo(
   function MarkdownViewerMemo({
     children,
     className,
-    shouldUseCapsize = true,
+    shouldTrimTextBox = true,
     ...reactMarkdownProps
   }: HtmlViewerProps) {
     const baseClassName = useClassNames(htmlViewerContainer, className);
@@ -31,7 +30,7 @@ export const HtmlViewer = memo(
         as="div"
         size="paragraph"
         className={baseClassName}
-        shouldUseCapsize={false}
+        shouldTrimTextBox={false}
       >
         <ReactMarkdown
           components={{
@@ -71,7 +70,7 @@ export const HtmlViewer = memo(
             h1({ node: _node, ...props }) {
               return (
                 <Typography
-                  shouldUseCapsize={shouldUseCapsize}
+                  shouldTrimTextBox={shouldTrimTextBox}
                   as="h1"
                   size="headingSmall"
                   className="font-bold"
@@ -83,7 +82,7 @@ export const HtmlViewer = memo(
               return (
                 <Typography
                   className="font-bold"
-                  shouldUseCapsize={shouldUseCapsize}
+                  shouldTrimTextBox={shouldTrimTextBox}
                   as="h2"
                   size="headingSmall"
                   {...props}
@@ -94,7 +93,7 @@ export const HtmlViewer = memo(
               return (
                 <Typography
                   className="font-bold"
-                  shouldUseCapsize={shouldUseCapsize}
+                  shouldTrimTextBox={shouldTrimTextBox}
                   as="h3"
                   size="headingSmall"
                   {...props}
@@ -106,7 +105,7 @@ export const HtmlViewer = memo(
                 <Typography
                   as="h4"
                   className="font-bold"
-                  shouldUseCapsize={shouldUseCapsize}
+                  shouldTrimTextBox={shouldTrimTextBox}
                   size="headingSmaller"
                   {...props}
                 />
@@ -136,7 +135,7 @@ export const HtmlViewer = memo(
               // ordered: _ordered,
               ...props
             }) {
-              return <li className={listItem} {...props} />;
+              return <li className="text-paragraph break-words" {...props} />;
             },
             ol({
               className: _className,
@@ -149,7 +148,7 @@ export const HtmlViewer = memo(
             p({ className: _className, node: _node, ...props }) {
               return (
                 <Typography
-                  shouldUseCapsize={shouldUseCapsize}
+                  shouldTrimTextBox={shouldTrimTextBox}
                   as="p"
                   size="paragraph"
                   {...props}
@@ -159,7 +158,7 @@ export const HtmlViewer = memo(
             pre({ className: _className, node: _node, ...props }) {
               return (
                 <Typography
-                  shouldUseCapsize={shouldUseCapsize}
+                  shouldTrimTextBox={shouldTrimTextBox}
                   as="pre"
                   size="monospace"
                   {...props}
@@ -167,9 +166,11 @@ export const HtmlViewer = memo(
               );
             },
             small({ className: _className, node: _node, ...props }) {
+              // A trimmed inline root becomes a block, and a block cannot wrap
+              // inside a paragraph. Thus, this root stays inline and untrimmed.
               return (
                 <Typography
-                  shouldUseCapsize={shouldUseCapsize}
+                  shouldTrimTextBox={false}
                   as="small"
                   size="legal"
                   {...props}
@@ -196,7 +197,7 @@ export const HtmlViewer = memo(
     return (
       prevProps.children === nextProps.children &&
       prevProps.className === nextProps.className &&
-      prevProps.shouldUseCapsize === nextProps.shouldUseCapsize
+      prevProps.shouldTrimTextBox === nextProps.shouldTrimTextBox
     );
   },
 );

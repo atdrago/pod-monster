@@ -15,6 +15,8 @@ vi.mock('@sentry/nextjs', () => ({
 const DATABASE_NAME = 'pod.monster';
 const FEED_URL = 'https://example.com/feed.xml';
 const TITLE = 'Example Show';
+const LONG_TITLE =
+  'A podcast with a very long title that wraps onto a second line, then onto a third line, and the clamp hides the third line';
 const FEED_EPISODES_DATA = [
   {
     datePublished: Date.parse('2026-10-10T12:00:00.000Z') / 1000,
@@ -108,6 +110,18 @@ describe('SubscriptionItem', () => {
         'href',
         getPodcastPath({ feedUrl: FEED_URL }),
       );
+    });
+  });
+
+  describe('title', () => {
+    it('should clamp a long title to two lines without the trim', async () => {
+      await renderSubscriptionItem({
+        title: LONG_TITLE,
+      });
+      const heading = screen.getByRole('heading');
+
+      expect(heading).not.toHaveClass('text-box-trim-cap');
+      expect(heading.getBoundingClientRect().height).toBe(2 * 27);
     });
   });
 

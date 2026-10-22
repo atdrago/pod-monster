@@ -45,6 +45,26 @@ describe('Button', () => {
       expect(screen.getByText('Try again')).toHaveStyle({ padding: '12px' });
     });
 
+    it('should trim the text to the cap height', () => {
+      render(<Button>Try again</Button>);
+      const element = screen.getByText('Try again');
+      const context = document.createElement('canvas').getContext('2d');
+
+      if (context === null) {
+        throw new Error('The canvas has no 2D context.');
+      }
+
+      context.font = getComputedStyle(element).font;
+      const capHeight = context.measureText('H').actualBoundingBoxAscent;
+
+      expect(element).toHaveStyle({ textBoxTrim: 'trim-both' });
+      // The padding is 12px on each side, and the border is 1px.
+      expect(element.getBoundingClientRect().height).toBeCloseTo(
+        capHeight + 2 * 12 + 2 * 1,
+        0,
+      );
+    });
+
     it('should round the corners by 4px', () => {
       render(<Button>Try again</Button>);
       expect(screen.getByText('Try again')).toHaveStyle({

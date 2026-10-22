@@ -84,6 +84,7 @@ export const SubscriptionItem = ({
         <Typography
           as="h2"
           className="font-bold"
+          shouldTrimTextBox={false}
           size="headingSmaller"
           whitespace={2}
         >

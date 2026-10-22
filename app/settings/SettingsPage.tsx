@@ -169,7 +169,7 @@ export function SettingsPage() {
                   as="ul"
                   className="list-layout"
                   size="paragraph"
-                  shouldUseCapsize={false}
+                  shouldTrimTextBox={false}
                 >
                   {data.errors.map(({ title }, i) => {
                     return <li key={i}>{title}</li>;

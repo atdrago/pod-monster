@@ -31,6 +31,31 @@ describe('Badge', () => {
     });
   });
 
+  describe('trim', () => {
+    it.each([undefined, 'custom-class'])(
+      'should trim the text to the cap height with the className %s',
+      (className) => {
+        render(<Badge className={className}>Explicit</Badge>);
+        const element = screen.getByText('Explicit');
+        const context = document.createElement('canvas').getContext('2d');
+
+        if (context === null) {
+          throw new Error('The canvas has no 2D context.');
+        }
+
+        context.font = getComputedStyle(element).font;
+        const capHeight = context.measureText('H').actualBoundingBoxAscent;
+
+        expect(element).toHaveStyle({ textBoxTrim: 'trim-both' });
+        // The padding is 8px at the top and 7px at the bottom.
+        expect(element.getBoundingClientRect().height).toBeCloseTo(
+          capHeight + 15,
+          0,
+        );
+      },
+    );
+  });
+
   describe('className', () => {
     it('should apply custom className', async () => {
       const { container } = render(

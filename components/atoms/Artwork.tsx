@@ -49,7 +49,7 @@ export const Artwork = memo<ArtworkComponentProps>(
       />
     ) : (
       <Typography
-        as="span"
+        as="div"
         size="headingLarge"
         className={`
           self-center object-contain items-center justify-center
