@@ -4,13 +4,15 @@ import { Dot } from 'components/atoms/Dot';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import type { PodcastEpisode } from 'types/PodcastFeed';
 
-import { dotClassName } from './episodeUnlistenedDot.css';
-
 interface EpisodeUnlistedDotProps {
+  className?: string;
   episode: Pick<PodcastEpisode, 'datePublished' | 'feedUrl' | 'identity'>;
 }
 
-export const EpisodeUnlistenedDot = ({ episode }: EpisodeUnlistedDotProps) => {
+export const EpisodeUnlistenedDot = ({
+  className,
+  episode,
+}: EpisodeUnlistedDotProps) => {
   const { getEpisodeSettingsItem, getFeedSettingsItem } = useSettingsContext();
   const subscribedAt = getFeedSettingsItem({
     feedUrl: episode.feedUrl,
@@ -28,5 +30,13 @@ export const EpisodeUnlistenedDot = ({ episode }: EpisodeUnlistedDotProps) => {
     return null;
   }
 
-  return <Dot color={'blue'} className={dotClassName} label="New episodes" />;
+  // The negative margin equals the dot width and the `xxsmall` gap. Thus, the
+  // dot hangs in the gutter, and the artwork aligns with the content edge.
+  return (
+    <Dot
+      color={'blue'}
+      className={`-ml-3 ${className ?? ''}`}
+      label="New episodes"
+    />
+  );
 };

@@ -52,6 +52,16 @@ describe('FileField', () => {
     });
   });
 
+  describe('className', () => {
+    it('should apply a custom className to the root', () => {
+      const { container } = render(
+        <FileField className="custom-class" label="Import OPML" />,
+      );
+
+      expect(container.querySelector('label')).toHaveClass('custom-class');
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');

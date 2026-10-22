@@ -2,13 +2,8 @@ import { m } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { Box } from 'react-polymorphic-box';
 
-import {
-  buttonClassName,
-  inputClassName,
-  meterClassName,
-} from './sizeField.css';
-
 interface SizeFieldProps {
+  className?: string;
   label: string;
   max: number;
   min: number;
@@ -18,6 +13,7 @@ interface SizeFieldProps {
 }
 
 export const SizeField = ({
+  className,
   label,
   max,
   min,
@@ -37,7 +33,13 @@ export const SizeField = ({
     <Box
       as="button"
       aria-label={label}
-      className={buttonClassName}
+      className={`
+        flex flex-col items-stretch justify-end justify-self-end
+        m-0 h-6 w-4 p-px
+        border-2 border-foreground bg-transparent
+        cursor-pointer
+        ${className ?? ''}
+      `}
       onClick={() => {
         if (onChange && inputRef.current) {
           if (value === max) {
@@ -51,7 +53,7 @@ export const SizeField = ({
       }}
     >
       <input
-        className={inputClassName}
+        className="hidden"
         max={max}
         min={min}
         ref={inputRef}
@@ -63,7 +65,7 @@ export const SizeField = ({
         animate={{ height: `${(value / max) * 100}%` }}
         transition={{ damping: 15, mass: 0.1, stiffness: 500, type: 'spring' }}
         aria-hidden={true}
-        className={meterClassName}
+        className="m-0 block bg-foreground p-0"
       />
     </Box>
   );

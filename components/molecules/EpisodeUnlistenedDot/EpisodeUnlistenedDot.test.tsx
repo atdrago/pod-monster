@@ -37,12 +37,13 @@ function deleteDatabase() {
 
 async function renderEpisodeUnlistenedDot(
   episode: Parameters<typeof EpisodeUnlistenedDot>[0]['episode'] = EPISODE,
+  className?: string,
 ) {
   const rendered = renderHook(() => useSettingsContext(), {
     wrapper: ({ children }: PropsWithChildren) => (
       <SettingsProvider>
         {children}
-        <EpisodeUnlistenedDot episode={episode} />
+        <EpisodeUnlistenedDot className={className} episode={episode} />
       </SettingsProvider>
     ),
   });
@@ -171,6 +172,24 @@ describe('EpisodeUnlistenedDot', () => {
   it('should render the blue dot with a negative left margin', async () => {
     const element = await renderEpisodeUnlistenedDotForScreenshot();
     await expect(element).toMatchScreenshot('episodeUnlistenedDot-default.png');
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the dot', async () => {
+      const { result } = await renderEpisodeUnlistenedDot(
+        EPISODE,
+        'custom-class',
+      );
+
+      await act(() =>
+        result.current.setFeedSettingsItem(
+          { feedUrl: FEED_URL },
+          FEED_SETTINGS_ITEM,
+        ),
+      );
+
+      expect(screen.getByLabelText('New episodes')).toHaveClass('custom-class');
+    });
   });
 
   describe('dark', () => {

@@ -3,8 +3,6 @@ import { commands } from 'vitest/browser';
 
 import { Progress } from './Progress';
 
-// The JSDoc of `percent` says 0 to 100, but the code reads a fraction from 0
-// to 1. `EpisodeProgress` passes a fraction, so these cases pass a fraction.
 describe('Progress', () => {
   describe('not highlighted', () => {
     it('should render 0 percent', async () => {
@@ -76,6 +74,38 @@ describe('Progress', () => {
 
       expect(screen.getByText('Top left')).toBeVisible();
       expect(container.firstElementChild?.children).toHaveLength(1);
+    });
+  });
+
+  describe('bar color', () => {
+    it('should apply the foreground color to a highlighted bar', () => {
+      const { container } = render(
+        <Progress isHighlighted={true} percent={0.5} />,
+      );
+      const bar =
+        container.firstElementChild?.firstElementChild?.firstElementChild;
+
+      expect(bar).toHaveClass('bg-foreground');
+      expect(bar).not.toHaveClass('bg-note-border');
+    });
+
+    it('should apply the note border color to a bar that is not highlighted', () => {
+      const { container } = render(<Progress percent={0.5} />);
+      const bar =
+        container.firstElementChild?.firstElementChild?.firstElementChild;
+
+      expect(bar).toHaveClass('bg-note-border');
+      expect(bar).not.toHaveClass('bg-foreground');
+    });
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the root', () => {
+      const { container } = render(
+        <Progress className="custom-class" percent={0.5} />,
+      );
+
+      expect(container.firstElementChild).toHaveClass('custom-class');
     });
   });
 

@@ -43,6 +43,24 @@ describe('Footer', () => {
     });
   });
 
+  describe('list', () => {
+    it('should show no list markers', () => {
+      const { container } = render(<Footer />);
+
+      expect(container.querySelector('ul')).toHaveStyle({
+        listStyleType: 'none',
+      });
+    });
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the root', () => {
+      const { container } = render(<Footer className="custom-class" />);
+
+      expect(container.querySelector('footer')).toHaveClass('custom-class');
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');

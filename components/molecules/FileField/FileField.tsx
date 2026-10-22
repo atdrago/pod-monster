@@ -6,10 +6,9 @@ import { Stack } from 'components/layouts/Stack';
 import SpinnerIcon from 'icons/spinner8.svg';
 import UploadIcon8 from 'icons/upload2.svg';
 
-import { buttonClassName, inputClassName } from './fileField.css';
-
 interface FileFieldProps {
   accept?: string;
+  className?: string;
   isLoading?: boolean;
   label: string;
   loadingLabel?: string;
@@ -18,16 +17,21 @@ interface FileFieldProps {
 
 export const FileField = ({
   accept,
+  className,
   isLoading = false,
   label,
   loadingLabel = 'Loading...',
   onChange,
 }: FileFieldProps) => {
   return (
-    <Button as="label" className={buttonClassName} role="button">
+    <Button
+      as="label"
+      className={`inline-block ${className ?? ''}`}
+      role="button"
+    >
       <input
         accept={accept}
-        className={inputClassName}
+        className="hidden"
         type="file"
         onChange={onChange}
       />

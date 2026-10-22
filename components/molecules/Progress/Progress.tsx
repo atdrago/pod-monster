@@ -2,21 +2,20 @@ import { useMemo } from 'react';
 
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { useClassNames } from 'hooks/useClassNames';
 
-import {
-  progressBar,
-  progressBarContainer,
-  progressBarHighlightVariant,
-} from './progress.css';
+const barColorClasses = {
+  false: 'bg-note-border',
+  true: 'bg-foreground',
+} as const;
 
 interface ProgressProps {
   bottomLeftTitle?: string;
   bottomRightTitle?: string;
+  className?: string;
   isHighlighted?: boolean;
   /**
-   * A number, representing the "percent complete", between 0 and 100. Will be
-   * rounded to 2 decimal places.
+   * The completed part, as a fraction from 0 to 1. The bar width rounds it to
+   * a percent with two decimal places.
    */
   percent?: number;
   topLeftTitle?: string;
@@ -26,22 +25,19 @@ interface ProgressProps {
 export const Progress = ({
   bottomLeftTitle,
   bottomRightTitle,
+  className,
   isHighlighted = false,
   percent,
   topLeftTitle,
   topRightTitle,
 }: ProgressProps) => {
-  const progressBarClassName = useClassNames(
-    progressBar,
-    progressBarHighlightVariant[`${isHighlighted}`],
-  );
   const width = useMemo(
     () => (typeof percent === 'number' ? Math.round(percent * 10000) / 100 : 0),
     [percent],
   );
 
   return (
-    <Stack space="xsmall">
+    <Stack className={className} space="xsmall">
       {topLeftTitle || topRightTitle ? (
         <Stack kind="flexRow" justify="spaceBetween">
           {topLeftTitle ? (
@@ -57,9 +53,9 @@ export const Progress = ({
         </Stack>
       ) : null}
       {typeof percent === 'number' ? (
-        <div className={progressBarContainer}>
+        <div className="h-1 bg-background-highlight">
           <div
-            className={progressBarClassName}
+            className={`h-1 ${barColorClasses[`${isHighlighted}`]}`}
             style={{
               width: `${width}%`,
             }}

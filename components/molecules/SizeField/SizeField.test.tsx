@@ -4,10 +4,17 @@ import { commands } from 'vitest/browser';
 
 import { SizeField } from './SizeField';
 
-function renderSizeField(value: number) {
+function renderSizeField(value: number, className?: string) {
   return render(
     <LazyMotion features={domAnimation}>
-      <SizeField label="Player size" max={2} min={1} step={1} value={value} />
+      <SizeField
+        className={className}
+        label="Player size"
+        max={2}
+        min={1}
+        step={1}
+        value={value}
+      />
     </LazyMotion>,
   );
 }
@@ -34,6 +41,14 @@ describe('SizeField', () => {
       const { container } = renderSizeField(2);
       const element = container.querySelector('button');
       await expect(element).toMatchScreenshot('sizeField-value-2.png');
+    });
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the root', () => {
+      const { container } = renderSizeField(1, 'custom-class');
+
+      expect(container.querySelector('button')).toHaveClass('custom-class');
     });
   });
 
