@@ -19,7 +19,7 @@
     "@plussub/srt-vtt-parser": "^2.0.5",
     "@sentry/nextjs": "^10.27.0",
     "@tailwindcss/postcss": "^4.1.13",
-    "@tanstack/react-query": "^5.90.11",
+    "@tanstack/react-query": "^5.104.4",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.2.0",
     "feedsmith": "3.0.0",
