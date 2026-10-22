@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { LazyMotion, domAnimation } from 'framer-motion';
+import { LazyMotion, MotionGlobalConfig, domAnimation } from 'framer-motion';
 import { commands } from 'vitest/browser';
 
 import { SizeField } from './SizeField';
@@ -13,6 +13,16 @@ function renderSizeField(value: number) {
 }
 
 describe('SizeField', () => {
+  // The meter animates its height. A screenshot taken before the end of the
+  // animation can differ by one or two pixels from run to run.
+  beforeAll(() => {
+    MotionGlobalConfig.skipAnimations = true;
+  });
+
+  afterAll(() => {
+    MotionGlobalConfig.skipAnimations = false;
+  });
+
   describe('value', () => {
     it('should render size 1', async () => {
       const { container } = renderSizeField(1);
