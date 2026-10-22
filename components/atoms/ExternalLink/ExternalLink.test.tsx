@@ -26,6 +26,40 @@ describe('ExternalLink', () => {
     expect(link).toHaveAttribute('rel', 'noreferrer noopener');
   });
 
+  it('should underline the link', () => {
+    render(
+      <ExternalLink href="https://podcastindex.org/">
+        Podcast Index
+      </ExternalLink>,
+    );
+    expect(screen.getByText('Podcast Index')).toHaveStyle({
+      textDecorationLine: 'underline',
+    });
+  });
+
+  describe('className', () => {
+    it('should add a custom className to the underline', () => {
+      render(
+        <ExternalLink className="font-bold" href="https://podcastindex.org/">
+          Podcast Index
+        </ExternalLink>,
+      );
+      expect(screen.getByText('Podcast Index')).toHaveClass(
+        'underline',
+        'font-bold',
+      );
+    });
+
+    it('should write no undefined class when no className is given', () => {
+      render(
+        <ExternalLink href="https://podcastindex.org/">
+          Podcast Index
+        </ExternalLink>,
+      );
+      expect(screen.getByText('Podcast Index')).not.toHaveClass('undefined');
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');

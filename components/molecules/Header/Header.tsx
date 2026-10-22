@@ -8,7 +8,6 @@ import { Icon } from 'components/atoms/Icon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import LogoIcon from 'icons/logo.svg';
-import { headingLink } from 'styles';
 import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
@@ -105,7 +104,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
             shouldUseCapsize={false}
             title={feedTitle}
           >
-            <Link href={pathname} className={headingLink}>
+            <Link href={pathname} className="no-underline hover:underline">
               {toTitleCase(pathname.slice(1))}
             </Link>
           </Typography>
@@ -137,7 +136,10 @@ export const Header: FunctionComponent<HeaderProps> = ({
             {isLoading ? (
               'Loading...'
             ) : feedUrl ? (
-              <Link href={getPodcastPath({ feedUrl })} className={headingLink}>
+              <Link
+                href={getPodcastPath({ feedUrl })}
+                className="no-underline hover:underline"
+              >
                 {abbreviatedFeedTitle}
               </Link>
             ) : (
@@ -170,7 +172,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
                 episodeIdentity: episode.identity,
                 feedUrl,
               })}
-              className={headingLink}
+              className="no-underline hover:underline"
             >
               {episode.title}
             </Link>

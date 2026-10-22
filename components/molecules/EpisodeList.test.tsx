@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { commands } from 'vitest/browser';
 
 import { EpisodeList } from './EpisodeList';
@@ -74,6 +74,16 @@ describe('EpisodeList', () => {
     const { container } = await renderEpisodeList();
     const element = container.firstElementChild;
     await expect(element).toMatchScreenshot('episodeList-default.png');
+  });
+
+  it('should not underline the links to the episodes', async () => {
+    await renderEpisodeList();
+    const links = screen.getAllByRole('link');
+
+    expect(links).toHaveLength(EPISODES.length);
+    links.forEach((link) => {
+      expect(link).toHaveStyle({ textDecorationLine: 'none' });
+    });
   });
 
   describe('dark', () => {

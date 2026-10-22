@@ -31,7 +31,6 @@ import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
-import { underlinedLink } from 'styles';
 import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 import { getEpisodePath } from 'utils/paths';
 import { playbackRates, type PlaybackRate } from 'utils/playbackRates';
@@ -306,7 +305,7 @@ export const MediaPlayer: FunctionComponent = () => {
                       {episodePath !== null &&
                       !isPlayingEpisodeOfCurrentPage ? (
                         <Link
-                          className={underlinedLink}
+                          className="underline"
                           href={episodePath}
                           onClick={() => {
                             setSize(1);
@@ -331,7 +330,7 @@ export const MediaPlayer: FunctionComponent = () => {
                         <Link
                           rel="noreferrer noopener"
                           target="_blank"
-                          className={underlinedLink}
+                          className="underline"
                           href={currentChapter?.url}
                         >
                           {currentChapter.title}

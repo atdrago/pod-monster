@@ -14,7 +14,6 @@ import { EpisodeList } from 'components/molecules/EpisodeList';
 import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { Funding } from 'components/molecules/Funding';
 import { Header } from 'components/molecules/Header';
-import { headingLink } from 'styles';
 import { decodeFeedUrlSegment, encodeBase64Url } from 'utils/base64Url';
 import { createMetadata } from 'utils/createMetadata';
 import { getPodcastPath, type SearchParams, toQueryString } from 'utils/paths';
@@ -181,7 +180,7 @@ export default async function Page(props: PageProps) {
                   <Link
                     rel="noreferrer noopener"
                     target="_blank"
-                    className={headingLink}
+                    className="no-underline hover:underline"
                     href={feed.link}
                   >
                     {feed.link}

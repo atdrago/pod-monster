@@ -4,7 +4,7 @@ import ReactMarkdown, { type Options } from 'react-markdown';
 import { Blockquote } from 'components/atoms/Blockquote';
 import { Typography } from 'components/atoms/Typography';
 import { useClassNames } from 'hooks/useClassNames';
-import { listItem, underlinedLink } from 'styles';
+import { listItem } from 'styles';
 
 interface HtmlViewerProps extends Options {
   className?: string;
@@ -43,7 +43,7 @@ export const HtmlViewer = memo(
             }) {
               return (
                 <a
-                  className={underlinedLink}
+                  className="underline"
                   rel="noreferrer noopener"
                   target="_blank"
                   {...props}

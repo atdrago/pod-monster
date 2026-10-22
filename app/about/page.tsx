@@ -5,7 +5,6 @@ import type { ReactNode } from 'react';
 import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { headingLink, underlinedLink } from 'styles';
 import { createMetadata } from 'utils/createMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,7 +32,7 @@ const HeadingAnchor = ({ label }: { label?: Heading }) => {
   }
 
   return (
-    <a className={headingLink} href={`#${slug}`} id={slug}>
+    <a className="no-underline hover:underline" href={`#${slug}`} id={slug}>
       {label}
     </a>
   );
@@ -55,7 +54,7 @@ const HeadingAnchorLink = ({
   }
 
   return (
-    <a className={underlinedLink} href={`#${slug}`}>
+    <a className="underline" href={`#${slug}`}>
       {children}
     </a>
   );
@@ -92,7 +91,7 @@ export default function Page() {
         <Typography as="p" size="paragraph">
           When you &ldquo;subscribe&rdquo; to a podcast, it will appear in your
           &ldquo;
-          <Link className={underlinedLink} href={'/'}>
+          <Link className="underline" href={'/'}>
             Subscriptions
           </Link>
           &rdquo; list for easy access. Subscribing is and will always be free
@@ -192,7 +191,7 @@ export default function Page() {
               storage should be persistent. Still, there is no surefire way to
               keep reliably persistent data in a web browser. For this reason, I
               encourage you to{' '}
-              <Link className={underlinedLink} href="/settings">
+              <Link className="underline" href="/settings">
                 keep an OPML back-up
               </Link>{' '}
               of your subscriptions, just in case your subscriptions get wiped

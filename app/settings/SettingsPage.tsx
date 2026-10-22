@@ -15,7 +15,6 @@ import {
 import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport, type OpmlImportResponse } from 'rest/fetchOpmlImport';
-import { underlinedLink } from 'styles';
 import { ApiErrorResponse } from 'utils/createApiErrorResponse';
 
 export function SettingsPage() {
@@ -98,7 +97,7 @@ export function SettingsPage() {
         </Typography>
         <Typography as="p" size="paragraph">
           <a
-            className={underlinedLink}
+            className="underline"
             href="http://opml.org/"
             target="_blank"
             rel="noreferrer noopener"
@@ -117,7 +116,7 @@ export function SettingsPage() {
             </Typography>
             <Typography as="p" size="paragraph">
               <Stack
-                className={underlinedLink}
+                className="underline"
                 as="a"
                 kind="flexRow"
                 space="xsmall"
@@ -180,7 +179,7 @@ export function SettingsPage() {
             ) : (
               <Typography as="p" size="paragraph">
                 All feeds were imported successfully.{' '}
-                <Link className={underlinedLink} href="/">
+                <Link className="underline" href="/">
                   View all subscriptions.
                 </Link>
               </Typography>

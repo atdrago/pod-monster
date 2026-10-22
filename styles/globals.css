@@ -60,6 +60,10 @@
     25px 50px 62.9px -2.5px
       light-dark(hsl(0 0% 50% / 0.34), hsl(70 14% 5% / 0.34));
 
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+
   --animate-spin-1s: spin 1s linear infinite;
 
   --container-content: 30rem;
@@ -68,6 +72,11 @@
 @layer base {
   :root {
     color-scheme: light dark;
+  }
+
+  html {
+    @apply bg-background text-foreground antialiased;
+    font-smooth: always;
   }
 }
 

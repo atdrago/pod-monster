@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
 import type { ComponentProps } from 'react';
-import { commands } from 'vitest/browser';
+import { commands, userEvent } from 'vitest/browser';
 
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 
@@ -103,6 +103,34 @@ describe('Header', () => {
         isLoading: true,
       });
       await expect(element).toMatchScreenshot('header-loading.png');
+    });
+  });
+
+  describe('hover', () => {
+    // The pointer stays where the last hover put it, and a later screenshot
+    // can show a hover underline. The top-left corner of the page has no link.
+    afterEach(async () => {
+      await userEvent.hover(document.body, { position: { x: 0, y: 0 } });
+    });
+
+    it('should underline the name of the page on hover', async () => {
+      renderHeader('/settings');
+      const link = screen.getByRole('link', { name: 'Settings' });
+
+      expect(link).toHaveStyle({ textDecorationLine: 'none' });
+
+      await userEvent.hover(link);
+
+      expect(link).toHaveStyle({ textDecorationLine: 'underline' });
+    });
+
+    it('should not underline the logo link on hover', async () => {
+      renderHeader('/');
+      const link = screen.getByRole('link', { name: 'Pod Monster' });
+
+      await userEvent.hover(link);
+
+      expect(link).toHaveStyle({ textDecorationLine: 'none' });
     });
   });
 

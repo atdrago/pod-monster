@@ -7,7 +7,6 @@ import { Stack } from 'components/layouts/Stack';
 import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { useSettingsContext } from 'contexts/SettingsContext';
 import { useClassNames } from 'hooks/useClassNames';
-import { nonUnderlinedLink } from 'styles';
 import { getEpisodeIdentity } from 'utils/getEpisodeIdentity';
 import { getPodcastPath } from 'utils/paths';
 
@@ -35,7 +34,7 @@ export const SubscriptionItem = ({
 }: SubscriptionItemProps) => {
   const baseClassName = useClassNames(
     subscriptionItemClassName,
-    nonUnderlinedLink,
+    'no-underline',
     className,
   );
   const { getEpisodeSettingsItem, getFeedSettingsItem } = useSettingsContext();
