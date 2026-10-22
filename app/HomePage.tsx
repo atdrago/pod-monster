@@ -87,7 +87,7 @@ export function HomePage({
         podcastIndexId === undefined ? [] : [podcastIndexId],
       ),
     ),
-  ).toSorted((left, right) => left - right);
+  ).sort((left, right) => left - right);
 
   // -30 days
   const since = -30 * 24 * 60 * 60;
