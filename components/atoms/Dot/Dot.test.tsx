@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { commands } from 'vitest/browser';
 
 import { Dot } from './Dot';
 
@@ -43,5 +44,45 @@ describe('Dot', () => {
     const { container } = render(<Dot color="blue" label="Status indicator" />);
     const element = container.querySelector('span');
     await expect(element).toMatchScreenshot('dot-with-label.png');
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render blue dot', async () => {
+      const { container } = render(<Dot color="blue" />);
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('dot-blue-dark.png');
+    });
+
+    it('should render green dot', async () => {
+      const { container } = render(<Dot color="green" />);
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('dot-green-dark.png');
+    });
+
+    it('should render pink dot', async () => {
+      const { container } = render(<Dot color="pink" />);
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('dot-pink-dark.png');
+    });
+
+    it('should render red dot', async () => {
+      const { container } = render(<Dot color="red" />);
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('dot-red-dark.png');
+    });
+
+    it('should render yellow dot', async () => {
+      const { container } = render(<Dot color="yellow" />);
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('dot-yellow-dark.png');
+    });
   });
 });

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { commands } from 'vitest/browser';
 
 import CogIcon from 'icons/cog.svg';
 
@@ -172,6 +173,66 @@ describe('Icon', () => {
       );
       const element = container.querySelector('span');
       await expect(element).toMatchScreenshot('icon-custom-className.png');
+    });
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render xxsmall icon', async () => {
+      const { container } = render(
+        <Icon size="xxsmall">
+          <CogIcon />
+        </Icon>,
+      );
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('icon-size-xxsmall-dark.png');
+    });
+
+    it('should render with foreground color', async () => {
+      const { container } = render(
+        <Icon size="medium" color="foreground">
+          <CogIcon />
+        </Icon>,
+      );
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('icon-color-foreground-dark.png');
+    });
+
+    it('should render with blue color', async () => {
+      const { container } = render(
+        <Icon size="medium" color="blue">
+          <CogIcon />
+        </Icon>,
+      );
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('icon-color-blue-dark.png');
+    });
+
+    it('should render with green color', async () => {
+      const { container } = render(
+        <Icon size="medium" color="green">
+          <CogIcon />
+        </Icon>,
+      );
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('icon-color-green-dark.png');
+    });
+
+    it('should render with red color', async () => {
+      const { container } = render(
+        <Icon size="medium" color="red">
+          <CogIcon />
+        </Icon>,
+      );
+      const element = container.querySelector('span');
+      await expect(element).toMatchScreenshot('icon-color-red-dark.png');
     });
   });
 });

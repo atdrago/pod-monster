@@ -1,5 +1,12 @@
-import { act, renderHook, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
+import { commands } from 'vitest/browser';
 
 import { SettingsProvider, useSettingsContext } from 'contexts/SettingsContext';
 import type { PodcastEpisode } from 'types/PodcastFeed';
@@ -51,6 +58,23 @@ async function renderEpisodeProgress(
   );
 
   return rendered;
+}
+
+// The date shows a local time. A publish time at local noon gives the same
+// image in each time zone.
+const LOCAL_NOON_EPISODE = {
+  ...EPISODE,
+  datePublished: new Date(2026, 9, 10, 12).getTime() / 1000,
+};
+
+function renderEpisodeProgressForScreenshot() {
+  const { container } = render(
+    <SettingsProvider>
+      <EpisodeProgress episode={LOCAL_NOON_EPISODE} />
+    </SettingsProvider>,
+  );
+
+  return container.firstElementChild;
 }
 
 describe('EpisodeProgress', () => {
@@ -109,5 +133,27 @@ describe('EpisodeProgress', () => {
 
     expect(screen.queryByText(/2026/)).toBeNull();
     expect(screen.getByText('01:00:00')).toBeVisible();
+  });
+
+  it('should render the date, an empty bar, and the length', async () => {
+    const element = renderEpisodeProgressForScreenshot();
+    await expect(element).toMatchScreenshot('episodeProgress-default.png');
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the date, an empty bar, and the length', async () => {
+      const element = renderEpisodeProgressForScreenshot();
+      await expect(element).toMatchScreenshot(
+        'episodeProgress-default-dark.png',
+      );
+    });
   });
 });

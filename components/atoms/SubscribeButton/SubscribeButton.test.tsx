@@ -7,6 +7,7 @@ import {
 } from '@testing-library/react';
 import { openDB } from 'idb';
 import type { PropsWithChildren } from 'react';
+import { commands } from 'vitest/browser';
 
 import { SettingsProvider, useSettingsContext } from 'contexts/SettingsContext';
 import type { PodcastFeed } from 'types/PodcastFeed';
@@ -169,5 +170,47 @@ describe('SubscribeButton', () => {
     expect(button).toBeDisabled();
     await waitFor(() => expect(button).toBeEnabled());
     expect(button).toHaveTextContent('Unsubscribe');
+  });
+
+  describe('library state', () => {
+    it('should render the subscribe button after hydration', async () => {
+      await renderSubscribeButton(RSS_ONLY_FEED);
+
+      const element = screen.getByRole('button', { name: 'Subscribe' });
+      await expect(element).toMatchScreenshot('subscribeButton-subscribe.png');
+    });
+
+    it('should render the unsubscribe button for a show in the library', async () => {
+      await renderSubscribeButton(RSS_ONLY_FEED);
+
+      fireEvent.click(screen.getByText('Subscribe'));
+
+      const element = await screen.findByRole('button', {
+        name: 'Unsubscribe',
+      });
+      await waitFor(() => expect(element).toBeEnabled());
+      await expect(element).toMatchScreenshot(
+        'subscribeButton-unsubscribe.png',
+      );
+    });
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the subscribe button after hydration', async () => {
+      await renderSubscribeButton(RSS_ONLY_FEED);
+
+      const element = screen.getByRole('button', { name: 'Subscribe' });
+      await expect(element).toMatchScreenshot(
+        'subscribeButton-subscribe-dark.png',
+      );
+    });
   });
 });

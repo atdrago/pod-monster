@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { commands } from 'vitest/browser';
 
 import { StartTimePrompt } from './StartTimePrompt';
 
@@ -132,5 +133,23 @@ describe('StartTimePrompt', () => {
 
     expect(onNotNowClick).toHaveBeenCalledOnce();
     expect(onPlayFromClick).not.toHaveBeenCalled();
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the line and the two buttons with the start time', async () => {
+      const { container } = await renderStartTimePrompt();
+
+      await expect(container.firstElementChild).toMatchScreenshot(
+        'startTimePrompt-default-dark.png',
+      );
+    });
   });
 });

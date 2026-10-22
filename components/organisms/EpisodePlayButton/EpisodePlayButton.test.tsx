@@ -2,11 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
   fireEvent,
+  render,
   renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import type { PropsWithChildren } from 'react';
+import type { ComponentProps, PropsWithChildren } from 'react';
+import { commands } from 'vitest/browser';
 
 import { MediaProvider, useMediaContext } from 'contexts/MediaContext';
 import { SettingsProvider, useSettingsContext } from 'contexts/SettingsContext';
@@ -67,6 +69,31 @@ async function renderEpisodePlayButton(
 
   await waitFor(() =>
     expect(rendered.result.current.settings.isDoneHydratingFromIdb).toBe(true),
+  );
+
+  return rendered;
+}
+
+/** Waits for the hydration, which enables the button. */
+async function renderEpisodePlayButtonForScreenshot(
+  props: Partial<ComponentProps<typeof EpisodePlayButton>> = {},
+) {
+  const rendered = render(
+    <QueryClientProvider client={new QueryClient()}>
+      <SettingsProvider>
+        <MediaProvider>
+          <EpisodePlayButton
+            currentChapter={null}
+            episode={EPISODE}
+            {...props}
+          />
+        </MediaProvider>
+      </SettingsProvider>
+    </QueryClientProvider>,
+  );
+
+  await waitFor(() =>
+    expect(screen.getByLabelText('Play podcast')).toBeEnabled(),
   );
 
   return rendered;
@@ -181,5 +208,71 @@ describe('EpisodePlayButton', () => {
     expect(
       screen.getByText('Episode 1').querySelector('svg'),
     ).toBeInTheDocument();
+  });
+
+  describe('default', () => {
+    it('should render the play button and the title of a paused episode', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot();
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot('episodePlayButton-default.png');
+    });
+  });
+
+  describe('explicit', () => {
+    it('should render the explicit icon before the title', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot({
+        episode: { ...EPISODE, explicit: true },
+      });
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot('episodePlayButton-explicit.png');
+    });
+  });
+
+  describe('currentChapter', () => {
+    it('should render the title of the chapter and the link of the chapter', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot({
+        currentChapter: {
+          startTime: 60,
+          title: 'Chapter 2',
+          url: 'https://example.com/chapter-2',
+        },
+      });
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot(
+        'episodePlayButton-current-chapter.png',
+      );
+    });
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the play button and the title of a paused episode', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot();
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot(
+        'episodePlayButton-default-dark.png',
+      );
+    });
+
+    it('should render the title of the chapter and the link of the chapter', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot({
+        currentChapter: {
+          startTime: 60,
+          title: 'Chapter 2',
+          url: 'https://example.com/chapter-2',
+        },
+      });
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot(
+        'episodePlayButton-current-chapter-dark.png',
+      );
+    });
   });
 });

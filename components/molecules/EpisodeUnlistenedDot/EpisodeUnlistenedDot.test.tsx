@@ -1,5 +1,6 @@
 import { act, renderHook, screen, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
+import { commands } from 'vitest/browser';
 
 import { SettingsProvider, useSettingsContext } from 'contexts/SettingsContext';
 import type { PodcastEpisode } from 'types/PodcastFeed';
@@ -51,6 +52,36 @@ async function renderEpisodeUnlistenedDot(
   );
 
   return rendered;
+}
+
+/**
+ * The dot has a negative left margin, so that it hangs in the gutter of the
+ * page. The image shows the padded box around the dot, so that it records the
+ * margin.
+ */
+async function renderEpisodeUnlistenedDotForScreenshot() {
+  const rendered = renderHook(() => useSettingsContext(), {
+    wrapper: ({ children }: PropsWithChildren) => (
+      <SettingsProvider>
+        {children}
+        <div style={{ display: 'flex', padding: 16, width: 'fit-content' }}>
+          <EpisodeUnlistenedDot episode={EPISODE} />
+        </div>
+      </SettingsProvider>
+    ),
+  });
+
+  await waitFor(() =>
+    expect(rendered.result.current.isDoneHydratingFromIdb).toBe(true),
+  );
+  await act(() =>
+    rendered.result.current.setFeedSettingsItem(
+      { feedUrl: FEED_URL },
+      FEED_SETTINGS_ITEM,
+    ),
+  );
+
+  return screen.getByLabelText('New episodes').parentElement;
 }
 
 describe('EpisodeUnlistenedDot', () => {
@@ -135,5 +166,27 @@ describe('EpisodeUnlistenedDot', () => {
     );
 
     expect(screen.queryByLabelText('New episodes')).toBeNull();
+  });
+
+  it('should render the blue dot with a negative left margin', async () => {
+    const element = await renderEpisodeUnlistenedDotForScreenshot();
+    await expect(element).toMatchScreenshot('episodeUnlistenedDot-default.png');
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the blue dot with a negative left margin', async () => {
+      const element = await renderEpisodeUnlistenedDotForScreenshot();
+      await expect(element).toMatchScreenshot(
+        'episodeUnlistenedDot-default-dark.png',
+      );
+    });
   });
 });
