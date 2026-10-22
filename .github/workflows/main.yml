@@ -13,7 +13,10 @@ on:
 
 jobs:
   lint_prettier_and_test:
-    runs-on: macos-26
+    # The screenshots use the system font, so CI must run the macOS version
+    # that made the reference images. The `xcode-27` image runs macOS 27.
+    # TODO: Use `macos-27` when GitHub adds that label.
+    runs-on: xcode-27
 
     steps:
       - uses: actions/checkout@v2
