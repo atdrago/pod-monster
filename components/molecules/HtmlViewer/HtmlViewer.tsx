@@ -2,6 +2,7 @@ import { memo } from 'react';
 import ReactMarkdown, { type Options } from 'react-markdown';
 
 import { Blockquote } from 'components/atoms/Blockquote';
+import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
 
 interface HtmlViewerProps extends Options {
@@ -31,16 +32,7 @@ export const HtmlViewer = memo(
               node: _node,
               ...props
             }) {
-              return (
-                <a
-                  className="underline"
-                  rel="noreferrer noopener"
-                  target="_blank"
-                  {...props}
-                >
-                  {aChildren}
-                </a>
-              );
+              return <ExternalLink {...props}>{aChildren}</ExternalLink>;
             },
             blockquote({ className: _className, node: _node, ...props }) {
               return <Blockquote {...props} />;

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ReactEventHandler, useState } from 'react';
 
 import { Checkbox } from 'components/atoms/Checkbox';
+import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { FileField } from 'components/molecules/FileField';
@@ -96,15 +97,8 @@ export function SettingsPage() {
           OPML
         </Typography>
         <Typography as="p" size="paragraph">
-          <a
-            className="underline"
-            href="http://opml.org/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            OPML
-          </a>{' '}
-          is a standard format for exchanging groups of RSS feeds. And since a
+          <ExternalLink href="http://opml.org/">OPML</ExternalLink> is a
+          standard format for exchanging groups of RSS feeds. And since a
           podcast is just an RSS feed that points to an audio or video file,
           OPML is commonly used to import and export podcast subscriptions
           between applications.
