@@ -84,14 +84,59 @@ describe('HtmlViewer', () => {
       expect(first.height).toBe(24);
       expect(second.top - first.top).toBe(24);
     });
+
+    it('should show bullets on each unordered list with a 24px indent', async () => {
+      await renderHtmlViewer();
+
+      const list = screen.getByText('First item').closest('ul');
+      const nestedList = screen.getByText('Nested item').closest('ul');
+
+      expect(nestedList).not.toBe(list);
+      expect(list).toHaveStyle({ listStyleType: 'disc', paddingLeft: '24px' });
+      expect(nestedList).toHaveStyle({
+        listStyleType: 'disc',
+        paddingLeft: '24px',
+      });
+    });
+
+    it('should show numbers on an ordered list with a 24px indent', async () => {
+      await renderHtmlViewer();
+
+      expect(screen.getByText('First step').closest('ol')).toHaveStyle({
+        listStyleType: 'decimal',
+        paddingLeft: '24px',
+      });
+    });
+  });
+
+  describe('images', () => {
+    it('should render an image no wider than its container', async () => {
+      const { container } = render(
+        <HtmlViewer rehypePlugins={[rehypeRaw]}>
+          {
+            '<img alt="Large logo" src="/android-chrome-512x512.png" width="512" height="512">'
+          }
+        </HtmlViewer>,
+      );
+      const image = screen.getByAltText<HTMLImageElement>('Large logo');
+      await image.decode();
+
+      const imageBox = image.getBoundingClientRect();
+      const rootBox = container.firstElementChild!.getBoundingClientRect();
+
+      expect(imageBox.width).toBeLessThan(512);
+      expect(imageBox.width).toBeLessThanOrEqual(rootBox.width);
+      expect(imageBox.height).toBe(imageBox.width);
+    });
   });
 
   describe('links', () => {
-    it('should open a link in a new tab', async () => {
+    it('should underline a link and open it in a new tab', async () => {
       await renderHtmlViewer();
 
       const link = screen.getByRole('link', { name: 'a link' });
 
+      expect(link).toHaveStyle({ textDecorationLine: 'underline' });
       expect(link).toHaveAttribute('href', 'https://example.com');
       expect(link).toHaveAttribute('target', '_blank');
       expect(link).toHaveAttribute('rel', 'noreferrer noopener');

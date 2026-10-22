@@ -3,18 +3,11 @@ import ReactMarkdown, { type Options } from 'react-markdown';
 
 import { Blockquote } from 'components/atoms/Blockquote';
 import { Typography } from 'components/atoms/Typography';
-import { useClassNames } from 'hooks/useClassNames';
 
 interface HtmlViewerProps extends Options {
   className?: string;
   shouldTrimTextBox?: boolean;
 }
-
-import {
-  htmlViewerContainer,
-  imgClassName,
-  listLayout,
-} from './htmlViewer.css';
 
 export const HtmlViewer = memo(
   function MarkdownViewerMemo({
@@ -23,13 +16,11 @@ export const HtmlViewer = memo(
     shouldTrimTextBox = true,
     ...reactMarkdownProps
   }: HtmlViewerProps) {
-    const baseClassName = useClassNames(htmlViewerContainer, className);
-
     return (
       <Typography
         as="div"
         size="paragraph"
-        className={baseClassName}
+        className={className}
         shouldTrimTextBox={false}
       >
         <ReactMarkdown
@@ -122,7 +113,7 @@ export const HtmlViewer = memo(
               return (
                 <img
                   alt={alt}
-                  className={imgClassName}
+                  className="h-auto max-w-full"
                   height={height}
                   src={src}
                   width={width}
@@ -143,7 +134,12 @@ export const HtmlViewer = memo(
               // ordered: _ordered,
               ...props
             }) {
-              return <ol className={listLayout} {...props} />;
+              return (
+                <ol
+                  className="mx-auto w-full max-w-content list-decimal pl-6"
+                  {...props}
+                />
+              );
             },
             p({ className: _className, node: _node, ...props }) {
               return (
@@ -183,7 +179,12 @@ export const HtmlViewer = memo(
               // ordered: _ordered,
               ...props
             }) {
-              return <ul className={listLayout} {...props} />;
+              return (
+                <ul
+                  className="mx-auto w-full max-w-content list-disc pl-6"
+                  {...props}
+                />
+              );
             },
           }}
           {...reactMarkdownProps}
