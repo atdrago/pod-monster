@@ -151,6 +151,35 @@ describe('HomePage', () => {
     expect(requestText).not.toContain('patreon.com');
   });
 
+  it('should send the sorted Podcast Index feed ids in a browser that has no Array.prototype.toSorted', async () => {
+    const toSortedDescriptor = Object.getOwnPropertyDescriptor(
+      Array.prototype,
+      'toSorted',
+    )!;
+
+    answerEpisodes([]);
+    Reflect.deleteProperty(Array.prototype, 'toSorted');
+
+    try {
+      const { result } = await renderHomePage();
+
+      await act(() =>
+        result.current.setAllFeedSettings({
+          [SHOW_B_FEED_URL]: LIBRARY[SHOW_B_FEED_URL],
+          // eslint-disable-next-line sort-keys-fix/sort-keys-fix -- The id 222 comes before the id 111, so the test checks the sort.
+          [SHOW_A_FEED_URL]: LIBRARY[SHOW_A_FEED_URL],
+        }),
+      );
+
+      await waitFor(() => expect(fetchPodcastEpisodes).toHaveBeenCalled());
+      expect(vi.mocked(fetchPodcastEpisodes).mock.calls).toEqual([
+        [[111, 222], THIRTY_DAYS_AGO],
+      ]);
+    } finally {
+      Object.defineProperty(Array.prototype, 'toSorted', toSortedDescriptor);
+    }
+  });
+
   it('should list each subscribed show, with a link to its show path', async () => {
     answerEpisodes([]);
 
