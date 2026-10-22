@@ -118,27 +118,35 @@ function createSilentWavUrl(durationInSeconds: number) {
  * the short scroll container clips the sentinel, so the player pins to the
  * bottom of the container.
  */
-function PlayerFrame({ isPinned }: { isPinned: boolean }) {
+function PlayerFrame({
+  className,
+  isPinned,
+}: {
+  className?: string;
+  isPinned: boolean;
+}) {
   if (isPinned) {
     return (
       <div style={{ height: 240, overflowY: 'auto', scrollbarWidth: 'none' }}>
         <div style={{ height: 1000 }} />
-        <MediaPlayer />
+        <MediaPlayer className={className} />
       </div>
     );
   }
 
   return (
     <div style={{ paddingBottom: 32 }}>
-      <MediaPlayer />
+      <MediaPlayer className={className} />
     </div>
   );
 }
 
 async function renderMediaPlayerFrame({
+  className,
   isPinned = false,
   size,
 }: {
+  className?: string;
   isPinned?: boolean;
   size: 1 | 2;
 }) {
@@ -153,7 +161,7 @@ async function renderMediaPlayerFrame({
             <LazyMotion features={domAnimation}>
               <MediaProvider>
                 {children}
-                <PlayerFrame isPinned={isPinned} />
+                <PlayerFrame className={className} isPinned={isPinned} />
               </MediaProvider>
             </LazyMotion>
           </SettingsProvider>
@@ -238,6 +246,41 @@ describe('MediaPlayer', () => {
     expect(
       await screen.findByRole('link', { name: EPISODE_TITLE }),
     ).toHaveAttribute('href', playerEpisodePath);
+  });
+
+  describe('styles', () => {
+    it('should blur the background of the container', async () => {
+      await renderMediaPlayerFrame({ size: 1 });
+
+      expect(screen.getByRole('complementary')).toHaveStyle({
+        backdropFilter: 'blur(6px)',
+        backgroundColor: 'rgba(198, 198, 198, 0.7)',
+      });
+    });
+
+    it('should give the unpinned player the medium elevation shadow', async () => {
+      await renderMediaPlayerFrame({ size: 1 });
+      const player = screen.getByRole('complementary').lastElementChild;
+
+      expect(player).toHaveClass('shadow-elevation-medium');
+      expect(player).not.toHaveClass('shadow-elevation-high');
+    });
+
+    it('should give the pinned player the high elevation shadow', async () => {
+      await renderMediaPlayerFrame({ isPinned: true, size: 1 });
+      const player = screen.getByRole('complementary').lastElementChild;
+
+      await waitFor(() => expect(player).toHaveClass('shadow-elevation-high'));
+      expect(player).not.toHaveClass('shadow-elevation-medium');
+    });
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the container', async () => {
+      await renderMediaPlayerFrame({ className: 'custom-class', size: 1 });
+
+      expect(screen.getByRole('complementary')).toHaveClass('custom-class');
+    });
   });
 
   describe('screenshots', () => {

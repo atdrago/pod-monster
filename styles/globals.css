@@ -139,6 +139,8 @@
   }
 }
 
+@custom-variant standalone (@media (display-mode: standalone));
+
 .list-layout {
   @apply flex flex-col gap-8 pl-6;
 

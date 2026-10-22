@@ -27,7 +27,6 @@ import {
   DEFAULT_SEEK_FORWARD_OFFSET,
   useMediaContext,
 } from 'contexts/MediaContext';
-import { useClassNames } from 'hooks/useClassNames';
 import { useIsMobileDevice } from 'hooks/useIsMobileDevice';
 import SpinnerIcon from 'icons/spinner11.svg';
 import StopIcon from 'icons/stop.svg';
@@ -35,18 +34,20 @@ import { bufferedTimeRangesToTuples } from 'utils/bufferedTimeRangesToTuples';
 import { getEpisodePath } from 'utils/paths';
 import { playbackRates, type PlaybackRate } from 'utils/playbackRates';
 
-import {
-  container,
-  containerPinnedVariant,
-  iconButton,
-  intersectionObserverClassName,
-  playbackRateContainer,
-  player,
-  playerButtons,
-  playerElevatedVariant,
-  playerPinnedVariant,
-  volumeLayout,
-} from './mediaPlayer.css';
+interface MediaPlayerProps {
+  className?: string;
+}
+
+const containerPinnedClasses = {
+  pinned:
+    'bottom-0 w-screen max-w-[512px] min-[512px]:bottom-4 min-[512px]:ml-0 min-[512px]:w-[480px]',
+  unpinned: 'bottom-4 ml-0 w-screen max-w-[480px]',
+} as const;
+
+const playerPinnedClasses = {
+  pinned: 'shadow-elevation-high standalone:max-[512px]:py-8',
+  unpinned: 'shadow-elevation-medium',
+} as const;
 
 const rateDecimalToFraction = (rate: PlaybackRate): string => {
   switch (rate) {
@@ -92,7 +93,9 @@ const fractionToPlaybackRate = (fraction: string): PlaybackRate | null => {
   }
 };
 
-export const MediaPlayer: FunctionComponent = () => {
+export const MediaPlayer: FunctionComponent<MediaPlayerProps> = ({
+  className,
+}) => {
   const {
     audioRef,
     chapters,
@@ -134,15 +137,7 @@ export const MediaPlayer: FunctionComponent = () => {
   const intersectionObserverRef = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
   const [isPinned, setIsPinned] = useState(false);
-  const playerClassName = useClassNames(
-    player,
-    playerElevatedVariant[isPinned ? 'elevated' : 'inset'],
-    playerPinnedVariant[isPinned ? 'pinned' : 'unpinned'],
-  );
-  const containerClassName = useClassNames(
-    container,
-    containerPinnedVariant[isPinned ? 'pinned' : 'unpinned'],
-  );
+  const pinnedVariant = isPinned ? 'pinned' : 'unpinned';
 
   const playerArtwork = currentChapter?.img || episodeImage || feedImage;
 
@@ -258,7 +253,13 @@ export const MediaPlayer: FunctionComponent = () => {
     <AnimatePresence>
       {src && (
         <m.aside
-          className={containerClassName}
+          className={`
+            sticky top-0 z-1 bg-background-blurred-opaque
+            supports-[backdrop-filter]:bg-background-blurred
+            supports-[backdrop-filter]:backdrop-blur-[6px]
+            ${containerPinnedClasses[pinnedVariant]}
+            ${className ?? ''}
+          `}
           animate={{
             height: 'auto',
             marginBottom: 0,
@@ -280,17 +281,19 @@ export const MediaPlayer: FunctionComponent = () => {
             opacity: 0,
             y: '100%',
           }}
-          style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 1,
-          }}
         >
           <div
-            className={intersectionObserverClassName}
+            className="absolute -bottom-[17px] h-0"
             ref={intersectionObserverRef}
           ></div>
-          <m.div className={playerClassName}>
+          <m.div
+            className={`
+              mx-auto flex w-full flex-col items-stretch gap-4 overflow-hidden
+              border-0 p-4 transition-[box-shadow,transform] duration-500
+              ease-[ease]
+              ${playerPinnedClasses[pinnedVariant]}
+            `}
+          >
             <AnimatePresence>
               {size === 2 && (
                 <Stack as={m.div} space="small" {...animationProperties}>
@@ -392,10 +395,15 @@ export const MediaPlayer: FunctionComponent = () => {
             />
             <AnimatePresence>
               {!isMobileDevice && !isVideo && size === 2 && (
-                <m.div className={volumeLayout} {...animationProperties}>
+                <m.div
+                  // The right padding matches the width of the mute button.
+                  // Thus, the range sits in the center of the row.
+                  className="mx-auto flex w-[280px] items-center pr-[30px]"
+                  {...animationProperties}
+                >
                   <button
                     aria-label="Mute"
-                    className={iconButton}
+                    className="m-0 inline-flex w-[30px] cursor-pointer items-center border-0 bg-transparent px-2 py-1 text-foreground"
                     type="button"
                     onClick={handleMuteClick}
                   >
@@ -413,7 +421,7 @@ export const MediaPlayer: FunctionComponent = () => {
                 </m.div>
               )}
             </AnimatePresence>
-            <div className={playerButtons}>
+            <div className="grid grid-cols-[30px_1fr_155px_1fr_18px] items-center">
               <IconButton
                 label={'Stop'}
                 onClick={resetMediaContext}
@@ -428,7 +436,7 @@ export const MediaPlayer: FunctionComponent = () => {
                 justify="center"
                 kind="flexRow"
                 space="small"
-                style={{ gridColumnStart: 3 }}
+                className="col-start-3"
               >
                 <IconButton
                   background="circle"
@@ -467,7 +475,7 @@ export const MediaPlayer: FunctionComponent = () => {
                   </Icon>
                 </IconButton>
               </Stack>
-              <div className={playbackRateContainer}>
+              <div className="mx-2">
                 <SelectField
                   value={rateDecimalToFraction(playbackRate)}
                   label={`${rateDecimalToFraction(playbackRate)}x`}
