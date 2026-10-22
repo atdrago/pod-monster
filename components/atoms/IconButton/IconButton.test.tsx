@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { commands } from 'vitest/browser';
 
 import { Icon } from 'components/atoms/Icon';
@@ -72,6 +72,20 @@ describe('IconButton', () => {
       await expect(element).toMatchScreenshot(
         'iconButton-background-circle.png',
       );
+    });
+
+    it('should fill the circle with the background color and outline it with the foreground color', () => {
+      render(
+        <IconButton label="Settings" background="circle">
+          <Icon size="small">
+            <CogIcon />
+          </Icon>
+        </IconButton>,
+      );
+      expect(screen.getByRole('button', { name: 'Settings' })).toHaveStyle({
+        backgroundColor: 'rgb(208, 208, 208)',
+        borderColor: 'rgb(39, 40, 34)',
+      });
     });
   });
 

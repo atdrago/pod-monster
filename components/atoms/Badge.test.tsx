@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { commands } from 'vitest/browser';
 
 import { Badge } from './Badge';
@@ -17,6 +17,13 @@ describe('Badge', () => {
       );
       const element = container.querySelector('span');
       await expect(element).toMatchScreenshot('badge-custom-className.png');
+    });
+
+    it('should keep the badge style when a custom className is given', () => {
+      render(<Badge className="custom-class">Explicit</Badge>);
+      const element = screen.getByText('Explicit');
+      expect(element).toHaveClass('custom-class');
+      expect(element).toHaveStyle({ fontWeight: '700' });
     });
   });
 

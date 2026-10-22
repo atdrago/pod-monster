@@ -110,48 +110,6 @@ describe('Icon', () => {
     });
   });
 
-  describe('colors', () => {
-    it('should render with foreground color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="foreground">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-foreground.png');
-    });
-
-    it('should render with blue color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="blue">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-blue.png');
-    });
-
-    it('should render with green color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="green">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-green.png');
-    });
-
-    it('should render with red color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="red">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-red.png');
-    });
-  });
-
   describe('polymorphic', () => {
     it('should render as custom element type', async () => {
       const { container } = render(
@@ -193,46 +151,6 @@ describe('Icon', () => {
       );
       const element = container.querySelector('span');
       await expect(element).toMatchScreenshot('icon-size-xxsmall-dark.png');
-    });
-
-    it('should render with foreground color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="foreground">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-foreground-dark.png');
-    });
-
-    it('should render with blue color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="blue">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-blue-dark.png');
-    });
-
-    it('should render with green color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="green">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-green-dark.png');
-    });
-
-    it('should render with red color', async () => {
-      const { container } = render(
-        <Icon size="medium" color="red">
-          <CogIcon />
-        </Icon>,
-      );
-      const element = container.querySelector('span');
-      await expect(element).toMatchScreenshot('icon-color-red-dark.png');
     });
   });
 });

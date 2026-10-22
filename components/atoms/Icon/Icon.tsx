@@ -1,7 +1,5 @@
 import { Box, PolymorphicComponentProps } from 'react-polymorphic-box';
 
-import { vars } from 'styles';
-
 export type IconSize =
   | 'xxsmall'
   | 'xsmall'
@@ -13,7 +11,6 @@ export type IconSize =
 type IconComponentProps = PolymorphicComponentProps<
   React.ElementType,
   {
-    color?: keyof typeof vars.color;
     orientation?: 'default' | 'reverse' | 'rotate90' | 'spinning';
     size: IconSize;
   }
@@ -37,7 +34,6 @@ const orientationClasses = {
 
 export const Icon = ({
   className,
-  color = 'foreground',
   orientation = 'default',
   size,
   ...spanProps
@@ -45,8 +41,7 @@ export const Icon = ({
   return (
     <Box
       as="span"
-      className={`inline-flex items-center leading-none ${sizeClasses[size]} ${orientationClasses[orientation]} ${className ?? ''}`}
-      style={{ color: vars.color[color] }}
+      className={`inline-flex items-center leading-none text-foreground ${sizeClasses[size]} ${orientationClasses[orientation]} ${className ?? ''}`}
       {...spanProps}
     />
   );

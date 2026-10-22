@@ -34,6 +34,13 @@ describe('Button', () => {
     });
   });
 
+  describe('className', () => {
+    it('should write no undefined class when no className is given', () => {
+      render(<Button>Try again</Button>);
+      expect(screen.getByText('Try again')).not.toHaveClass('undefined');
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');

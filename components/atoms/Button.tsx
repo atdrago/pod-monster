@@ -7,12 +7,12 @@ export const Button = ({ as = 'button', className, ...rest }: ButtonProps) => (
   <Box
     as={as}
     className={`
-      border border-zinc-800 dark:border-zinc-400
-      text-zinc-900 dark:text-zinc-100
-      bg-zinc-100 dark:bg-zinc-900
+      border border-button-border
+      text-foreground
+      bg-background
       rounded-lg m-0 p-3
       cursor-pointer text-lg
-      ${className}
+      ${className ?? ''}
     `}
     type="button"
     {...rest}

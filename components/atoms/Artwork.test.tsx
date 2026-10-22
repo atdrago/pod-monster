@@ -114,6 +114,23 @@ describe('Artwork', () => {
     });
   });
 
+  describe('className', () => {
+    it('should add a custom className to the root', () => {
+      const { container } = render(
+        <Artwork
+          alt=""
+          className="custom-class"
+          height={80}
+          label="1."
+          width={80}
+        />,
+      );
+      const element = container.firstElementChild;
+      expect(element).toHaveClass('custom-class');
+      expect(element).toHaveStyle({ position: 'relative' });
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');

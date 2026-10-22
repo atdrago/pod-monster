@@ -21,7 +21,7 @@ export const AnotherTabNotice = ({ className }: AnotherTabNoticeProps) => {
 
   return (
     <div
-      className={`w-full max-w-3xl rounded-lg border border-zinc-400 p-6 dark:border-zinc-600 ${className ?? ''}`}
+      className={`w-full max-w-3xl rounded-lg border border-note-border p-6 ${className ?? ''}`}
       role="alert"
     >
       <Typography as="p" size="paragraph">

@@ -17,6 +17,19 @@ describe('Blockquote', () => {
     await expect(element).toMatchScreenshot('blockquote-default.png');
   });
 
+  describe('className', () => {
+    it('should write no undefined class when no className is given', () => {
+      const { container } = render(
+        <Blockquote>
+          <p>{QUOTE_TEXT}</p>
+        </Blockquote>,
+      );
+      expect(container.querySelector('blockquote')).not.toHaveClass(
+        'undefined',
+      );
+    });
+  });
+
   describe('dark', () => {
     beforeAll(async () => {
       await commands.setColorScheme('dark');

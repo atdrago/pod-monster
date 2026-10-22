@@ -56,7 +56,7 @@ export const Details = ({
       {children ? (
         <article
           className={`
-            border-l-12 border-foreground-light dark:border-foreground-dark
+            border-l-12 border-blockquote-border
             mt-6 pl-6
           `}
         >
