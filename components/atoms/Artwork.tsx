@@ -22,6 +22,7 @@ export type ArtworkComponentProps = PolymorphicComponentProps<
 export const Artwork = memo<ArtworkComponentProps>(
   function ArtworkComponentMemo({
     alt,
+    className,
     height = 512,
     isSquare = true,
     label,
@@ -48,7 +49,7 @@ export const Artwork = memo<ArtworkComponentProps>(
       />
     ) : (
       <Typography
-        as="span"
+        as="div"
         size="headingLarge"
         className={`
           self-center object-contain items-center justify-center
@@ -66,6 +67,7 @@ export const Artwork = memo<ArtworkComponentProps>(
         className={`
           max-w-full leading-0 grow-0 shrink-0 relative
           ${shadow ? 'shadow-lg/35' : ''}
+          ${className ?? ''}
         `}
         style={{ width: `${width}px` }}
       >
@@ -73,7 +75,7 @@ export const Artwork = memo<ArtworkComponentProps>(
           <div
             style={{ gridArea: '1 / 1' }}
             className={`
-              dark:bg-zinc-900/70
+              bg-background-blurred
               grid overflow-hidden
               h-0 w-full pt-[100%] relative
             `}
@@ -94,7 +96,7 @@ export const Artwork = memo<ArtworkComponentProps>(
             aria-label="Subtitles"
             aria-live="polite"
             className={`
-              bg-zinc-300/80 dark:bg-zinc-900/80
+              bg-background-blurred-opaque/80
               absolute bottom-0 right-0 left-0
               m-4 p-4
             `}
@@ -110,6 +112,7 @@ export const Artwork = memo<ArtworkComponentProps>(
   },
   (prevProps, nextProps) => {
     return (
+      prevProps.className === nextProps.className &&
       prevProps.height === nextProps.height &&
       prevProps.isSquare === nextProps.isSquare &&
       prevProps.label === nextProps.label &&

@@ -122,6 +122,7 @@ export const EpisodePlayButton = ({
         </IconButton>
         <Typography
           className="font-bold"
+          shouldTrimTextBox={false}
           size="headingSmaller"
           as="h3"
           whitespace={2}
@@ -137,7 +138,10 @@ export const EpisodePlayButton = ({
         </Typography>
       </Stack>
       {currentChapter?.url && (
-        <ExternalLink href={currentChapter.url}>
+        // TODO: The icon sits on a text line. This 10px text size keeps the
+        // legacy height of that line. Remove it in a unit that names the image
+        // change.
+        <ExternalLink className="text-[10px]" href={currentChapter.url}>
           <Icon size="medium">
             <ChapterLinkIcon />
           </Icon>

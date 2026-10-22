@@ -1,4 +1,3 @@
-import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
 import bundleAnalyzer from '@next/bundle-analyzer';
 import withSvgr from 'next-plugin-svgr';
 import { withSentryConfig } from '@sentry/nextjs';
@@ -6,8 +5,6 @@ import { withSentryConfig } from '@sentry/nextjs';
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
-
-const withVanillaExtract = createVanillaExtractPlugin();
 
 const nextConfig = {
   // A page sends its full URL as the `Referer` of each request, and a log
@@ -30,7 +27,11 @@ const nextConfig = {
 };
 
 export default withSentryConfig(
-  withBundleAnalyzer(withSvgr(withVanillaExtract(nextConfig))),
+  // TODO: `withSvgr` adds a `webpack()` function, and Next 16 stops a
+  // Turbopack build when the config has a `webpack()` function. Thus, the
+  // `build` and `dev` scripts keep the `--webpack` flag. Replace `withSvgr`
+  // with a `turbopack.rules` entry for `*.svg`, and then remove the flag.
+  withBundleAnalyzer(withSvgr(nextConfig)),
   {
     org: 'adam-drago',
 

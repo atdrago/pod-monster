@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 export default function metadata(): MetadataRoute.Manifest {
   return {
-    background_color: '#ffffff',
+    background_color: '#d0d0d0',
     description: 'A front-end to the Podcast Index',
     display: 'standalone',
     icons: [

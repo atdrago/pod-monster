@@ -5,7 +5,6 @@ import type { ReactNode } from 'react';
 import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
-import { headingLink, underlinedLink } from 'styles';
 import { createMetadata } from 'utils/createMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,7 +32,7 @@ const HeadingAnchor = ({ label }: { label?: Heading }) => {
   }
 
   return (
-    <a className={headingLink} href={`#${slug}`} id={slug}>
+    <a className="no-underline hover:underline" href={`#${slug}`} id={slug}>
       {label}
     </a>
   );
@@ -55,7 +54,7 @@ const HeadingAnchorLink = ({
   }
 
   return (
-    <a className={underlinedLink} href={`#${slug}`}>
+    <a className="underline" href={`#${slug}`}>
       {children}
     </a>
   );
@@ -92,7 +91,7 @@ export default function Page() {
         <Typography as="p" size="paragraph">
           When you &ldquo;subscribe&rdquo; to a podcast, it will appear in your
           &ldquo;
-          <Link className={underlinedLink} href={'/'}>
+          <Link className="underline" href={'/'}>
             Subscriptions
           </Link>
           &rdquo; list for easy access. Subscribing is and will always be free
@@ -115,7 +114,7 @@ export default function Page() {
           as="ul"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>It is available for public testing and use.</li>
           <li>You can expect all changes that land to be stable.</li>
@@ -133,7 +132,7 @@ export default function Page() {
           as="ul"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>
             No account is required to subscribe to or listen to podcasts (though
@@ -170,10 +169,10 @@ export default function Page() {
           as="ul"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>
-            <Typography as="p" size="paragraph" shouldUseCapsize={false}>
+            <Typography as="p" size="paragraph" shouldTrimTextBox={false}>
               All settings, including subscriptions, are currently stored in
               LocalStorage, making them reasonably persistent. Unfortunately,
               browser processes like &ldquo;
@@ -192,7 +191,7 @@ export default function Page() {
               storage should be persistent. Still, there is no surefire way to
               keep reliably persistent data in a web browser. For this reason, I
               encourage you to{' '}
-              <Link className={underlinedLink} href="/settings">
+              <Link className="underline" href="/settings">
                 keep an OPML back-up
               </Link>{' '}
               of your subscriptions, just in case your subscriptions get wiped
@@ -200,7 +199,7 @@ export default function Page() {
               apps!
             </Typography>
             <br />
-            <Typography as="p" size="paragraph" shouldUseCapsize={false}>
+            <Typography as="p" size="paragraph" shouldTrimTextBox={false}>
               In the future, the plan is to fix this in two ways. First,
               migrating from LocalStorage to IndexedDB will increase storage
               limits, which should help avoid data eviction. And, second, adding
@@ -222,7 +221,7 @@ export default function Page() {
           as="ol"
           className="list-layout"
           size="paragraph"
-          shouldUseCapsize={false}
+          shouldTrimTextBox={false}
         >
           <li>
             <ExternalLink href="https://podcastindex.org/">
@@ -256,14 +255,14 @@ export default function Page() {
             deployments with 0 project-based configuration.
           </li>
           <li>
-            <ExternalLink href="https://vanilla-extract.style/">
-              Vanilla Extract
+            <ExternalLink href="https://tailwindcss.com/">
+              Tailwind CSS
             </ExternalLink>{' '}
-            is a lovely, newer tool for writing CSS styles in TypeScript. It
-            automatically scopes classes (like CSS Modules), is type-safe, and
-            allows the creation of theme-based contracts that make things like
-            dark/light mode support a breeze. It generates all CSS at build
-            time, so there is no run time performance implication.
+            is a utility-first CSS framework, which means you style each element
+            with small, single-purpose classes right in the markup. Its theme
+            keeps colors, type sizes, and spacing in one place, which makes
+            things like light and dark mode much easier to manage. It generates
+            the CSS at build time, so there&apos;s no run time performance cost.
           </li>
           <li>
             <ExternalLink href="https://icomoon.io/">IcoMoon</ExternalLink> lets

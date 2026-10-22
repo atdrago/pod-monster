@@ -8,18 +8,12 @@ import { Icon } from 'components/atoms/Icon';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import LogoIcon from 'icons/logo.svg';
-import { headingLink } from 'styles';
 import type { PodcastEpisode, PodcastFeed } from 'types/PodcastFeed';
 import { getEpisodePath, getPodcastPath } from 'utils/paths';
 import { toTitleCase } from 'utils/toTitleCase';
 
-import {
-  headerBaseClassName,
-  homeIconClassName,
-  homeLinkClassName,
-} from './header.css';
-
 interface HeaderProps {
+  className?: string;
   /**
    * Set on the page of an episode. The episode also gives the title and the
    * URL of its show, so the page of an episode does not set `feed`.
@@ -34,6 +28,7 @@ interface HeaderProps {
 }
 
 export const Header: FunctionComponent<HeaderProps> = ({
+  className,
   episode,
   feed,
   isLoading = false,
@@ -66,18 +61,30 @@ export const Header: FunctionComponent<HeaderProps> = ({
       space="small"
       as="header"
       kind="flexRow"
-      className={headerBaseClassName}
+      align="center"
+      justify="center"
+      className={`-mt-[5px] -mb-[6px] ${className ?? ''}`}
     >
       <Typography
         as="h1"
         size="headingSmall"
-        style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-        shouldUseCapsize={false}
-        className="font-bold"
+        width="auto"
+        shouldTrimTextBox={false}
+        className="flex-none font-bold"
       >
-        <Link aria-label="Pod Monster" href="/" className={homeLinkClassName}>
+        {/* The negative margin and the padding make the touch area larger,
+            but the layout box keeps its size. */}
+        <Link
+          aria-label="Pod Monster"
+          href="/"
+          className="
+            inline-flex flex-col items-center gap-3
+            -my-2 -mx-4 py-2 px-4
+            no-underline
+          "
+        >
           <Icon size="large" aria-hidden="true">
-            <LogoIcon className={homeIconClassName} />
+            <LogoIcon className="animate-logo" />
           </Icon>
           {isAppNameHidden ? null : 'Pod Monster'}
         </Link>
@@ -87,25 +94,20 @@ export const Header: FunctionComponent<HeaderProps> = ({
           <Typography
             as="span"
             size="headingSmall"
-            style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            width="auto"
+            className="flex-none"
           >
             {' / '}
           </Typography>
           <Typography
             as="h2"
-            className="font-bold"
+            className="flex-initial font-bold"
             size="headingSmall"
             whitespace="ellipsis"
-            style={{
-              flex: isEpisodeTitleVisible ? '0 0 auto' : '0 1 auto',
-              margin: 0,
-              width: 'auto',
-            }}
-            shouldUseCapsize={false}
+            width="auto"
             title={feedTitle}
           >
-            <Link href={pathname} className={headingLink}>
+            <Link href={pathname} className="no-underline hover:underline">
               {toTitleCase(pathname.slice(1))}
             </Link>
           </Typography>
@@ -116,28 +118,26 @@ export const Header: FunctionComponent<HeaderProps> = ({
           <Typography
             as="span"
             size="headingSmall"
-            style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            width="auto"
+            className="flex-none"
           >
             {' / '}
           </Typography>
           <Typography
             as="h2"
-            className="font-bold"
+            className={`${isEpisodeTitleVisible ? 'flex-none' : 'flex-initial'} font-bold`}
             size="headingSmall"
             whitespace="ellipsis"
-            style={{
-              flex: isEpisodeTitleVisible ? '0 0 auto' : '0 1 auto',
-              margin: 0,
-              width: 'auto',
-            }}
-            shouldUseCapsize={false}
+            width="auto"
             title={feedTitle}
           >
             {isLoading ? (
               'Loading...'
             ) : feedUrl ? (
-              <Link href={getPodcastPath({ feedUrl })} className={headingLink}>
+              <Link
+                href={getPodcastPath({ feedUrl })}
+                className="no-underline hover:underline"
+              >
                 {abbreviatedFeedTitle}
               </Link>
             ) : (
@@ -151,18 +151,17 @@ export const Header: FunctionComponent<HeaderProps> = ({
           <Typography
             as="span"
             size="headingSmall"
-            style={{ flex: '0 0 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            width="auto"
+            className="flex-none"
           >
             {' / '}
           </Typography>
           <Typography
             as="h3"
-            className="font-bold"
+            className="flex-initial font-bold"
             size="headingSmall"
             whitespace="ellipsis"
-            style={{ flex: '0 1 auto', margin: 0, width: 'auto' }}
-            shouldUseCapsize={false}
+            width="auto"
             title={episode.title}
           >
             <Link
@@ -170,7 +169,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
                 episodeIdentity: episode.identity,
                 feedUrl,
               })}
-              className={headingLink}
+              className="no-underline hover:underline"
             >
               {episode.title}
             </Link>

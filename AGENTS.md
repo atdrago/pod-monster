@@ -19,7 +19,7 @@ When you choose between a modern solution and a legacy solution, always choose t
 Pod Monster is a mobile-first web app for podcasts. It supports many features of the Podcasting 2.0 `podcast` namespace. The stack is:
 
 - [Next.js](https://nextjs.org/) with the App Router (`app/`), React, and TypeScript.
-- [Tailwind CSS](https://tailwindcss.com/) for styles. Some components still use [vanilla-extract](https://vanilla-extract.style/) (`*.css.ts` files).
+- [Tailwind CSS](https://tailwindcss.com/) for styles.
 - [TanStack Query](https://tanstack.com/query) for data on the client.
 - The `@atdrago/podcast-index` workspace package (`packages/podcast-index/`) for calls to the Podcast Index API.
 - [Vitest](https://vitest.dev/) in browser mode, with Playwright and Chromium, for tests.
@@ -95,7 +95,7 @@ Use [Tailwind CSS](https://tailwindcss.com/docs) utility classes for styles when
 - No Tailwind utility exists for the style.
 - The code calculates a value at runtime, and the `className` prop changes too frequently as a result.
 
-Do not add a new vanilla-extract file (`*.css.ts`). The Tailwind theme tokens are in the `@theme` block of `styles/globals.css`.
+The Tailwind theme tokens are in the `@theme` block of `styles/globals.css`. The semantic color tokens, for example `--color-background`, use `light-dark()` to follow the color scheme of the system.
 
 ### React rules
 
@@ -136,4 +136,20 @@ Use `components/atoms/IconButton/IconButton.test.tsx` as the canonical reference
     - the polymorphic `as` prop, when the component has one
 11. **No DOM snapshots**: Do not add a new `toMatchSnapshot()` call on rendered DOM. Use `toMatchScreenshot()` for the look, and explicit matchers for behavior.
 
-After an intended visual change, update the reference images with `npx vitest run -u`. Then look at each changed image before you commit it.
+### Reference images
+
+A reference image is the contract for the look of a component. Change a reference image only when the look must change:
+
+- A change that must keep the look must pass the existing reference images, within the allowance in `vitest.config.mts`. An example is a refactor of the styles. Do not regenerate the images to make such a change pass.
+- After an intended visual change, update the reference images with `npx vitest run -u`. Then look at each changed image before you commit it. In the pull request body, name each changed image and the cause of its change.
+- A Playwright or Chromium upgrade can change the rendered pixels. Regenerate the reference images for an upgrade in a separate pull request with no source change. In that pull request body, name the upgrade as the cause.
+
+### Dark mode
+
+To test the look in dark mode, put the dark-mode cases in a nested `describe('dark', ...)` block:
+
+1. In `beforeAll`, call `await commands.setColorScheme('dark')`. Import `commands` from `vitest/browser`.
+2. In `afterAll`, call `await commands.setColorScheme('light')`.
+3. Give each dark screenshot the `-dark` suffix, for example `iconButton-background-circle-dark.png`.
+
+`vitest.setup.ts` sets the light scheme before each test file, so a failed `afterAll` does not change the next file. The `dark` block in `IconButton.test.tsx` is the reference.

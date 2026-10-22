@@ -56,14 +56,14 @@ export const Details = ({
       {children ? (
         <article
           className={`
-            border-l-12 border-foreground-light dark:border-foreground-dark
-            mt-6 pl-6
+            border-l-12 border-blockquote-border
+            mt-4 pl-4
           `}
         >
           {children}
         </article>
       ) : null}
-      {footer ? <div className="mt-6">{footer}</div> : null}
+      {footer ? <div className="mt-4">{footer}</div> : null}
     </details>
   );
 };

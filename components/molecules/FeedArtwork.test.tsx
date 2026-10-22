@@ -1,6 +1,7 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, render, renderHook, waitFor } from '@testing-library/react';
 import { openDB } from 'idb';
-import type { PropsWithChildren } from 'react';
+import type { ComponentProps, PropsWithChildren } from 'react';
+import { commands } from 'vitest/browser';
 
 import { SettingsProvider, useSettingsContext } from 'contexts/SettingsContext';
 
@@ -67,6 +68,33 @@ async function renderFeedArtwork({
   );
 
   return rendered;
+}
+
+/**
+ * The shadow paints outside the root. The image shows the padded box around
+ * the root, so that it records the shadow.
+ */
+async function renderFeedArtworkForScreenshot(
+  props: Partial<ComponentProps<typeof FeedArtwork>> = {},
+) {
+  const { container } = render(
+    <SettingsProvider>
+      <div style={{ padding: 24, width: 'fit-content' }}>
+        <FeedArtwork
+          alt=""
+          feedUrl={FEED_URL}
+          height={128}
+          shadow={true}
+          width={128}
+          {...props}
+        />
+      </div>
+    </SettingsProvider>,
+  );
+
+  await container.querySelector('img')?.decode();
+
+  return container.firstElementChild;
 }
 
 describe('FeedArtwork', () => {
@@ -150,6 +178,42 @@ describe('FeedArtwork', () => {
 
     expect(await readFeedSettings()).toEqual({
       [FEED_URL]: FEED_SETTINGS_ITEM,
+    });
+  });
+
+  describe('src', () => {
+    it('should render the image of the show with a shadow', async () => {
+      const element = await renderFeedArtworkForScreenshot({
+        src: '/apple-touch-icon.png',
+      });
+      await expect(element).toMatchScreenshot('feedArtwork-image.png');
+    });
+
+    it('should render an empty square when the show has no image', async () => {
+      const element = await renderFeedArtworkForScreenshot();
+      await expect(element).toMatchScreenshot('feedArtwork-no-image.png');
+    });
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the image of the show with a shadow', async () => {
+      const element = await renderFeedArtworkForScreenshot({
+        src: '/apple-touch-icon.png',
+      });
+      await expect(element).toMatchScreenshot('feedArtwork-image-dark.png');
+    });
+
+    it('should render an empty square when the show has no image', async () => {
+      const element = await renderFeedArtworkForScreenshot();
+      await expect(element).toMatchScreenshot('feedArtwork-no-image-dark.png');
     });
   });
 });

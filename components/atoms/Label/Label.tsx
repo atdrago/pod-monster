@@ -1,7 +1,20 @@
 import type { PropsWithChildren } from 'react';
 
-import { labelClassName } from './label.css';
+type LabelProps = PropsWithChildren<{
+  className?: string;
+}>;
 
-export const Label = ({ children }: PropsWithChildren) => {
-  return <span className={labelClassName}>{children}</span>;
+export const Label = ({ children, className }: LabelProps) => {
+  return (
+    <span
+      className={`
+        inline-block w-auto p-2
+        bg-background-highlight shadow-elevation-low
+        text-paragraph text-box-trim-cap
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </span>
+  );
 };

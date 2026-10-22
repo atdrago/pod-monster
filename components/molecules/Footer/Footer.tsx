@@ -4,13 +4,15 @@ import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 
-import { footerList } from './footer.css';
+interface FooterProps {
+  className?: string;
+}
 
-export const Footer = () => {
+export const Footer = ({ className }: FooterProps) => {
   return (
-    <footer>
+    <footer className={className}>
       <nav>
-        <Stack as="ul" kind="flexRow" className={footerList}>
+        <Stack as="ul" kind="flexRow">
           <li>
             <Typography as={Link} href="/" size="paragraph">
               Home

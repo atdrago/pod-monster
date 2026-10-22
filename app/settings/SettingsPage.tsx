@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ReactEventHandler, useState } from 'react';
 
 import { Checkbox } from 'components/atoms/Checkbox';
+import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { FileField } from 'components/molecules/FileField';
@@ -15,7 +16,6 @@ import {
 import { useOpmlFileUrl } from 'hooks/useOpmlFileUrl';
 import DownloadIcon from 'icons/download2.svg';
 import { fetchOpmlImport, type OpmlImportResponse } from 'rest/fetchOpmlImport';
-import { underlinedLink } from 'styles';
 import { ApiErrorResponse } from 'utils/createApiErrorResponse';
 
 export function SettingsPage() {
@@ -97,15 +97,8 @@ export function SettingsPage() {
           OPML
         </Typography>
         <Typography as="p" size="paragraph">
-          <a
-            className={underlinedLink}
-            href="http://opml.org/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            OPML
-          </a>{' '}
-          is a standard format for exchanging groups of RSS feeds. And since a
+          <ExternalLink href="http://opml.org/">OPML</ExternalLink> is a
+          standard format for exchanging groups of RSS feeds. And since a
           podcast is just an RSS feed that points to an audio or video file,
           OPML is commonly used to import and export podcast subscriptions
           between applications.
@@ -117,7 +110,7 @@ export function SettingsPage() {
             </Typography>
             <Typography as="p" size="paragraph">
               <Stack
-                className={underlinedLink}
+                className="underline"
                 as="a"
                 kind="flexRow"
                 space="xsmall"
@@ -170,7 +163,7 @@ export function SettingsPage() {
                   as="ul"
                   className="list-layout"
                   size="paragraph"
-                  shouldUseCapsize={false}
+                  shouldTrimTextBox={false}
                 >
                   {data.errors.map(({ title }, i) => {
                     return <li key={i}>{title}</li>;
@@ -180,7 +173,7 @@ export function SettingsPage() {
             ) : (
               <Typography as="p" size="paragraph">
                 All feeds were imported successfully.{' '}
-                <Link className={underlinedLink} href="/">
+                <Link className="underline" href="/">
                   View all subscriptions.
                 </Link>
               </Typography>

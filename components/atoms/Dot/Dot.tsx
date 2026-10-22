@@ -8,12 +8,12 @@ type DotProps = JSX.IntrinsicElements['span'] & {
 };
 
 const colorClasses: Record<DotColor, string> = {
-  blue: 'bg-[#56B6C2]',
-  green: 'bg-[#98C379]',
-  pink: 'bg-[#C678DD]',
-  red: 'bg-[#E06C75]',
+  blue: 'bg-accent-blue',
+  green: 'bg-accent-green',
+  pink: 'bg-accent-pink',
+  red: 'bg-accent-red',
   transparent: 'bg-transparent',
-  yellow: 'bg-[#D19A66]',
+  yellow: 'bg-accent-yellow',
 };
 
 export const Dot = ({ className, color, label, ...spanProps }: DotProps) => {
@@ -22,7 +22,7 @@ export const Dot = ({ className, color, label, ...spanProps }: DotProps) => {
       aria-label={label}
       className={`
         rounded-full inline-block flex-none
-        h-[0.8rem] w-[0.8rem] m-0 p-0
+        h-2 w-2 m-0 p-0
         ${colorClasses[color]}
         ${className ?? ''}
       `}

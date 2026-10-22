@@ -1,18 +1,13 @@
 import type { JSX } from 'react';
 
-import { useClassNames } from 'hooks/useClassNames';
-import { underlinedLink } from 'styles';
-
 export const ExternalLink = ({
   children,
-  className: classNameProp,
+  className,
   ...props
 }: JSX.IntrinsicElements['a']) => {
-  const className = useClassNames(underlinedLink, classNameProp);
-
   return (
     <a
-      className={className}
+      className={`underline ${className ?? ''}`}
       target="_blank"
       rel="noreferrer noopener"
       {...props}

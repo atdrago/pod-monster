@@ -10,18 +10,8 @@ import {
 
 import { Range } from 'components/atoms/Range';
 import { Typography } from 'components/atoms/Typography';
-import { useClassNames } from 'hooks/useClassNames';
 import { secondsToFormattedTime } from 'utils/date';
 import type { PlaybackRate } from 'utils/playbackRates';
-
-import {
-  audio,
-  labelLayout,
-  mediaBase,
-  timeLabel,
-  timeLabelCenter,
-  timeLabelRight,
-} from './media.css';
 
 type MediaProps = JSX.IntrinsicElements['audio'] &
   Pick<JSX.IntrinsicElements['video'], 'poster'> & {
@@ -57,7 +47,6 @@ export const Media = function MediaRef({
   videoRef,
   ...props
 }: MediaProps) {
-  const audioClassName = useClassNames(audio, className);
   const [duration, setDuration] = useState(0);
   const id = useId();
 
@@ -210,7 +199,7 @@ export const Media = function MediaRef({
         </m.div>
       ) : (
         <audio
-          className={audioClassName}
+          className={`hidden w-full ${className ?? ''}`}
           controls={true}
           key={src}
           onLoadedData={handleLoadedData}
@@ -223,13 +212,25 @@ export const Media = function MediaRef({
           {...props}
         />
       )}
-      <div className={mediaBase}>
-        <label htmlFor={id} className={labelLayout}>
+      {/**
+       * TODO: The range input sits on a text line. This 10px text size keeps
+       * the legacy height of that line. Remove it in a unit that names the
+       * image change.
+       */}
+      <div className="relative text-[10px]">
+        <label
+          htmlFor={id}
+          className="
+            pointer-events-none absolute inset-0 m-auto grid
+            grid-cols-[max-content_1fr_max-content] items-center
+            justify-between gap-4 px-2
+          "
+        >
           <Typography
             as="span"
             size="paragraph"
-            className={timeLabel}
-            shouldUseCapsize={false}
+            className="text-white tabular-nums mix-blend-difference"
+            shouldTrimTextBox={false}
           >
             {duration === 0 ? '...' : secondsToFormattedTime(currentTime)}
           </Typography>
@@ -237,9 +238,10 @@ export const Media = function MediaRef({
             <Typography
               as="h4"
               size="paragraph"
-              className={timeLabelCenter + ' font-bold'}
+              className="font-bold text-white tabular-nums mix-blend-difference"
+              textAlign="center"
               whitespace="ellipsis"
-              shouldUseCapsize={false}
+              shouldTrimTextBox={false}
             >
               {title}
             </Typography>
@@ -247,8 +249,9 @@ export const Media = function MediaRef({
           <Typography
             as="span"
             size="paragraph"
-            className={timeLabelRight}
-            shouldUseCapsize={false}
+            className="col-start-3 text-white tabular-nums mix-blend-difference"
+            textAlign="right"
+            shouldTrimTextBox={false}
           >
             {duration === 0
               ? '...'

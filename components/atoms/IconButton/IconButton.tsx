@@ -20,10 +20,10 @@ const sizeClasses = {
 } as const;
 
 const backgroundClasses = {
-  circle: `rounded-full p-2 text-center
-    bg-light dark:bg-dark
-    border-2 border-foreground-light dark:border-foreground-dark`,
-  default: 'bg-none border-0',
+  circle: `rounded-full p-4 text-center
+    bg-background
+    border-2 border-foreground`,
+  default: 'bg-none border-0 p-0',
 } as const;
 
 export const IconButton = ({
@@ -41,10 +41,9 @@ export const IconButton = ({
     <Box
       as={asProp}
       className={`
-        inline-flex items-center justify-center flex-0-0-auto
+        inline-flex items-center justify-center flex-none
         cursor-pointer
-        text-foreground
-        m-0 p-0
+        m-0
         ${sizeClasses[size]}
         ${backgroundClasses[background]}
         ${className ?? ''}

@@ -12,7 +12,6 @@ import { Stack } from 'components/layouts/Stack';
 import { EpisodeProgress } from 'components/molecules/EpisodeProgress';
 import { EpisodeUnlistenedDot } from 'components/molecules/EpisodeUnlistenedDot';
 import ExplicitIcon from 'icons/explicit.svg';
-import { nonUnderlinedLink } from 'styles';
 import type { PodcastEpisode } from 'types/PodcastFeed';
 import { getEpisodePath } from 'utils/paths';
 
@@ -67,7 +66,7 @@ export const EpisodeList = ({ episodes }: EpisodeListProps) => {
           <Stack
             align="center"
             as={Link}
-            className={nonUnderlinedLink}
+            className="no-underline"
             href={getEpisodePath({
               episodeIdentity: episode.identity,
               feedUrl: episode.feedUrl,
@@ -104,7 +103,7 @@ export const EpisodeList = ({ episodes }: EpisodeListProps) => {
                     as="h3"
                     className="font-bold"
                     size="headingSmaller"
-                    shouldUseCapsize={false}
+                    shouldTrimTextBox={false}
                     whitespace="ellipsis"
                   >
                     {episode.title}

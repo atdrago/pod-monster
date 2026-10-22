@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { commands, page } from 'vitest/browser';
 
 import { StartTimePrompt } from './StartTimePrompt';
 
@@ -132,5 +133,49 @@ describe('StartTimePrompt', () => {
 
     expect(onNotNowClick).toHaveBeenCalledOnce();
     expect(onPlayFromClick).not.toHaveBeenCalled();
+  });
+
+  describe('640px viewport', () => {
+    beforeAll(async () => {
+      await page.viewport(640, 896);
+    });
+
+    afterAll(async () => {
+      await page.viewport(414, 896);
+    });
+
+    it('should put the buttons in a row', async () => {
+      await renderStartTimePrompt();
+
+      const playFromButton = screen.getByRole('button', {
+        name: 'Play from 12:34',
+      });
+      const notNowButton = screen.getByRole('button', { name: 'Not Now' });
+
+      expect(playFromButton.getBoundingClientRect().right).toBeLessThanOrEqual(
+        notNowButton.getBoundingClientRect().left,
+      );
+      expect(playFromButton.getBoundingClientRect().top).toBe(
+        notNowButton.getBoundingClientRect().top,
+      );
+    });
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the line and the two buttons with the start time', async () => {
+      const { container } = await renderStartTimePrompt();
+
+      await expect(container.firstElementChild).toMatchScreenshot(
+        'startTimePrompt-default-dark.png',
+      );
+    });
   });
 });

@@ -1,9 +1,6 @@
 import type { JSX } from 'react';
 
-import { useTypography } from 'components/atoms/Typography';
-import { useClassNames } from 'hooks/useClassNames';
-
-import { labelClassName, selectClassName } from './selectField.css';
+import { Typography } from 'components/atoms/Typography';
 
 type SelectFieldProps = JSX.IntrinsicElements['select'] & {
   label?: string;
@@ -16,19 +13,25 @@ export const SelectField = ({
   value,
   ...props
 }: SelectFieldProps) => {
-  const typographyClassName = useTypography({
-    className,
-    shouldUseCapsize: false,
-    size: 'paragraph',
-  });
-  const labelBaseClassName = useClassNames(labelClassName, typographyClassName);
-
   return (
-    <label className={labelBaseClassName}>
-      <select className={selectClassName} value={value} {...props}>
+    <Typography
+      as="label"
+      className={`block relative font-bold ${className ?? ''}`}
+      shouldTrimTextBox={false}
+      size="paragraph"
+      textAlign="center"
+    >
+      <select
+        className="
+          appearance-none absolute inset-0 m-auto w-full
+          border-0 bg-transparent text-center text-transparent
+        "
+        value={value}
+        {...props}
+      >
         {children}
       </select>
       {label ?? value}
-    </label>
+    </Typography>
   );
 };

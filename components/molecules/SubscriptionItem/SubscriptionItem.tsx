@@ -6,12 +6,8 @@ import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { useSettingsContext } from 'contexts/SettingsContext';
-import { useClassNames } from 'hooks/useClassNames';
-import { nonUnderlinedLink } from 'styles';
 import { getEpisodeIdentity } from 'utils/getEpisodeIdentity';
 import { getPodcastPath } from 'utils/paths';
-
-import { subscriptionItemClassName } from './subscriptionItem.css';
 
 type SubscriptionEpisode = Pick<
   PIApiEpisodeInfo,
@@ -33,11 +29,6 @@ export const SubscriptionItem = ({
   image,
   title,
 }: SubscriptionItemProps) => {
-  const baseClassName = useClassNames(
-    subscriptionItemClassName,
-    nonUnderlinedLink,
-    className,
-  );
   const { getEpisodeSettingsItem, getFeedSettingsItem } = useSettingsContext();
 
   const subscribedAt = getFeedSettingsItem({ feedUrl })?.subscribedAt;
@@ -59,11 +50,13 @@ export const SubscriptionItem = ({
     );
   });
 
+  // The negative margin equals the dot width and the `xxsmall` gap. Thus, the
+  // dot hangs in the gutter, and the artwork aligns with the content edge.
   return (
     <Stack
       align="center"
       as={Link}
-      className={baseClassName}
+      className={`-ml-3 no-underline ${className ?? ''}`}
       href={getPodcastPath({ feedUrl })}
       kind="flexRow"
       space="xxsmall"
@@ -85,6 +78,7 @@ export const SubscriptionItem = ({
         <Typography
           as="h2"
           className="font-bold"
+          shouldTrimTextBox={false}
           size="headingSmaller"
           whitespace={2}
         >

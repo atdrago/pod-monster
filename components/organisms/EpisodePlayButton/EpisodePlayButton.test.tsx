@@ -2,11 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
   fireEvent,
+  render,
   renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
-import type { PropsWithChildren } from 'react';
+import type { ComponentProps, PropsWithChildren } from 'react';
+import { commands } from 'vitest/browser';
 
 import { MediaProvider, useMediaContext } from 'contexts/MediaContext';
 import { SettingsProvider, useSettingsContext } from 'contexts/SettingsContext';
@@ -30,6 +32,8 @@ const EPISODE: PodcastEpisode = {
   identity: 'episode-1',
   title: 'Episode 1',
 };
+const LONG_TITLE =
+  'A podcast with a very long title that wraps onto a second line, then onto a third line, and the clamp hides the third line';
 
 function deleteDatabase() {
   return new Promise<void>((resolve, reject) => {
@@ -72,9 +76,44 @@ async function renderEpisodePlayButton(
   return rendered;
 }
 
+/** Waits for the hydration, which enables the button. */
+async function renderEpisodePlayButtonForScreenshot(
+  props: Partial<ComponentProps<typeof EpisodePlayButton>> = {},
+) {
+  const rendered = render(
+    <QueryClientProvider client={new QueryClient()}>
+      <SettingsProvider>
+        <MediaProvider>
+          <EpisodePlayButton
+            currentChapter={null}
+            episode={EPISODE}
+            {...props}
+          />
+        </MediaProvider>
+      </SettingsProvider>
+    </QueryClientProvider>,
+  );
+
+  await waitFor(() =>
+    expect(screen.getByLabelText('Play podcast')).toBeEnabled(),
+  );
+
+  return rendered;
+}
+
 describe('EpisodePlayButton', () => {
   beforeEach(async () => {
     await deleteDatabase();
+  });
+
+  it('should clamp a long title to two lines without the trim', async () => {
+    await renderEpisodePlayButtonForScreenshot({
+      episode: { ...EPISODE, title: LONG_TITLE },
+    });
+    const heading = screen.getByRole('heading');
+
+    expect(heading).not.toHaveClass('text-box-trim-cap');
+    expect(heading.getBoundingClientRect().height).toBe(2 * 27);
   });
 
   it('should put the feed URL and the identity of the episode in the player', async () => {
@@ -181,5 +220,71 @@ describe('EpisodePlayButton', () => {
     expect(
       screen.getByText('Episode 1').querySelector('svg'),
     ).toBeInTheDocument();
+  });
+
+  describe('default', () => {
+    it('should render the play button and the title of a paused episode', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot();
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot('episodePlayButton-default.png');
+    });
+  });
+
+  describe('explicit', () => {
+    it('should render the explicit icon before the title', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot({
+        episode: { ...EPISODE, explicit: true },
+      });
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot('episodePlayButton-explicit.png');
+    });
+  });
+
+  describe('currentChapter', () => {
+    it('should render the title of the chapter and the link of the chapter', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot({
+        currentChapter: {
+          startTime: 60,
+          title: 'Chapter 2',
+          url: 'https://example.com/chapter-2',
+        },
+      });
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot(
+        'episodePlayButton-current-chapter.png',
+      );
+    });
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render the play button and the title of a paused episode', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot();
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot(
+        'episodePlayButton-default-dark.png',
+      );
+    });
+
+    it('should render the title of the chapter and the link of the chapter', async () => {
+      const { container } = await renderEpisodePlayButtonForScreenshot({
+        currentChapter: {
+          startTime: 60,
+          title: 'Chapter 2',
+          url: 'https://example.com/chapter-2',
+        },
+      });
+      const element = container.firstElementChild;
+      await expect(element).toMatchScreenshot(
+        'episodePlayButton-current-chapter-dark.png',
+      );
+    });
   });
 });
