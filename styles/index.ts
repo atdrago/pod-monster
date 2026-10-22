@@ -2,4 +2,3 @@
 // `import { vars } from 'styles'`, the variable `vars` will not have been
 // declared yet.
 export * from './theme.css';
-export * from './animation.css';

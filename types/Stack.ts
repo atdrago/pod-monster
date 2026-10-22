@@ -8,7 +8,7 @@ export type StackProps = PolymorphicComponentProps<
     className?: string;
     justify?: 'center' | 'spaceBetween';
     kind?: 'flex' | 'flexRow' | 'flexRowReverse' | 'grid';
-    maxWidth?: 'none' | 'small';
+    maxWidth?: 'none' | 'page' | 'small';
     space?:
       | 'large'
       | 'medium'

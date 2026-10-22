@@ -26,6 +26,28 @@ describe('PlayPauseIcon', () => {
     });
   });
 
+  describe('animation', () => {
+    it('should spin the spinner when loading', () => {
+      const { container } = render(
+        <PlayPauseIcon isLoading={true} isPaused={false} />,
+      );
+      const animations = container.querySelector('svg')?.getAnimations();
+
+      expect(animations).toHaveLength(1);
+      expect((animations?.[0] as CSSAnimation).animationName).toBe('spin');
+    });
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the root', () => {
+      const { container } = render(
+        <PlayPauseIcon className="custom-class" isPaused={true} />,
+      );
+
+      expect(container.querySelector('span')).toHaveClass('custom-class');
+    });
+  });
+
   describe('sizes', () => {
     it('should render the medium size', async () => {
       const { container } = render(

@@ -108,6 +108,18 @@ describe('Icon', () => {
       const element = container.querySelector('span');
       await expect(element).toMatchScreenshot('icon-orientation-spinning.png');
     });
+
+    it('should spin in the spinning orientation', () => {
+      const { container } = render(
+        <Icon size="medium" orientation="spinning">
+          <CogIcon />
+        </Icon>,
+      );
+      const animations = container.querySelector('span')?.getAnimations();
+
+      expect(animations).toHaveLength(1);
+      expect((animations?.[0] as CSSAnimation).animationName).toBe('spin');
+    });
   });
 
   describe('polymorphic', () => {

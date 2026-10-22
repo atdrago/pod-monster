@@ -79,8 +79,6 @@
   --text-monospace: 0.75rem;
   --text-monospace--line-height: 1.3;
 
-  --animate-spin-1s: spin 1s linear infinite;
-
   --container-content: 30rem;
 }
 
@@ -104,12 +102,27 @@
   text-box: trim-both cap alphabetic;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+/**
+ * A browser drops a whole selector list when the list contains an unknown
+ * pseudo-element. Thus, each pseudo-element gets its own rule.
+ */
+@custom-variant slider-thumb {
+  &::-webkit-slider-thumb {
+    @slot;
   }
-  to {
-    transform: rotate(359deg);
+
+  &::-moz-range-thumb {
+    @slot;
+  }
+}
+
+@custom-variant slider-track {
+  &::-webkit-slider-runnable-track {
+    @slot;
+  }
+
+  &::-moz-range-track {
+    @slot;
   }
 }
 

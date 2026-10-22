@@ -29,7 +29,7 @@ const orientationClasses = {
   default: '',
   reverse: 'scale-x-[-1]',
   rotate90: 'rotate-90',
-  spinning: 'animate-[spin_1s_linear_infinite] origin-center',
+  spinning: 'animate-spin origin-center',
 } as const;
 
 export const Icon = ({

@@ -2,24 +2,25 @@ import { Icon, type IconSize } from 'components/atoms/Icon';
 import PauseIcon from 'icons/pause2.svg';
 import PlayIcon from 'icons/play3.svg';
 import SpinnerIcon from 'icons/spinner8.svg';
-import { spinnerClassName } from 'styles';
 
 interface PlayPauseIconProps {
+  className?: string;
   isLoading?: boolean;
   isPaused: boolean;
   size?: IconSize;
 }
 
 export const PlayPauseIcon = ({
+  className,
   isLoading,
   isPaused,
   size = 'small',
 }: PlayPauseIconProps) => (
-  <Icon size={size}>
+  <Icon className={className} size={size}>
     {isLoading ? (
-      <SpinnerIcon className={spinnerClassName} />
+      <SpinnerIcon className="animate-spin origin-center" />
     ) : isPaused ? (
-      <PlayIcon style={{ marginLeft: '3px' }} />
+      <PlayIcon className="ml-[3px]" />
     ) : (
       <PauseIcon />
     )}

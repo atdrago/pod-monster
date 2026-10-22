@@ -24,6 +24,22 @@ describe('CenteredPageLayout', () => {
     await expect(element).toMatchScreenshot('centeredPageLayout-default.png');
   });
 
+  describe('size', () => {
+    it('should set the minimum height to the viewport height', () => {
+      const { container } = render(<CenteredPageLayout />);
+
+      expect(container.firstElementChild).toHaveStyle({
+        minHeight: `${window.innerHeight}px`,
+      });
+    });
+
+    it('should limit the width to 1024px', () => {
+      const { container } = render(<CenteredPageLayout />);
+
+      expect(container.firstElementChild).toHaveStyle({ maxWidth: '1024px' });
+    });
+  });
+
   describe('className', () => {
     it('should apply a custom className', () => {
       const { container } = render(

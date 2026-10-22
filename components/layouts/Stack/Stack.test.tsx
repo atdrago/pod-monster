@@ -203,6 +203,16 @@ describe('Stack', () => {
       const element = container.firstElementChild;
       await expect(element).toMatchScreenshot('stack-maxWidth-small.png');
     });
+
+    it('should limit the width to 1024px for the page maxWidth', () => {
+      const { container } = render(
+        <Stack maxWidth="page">
+          <Boxes />
+        </Stack>,
+      );
+
+      expect(container.firstElementChild).toHaveStyle({ maxWidth: '1024px' });
+    });
   });
 
   describe('polymorphic', () => {
