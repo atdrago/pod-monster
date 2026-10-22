@@ -379,6 +379,25 @@ describe('Typography', () => {
       ).toBeLessThanOrEqual(300);
     });
 
+    it('should shrink a trimmed truncated title in a flex row', () => {
+      render(
+        <div className="flex w-[300px]">
+          <span className="flex-none">0:00</span>
+          <Typography
+            as="h4"
+            className="flex-initial"
+            size="paragraph"
+            whitespace="ellipsis"
+          >
+            {ELLIPSIS_TITLE}
+          </Typography>
+        </div>,
+      );
+      expect(
+        screen.getByRole('heading').getBoundingClientRect().right,
+      ).toBeLessThanOrEqual(300);
+    });
+
     it('should clamp a three-line text to two lines without the trim', () => {
       render(
         <Typography

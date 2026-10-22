@@ -45,10 +45,9 @@ export const Typography = ({
     width === 'content'
       ? `mx-auto w-full ${size === 'monospace' ? 'max-w-none' : 'max-w-content'}`
       : '';
-  // The legacy untrimmed ellipsis root clipped its own overflow, so it shrank
-  // below the width of its text in a flex row or a grid column.
-  const shrinkClassName =
-    whitespace === 'ellipsis' && !shouldTrimTextBox ? 'min-w-0' : '';
+  // An ellipsis root must shrink below the width of its text in a flex row or
+  // a grid column. The root does not clip its overflow, so it needs min-w-0.
+  const shrinkClassName = whitespace === 'ellipsis' ? 'min-w-0' : '';
 
   return (
     <Box

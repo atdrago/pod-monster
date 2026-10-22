@@ -51,6 +51,15 @@ describe('Header', () => {
         '/',
       );
     });
+
+    it('should animate the logo with the logo animation', () => {
+      const element = renderHeader('/');
+      const animations = element?.querySelector('svg')?.getAnimations();
+
+      expect(animations).toHaveLength(1);
+      expect((animations?.[0] as CSSAnimation).animationName).toBe('logo');
+      expect(animations?.[0]?.playState).toBe('running');
+    });
   });
 
   describe('static page', () => {
@@ -95,6 +104,63 @@ describe('Header', () => {
         getPodcastPath({ feedUrl: FEED_URL }),
       );
     });
+
+    it('should shrink the title of the episode to fit the row', () => {
+      const element = renderHeader(
+        getEpisodePath({
+          episodeIdentity: EPISODE.identity,
+          feedUrl: FEED_URL,
+        }),
+        { episode: EPISODE },
+      );
+      const title = screen.getByRole('heading', { level: 3 });
+
+      expect(title.getBoundingClientRect().right).toBeLessThanOrEqual(
+        element?.getBoundingClientRect().right ?? 0,
+      );
+    });
+  });
+
+  describe('trim', () => {
+    it('should keep the full line box of the home heading', () => {
+      renderHeader('/');
+
+      expect(screen.getByRole('heading', { level: 1 })).toHaveStyle({
+        textBoxTrim: 'none',
+      });
+    });
+
+    it('should trim the slash and the name of the page on a static page', () => {
+      const element = renderHeader('/settings');
+      const texts = Array.from(
+        element?.querySelectorAll(':scope > :not(h1)') ?? [],
+      );
+
+      expect(texts).toHaveLength(2);
+
+      for (const text of texts) {
+        expect(text).toHaveStyle({ textBoxTrim: 'trim-both' });
+      }
+    });
+
+    it('should trim the slashes and the titles on the page of an episode', () => {
+      const element = renderHeader(
+        getEpisodePath({
+          episodeIdentity: EPISODE.identity,
+          feedUrl: FEED_URL,
+        }),
+        { episode: EPISODE },
+      );
+      const texts = Array.from(
+        element?.querySelectorAll(':scope > :not(h1)') ?? [],
+      );
+
+      expect(texts).toHaveLength(4);
+
+      for (const text of texts) {
+        expect(text).toHaveStyle({ textBoxTrim: 'trim-both' });
+      }
+    });
   });
 
   describe('isLoading', () => {
@@ -124,6 +190,52 @@ describe('Header', () => {
       expect(link).toHaveStyle({ textDecorationLine: 'underline' });
     });
 
+    it('should underline the title of the show on hover', async () => {
+      renderHeader(getPodcastPath({ feedUrl: FEED_URL }), { feed: FEED });
+      const link = screen.getByRole('link', { name: 'Example Show' });
+
+      expect(link).toHaveStyle({ textDecorationLine: 'none' });
+
+      await userEvent.hover(link);
+
+      expect(link).toHaveStyle({ textDecorationLine: 'underline' });
+    });
+
+    it('should underline the short title of the show on hover', async () => {
+      renderHeader(
+        getEpisodePath({
+          episodeIdentity: EPISODE.identity,
+          feedUrl: FEED_URL,
+        }),
+        { episode: EPISODE },
+      );
+      const link = screen.getByRole('link', { name: 'ES' });
+
+      expect(link).toHaveStyle({ textDecorationLine: 'none' });
+
+      await userEvent.hover(link);
+
+      expect(link).toHaveStyle({ textDecorationLine: 'underline' });
+    });
+
+    it('should underline the title of the episode on hover', async () => {
+      renderHeader(
+        getEpisodePath({
+          episodeIdentity: EPISODE.identity,
+          feedUrl: FEED_URL,
+        }),
+        { episode: EPISODE },
+      );
+      const link = screen.getByRole('link', { name: EPISODE.title });
+
+      expect(link).toHaveStyle({ textDecorationLine: 'none' });
+
+      // The ellipsis clips the link, so the center of the link is not visible.
+      await userEvent.hover(link, { position: { x: 8, y: 8 } });
+
+      expect(link).toHaveStyle({ textDecorationLine: 'underline' });
+    });
+
     it('should not underline the logo link on hover', async () => {
       renderHeader('/');
       const link = screen.getByRole('link', { name: 'Pod Monster' });
@@ -131,6 +243,14 @@ describe('Header', () => {
       await userEvent.hover(link);
 
       expect(link).toHaveStyle({ textDecorationLine: 'none' });
+    });
+  });
+
+  describe('className', () => {
+    it('should apply a custom className to the root', () => {
+      const element = renderHeader('/', { className: 'custom-class' });
+
+      expect(element).toHaveClass('custom-class');
     });
   });
 
