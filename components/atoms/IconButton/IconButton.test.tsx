@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { commands } from 'vitest/browser';
 
 import { Icon } from 'components/atoms/Icon';
 import CogIcon from 'icons/cog.svg';
@@ -127,6 +128,30 @@ describe('IconButton', () => {
       );
       const element = container.querySelector('button');
       await expect(element).toMatchScreenshot('iconButton-medium-circle.png');
+    });
+  });
+
+  describe('dark', () => {
+    beforeAll(async () => {
+      await commands.setColorScheme('dark');
+    });
+
+    afterAll(async () => {
+      await commands.setColorScheme('light');
+    });
+
+    it('should render circle background', async () => {
+      const { container } = render(
+        <IconButton label="Settings" background="circle">
+          <Icon size="small">
+            <CogIcon />
+          </Icon>
+        </IconButton>,
+      );
+      const element = container.querySelector('button');
+      await expect(element).toMatchScreenshot(
+        'iconButton-background-circle-dark.png',
+      );
     });
   });
 });

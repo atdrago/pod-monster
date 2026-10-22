@@ -1,10 +1,18 @@
 import { fileURLToPath } from 'node:url';
+import type { BrowserCommands } from 'vitest/browser';
 import { configDefaults, defineConfig } from 'vitest/config';
+import type { BrowserCommand } from 'vitest/node';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { playwright } from '@vitest/browser-playwright';
 import svgr from 'vite-plugin-svgr';
+
+const setColorScheme: BrowserCommand<
+  Parameters<BrowserCommands['setColorScheme']>
+> = async ({ page }, colorScheme) => {
+  await page.emulateMedia({ colorScheme });
+};
 
 export default defineConfig({
   plugins: [
@@ -30,6 +38,7 @@ export default defineConfig({
           globals: true,
           setupFiles: './vitest.setup.ts',
           browser: {
+            commands: { setColorScheme },
             enabled: true,
             // The CI runner and a local Mac render a few edge pixels of text
             // differently. The allowance lets one set of reference images
