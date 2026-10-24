@@ -37,7 +37,7 @@ interface FeedSettingsItem {
 }
 
 /** Each key is a feed URL. */
-export type FeedSettings = Record<string, FeedSettingsItem>;
+type FeedSettings = Record<string, FeedSettingsItem>;
 
 type MediaPlayerSettings = {
   chaptersUrl: string | null;

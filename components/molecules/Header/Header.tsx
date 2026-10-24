@@ -38,7 +38,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
   const feedTitle = episode?.feedTitle ?? feed?.title;
   const feedUrl = episode?.feedUrl ?? feed?.url;
 
-  const isStaticPage = ['/about', '/settings'].includes(pathname);
+  const isStaticPage = ['/about'].includes(pathname);
 
   const isAppNameHidden = isStaticPage || isLoading || feedTitle || feedUrl;
 

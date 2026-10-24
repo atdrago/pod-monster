@@ -1,5 +1,1 @@
-export {
-  SettingsProvider,
-  type FeedSettings,
-  useSettingsContext,
-} from './SettingsContext';
+export { SettingsProvider, useSettingsContext } from './SettingsContext';

@@ -11,13 +11,13 @@ describe('Footer', () => {
   });
 
   describe('links', () => {
-    it('should show the four links', () => {
+    it('should show the three links', () => {
       render(<Footer />);
 
       expect(screen.getByText('Home')).toBeVisible();
       expect(screen.getByText('About')).toBeVisible();
-      expect(screen.getByText('Settings')).toBeVisible();
       expect(screen.getByText('GitHub')).toBeVisible();
+      expect(screen.queryByText('Settings')).toBeNull();
     });
 
     it('should not underline the internal links', () => {
@@ -27,9 +27,6 @@ describe('Footer', () => {
         textDecorationLine: 'none',
       });
       expect(screen.getByText('About')).toHaveStyle({
-        textDecorationLine: 'none',
-      });
-      expect(screen.getByText('Settings')).toHaveStyle({
         textDecorationLine: 'none',
       });
     });

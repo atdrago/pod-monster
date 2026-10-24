@@ -24,11 +24,6 @@ export const Footer = ({ className }: FooterProps) => {
             </Typography>
           </li>
           <li>
-            <Typography as={Link} href="/settings" size="paragraph">
-              Settings
-            </Typography>
-          </li>
-          <li>
             <Typography
               as={ExternalLink}
               href="https://github.com/atdrago/pod-monster"
