@@ -34,22 +34,8 @@ export const maxDuration = 60;
 
 // The client page gets only the fields of the feed that it reads. Thus, the
 // RSC payload does not hold the rest of the feed.
-const toEpisodePageFeed = ({
-  format,
+const toEpisodePageFeed = ({ funding }: EpisodePageFeed): EpisodePageFeed => ({
   funding,
-  image,
-  link,
-  podcastIndexId,
-  title,
-  url,
-}: EpisodePageFeed): EpisodePageFeed => ({
-  format,
-  funding,
-  image,
-  link,
-  podcastIndexId,
-  title,
-  url,
 });
 
 /**

@@ -1,1 +1,0 @@
-export { SubscribeButton } from './SubscribeButton';

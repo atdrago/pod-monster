@@ -33,9 +33,17 @@ vi.mock('rest/fetchPodcastEpisodeTranscript', async (importOriginal) => ({
   fetchPodcastEpisodeTranscript: vi.fn(),
 }));
 
+const FUNDING = {
+  message: 'Support the show',
+  url: 'https://example.com/support',
+};
 const FEED: PodcastFeed = {
   format: 'rss',
+  funding: FUNDING,
+  image: 'https://example.com/show.jpg',
   isSerial: false,
+  link: 'https://example.com',
+  podcastIndexId: 12345,
   title: 'Example Show',
   url: 'https://example.com/feed.xml',
 };
@@ -367,6 +375,22 @@ describe('EpisodePage', () => {
         'rel',
         FEED_LINK_REL,
       );
+    });
+  });
+
+  describe('feed', () => {
+    it('should show no "Subscribe" button for a full feed', () => {
+      renderEpisodePage(EPISODE);
+
+      expect(screen.queryByText(/subscribe/i)).not.toBeInTheDocument();
+    });
+
+    it('should show the funding link of the feed', () => {
+      renderEpisodePage(EPISODE);
+
+      expect(
+        screen.getByRole('link', { name: FUNDING.message }),
+      ).toHaveAttribute('href', FUNDING.url);
     });
   });
 
