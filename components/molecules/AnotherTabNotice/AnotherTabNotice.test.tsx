@@ -20,7 +20,7 @@ describe('AnotherTabNotice', () => {
     const { container } = render(<AnotherTabNotice />);
 
     expect(screen.getByRole('alert')).toHaveTextContent(
-      'Pod Monster is open in another tab. Close that tab, and this page will finish loading your library.',
+      "Pod Monster is open in another tab or window. Close it, and you'll be able to play episodes.",
     );
     expect(screen.getByRole('alert')).toBeVisible();
     await expect(container.firstElementChild).toMatchScreenshot(
