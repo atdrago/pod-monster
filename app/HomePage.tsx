@@ -8,17 +8,13 @@ import { searchByTerm } from '@atdrago/podcast-index';
 import { Artwork } from 'components/atoms/Artwork';
 import { Checkbox } from 'components/atoms/Checkbox';
 import { LinkStack } from 'components/atoms/LinkStack';
-import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { Header } from 'components/molecules/Header';
 import { SearchField } from 'components/molecules/SearchField';
-import { SubscriptionItem } from 'components/molecules/SubscriptionItem';
-import { useSettingsContext } from 'contexts/SettingsContext';
 import { useStateWithDebounce } from 'hooks/useStateWithDebounce';
 import { getPodcastIndexConfig } from 'utils/getPodcastIndexConfig';
 import { getPodcastPath } from 'utils/paths';
-import { fetchPodcastEpisodes } from 'rest/fetchPodcastEpisodes';
 
 interface HomePageProps {
   podcastIndexAuthTime: number;
@@ -29,7 +25,6 @@ export function HomePage({
   podcastIndexAuthTime,
   podcastIndexAuthToken,
 }: HomePageProps) {
-  const { feedSettings } = useSettingsContext();
   const [shouldIncludeDeadFeeds, setShouldIncludeDeadFeeds] = useState(false);
   const searchParams = useSearchParams();
   const [searchTerm, searchTermDebounced, setSearchTerm] = useStateWithDebounce(
@@ -59,12 +54,6 @@ export function HomePage({
   const isSearchLoading =
     (isLoading || searchTermDebounced !== searchTerm) && !isSearchEmpty;
 
-  const feedSettingsEntries = Object.entries(feedSettings).filter(
-    ([_, { subscribedAt }]) => {
-      return !!subscribedAt;
-    },
-  );
-
   let searchFeedback =
     searchResponse && !isSearchEmpty
       ? `${searchResponse.description} ${
@@ -78,28 +67,6 @@ export function HomePage({
 
   const hasDeadFeeds =
     searchResponse && searchResponse.feeds.some((feed) => feed.dead > 0);
-
-  // The refresh sends Podcast Index feed ids only, so that no feed URL goes
-  // into a query string. A show with no id gets no new episodes dot.
-  const subscribedPodcastIndexFeedIds = Array.from(
-    new Set(
-      feedSettingsEntries.flatMap(([_, { podcastIndexId }]) =>
-        podcastIndexId === undefined ? [] : [podcastIndexId],
-      ),
-    ),
-  ).sort((left, right) => left - right);
-
-  // -30 days
-  const since = -30 * 24 * 60 * 60;
-
-  const { data: feedEpisodesData } = useQuery({
-    enabled: subscribedPodcastIndexFeedIds.length > 0,
-    queryFn: () => fetchPodcastEpisodes(subscribedPodcastIndexFeedIds, since),
-    queryKey: ['fetchPodcastEpisodes', subscribedPodcastIndexFeedIds, since],
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
 
   return (
     <>
@@ -182,45 +149,9 @@ export function HomePage({
                         ) : null}
                       </Stack>
                     </LinkStack>
-                    <SubscribeButton
-                      feed={{
-                        format: feed.type === 0 ? 'rss' : 'atom',
-                        image: feed.image,
-                        link: feed.link,
-                        podcastIndexId: feed.id,
-                        title: feed.title,
-                        url: feed.url,
-                      }}
-                    />
                   </Stack>
                 );
               })}
-            </Stack>
-          )}
-          {feedSettingsEntries.length > 0 && (
-            <Stack space="small">
-              <Typography as="h2" size="headingSmall" className="font-bold">
-                Subscriptions
-              </Typography>
-              {feedSettingsEntries.map(
-                ([feedUrl, { image, podcastIndexId, title }]) => {
-                  return (
-                    <SubscriptionItem
-                      key={feedUrl}
-                      feedEpisodesData={
-                        podcastIndexId === undefined
-                          ? undefined
-                          : feedEpisodesData?.items.filter(
-                              ({ feedId }) => feedId === podcastIndexId,
-                            )
-                      }
-                      feedUrl={feedUrl}
-                      image={image}
-                      title={title}
-                    />
-                  );
-                },
-              )}
             </Stack>
           )}
         </Stack>

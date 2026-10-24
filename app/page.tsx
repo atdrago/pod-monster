@@ -10,7 +10,7 @@ import { HomePage } from './HomePage';
 
 export async function generateMetadata(): Promise<Metadata> {
   return createMetadata({
-    description: 'Search for and subscribe to podcasts',
+    description: 'Search for podcasts',
     titles: ['Home'],
   });
 }
