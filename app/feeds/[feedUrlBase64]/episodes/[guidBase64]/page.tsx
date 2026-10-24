@@ -43,7 +43,8 @@ const toEpisodePageFeed = ({ funding }: EpisodePageFeed): EpisodePageFeed => ({
  * value, and the feed URL is normalized. Else, redirects to the canonical
  * path. The decoder also accepts standard base64, padding, and a feed URL that
  * is not normalized, but one episode must have one path. Thus, `og:url`, the
- * library key, and the path check of the player agree with the address bar.
+ * key of the saved episode data, and the path check of the player agree with
+ * the address bar.
  */
 async function getCanonicalSegments({
   params,

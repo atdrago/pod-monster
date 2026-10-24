@@ -12,8 +12,17 @@ vi.mock('@sentry/nextjs', () => ({
 }));
 
 const DATABASE_NAME = 'pod.monster';
-const STORE_NAMES = ['episodeSettings', 'feedSettings', 'mediaPlayerSettings'];
+const OLD_STORE_NAMES = [
+  'episodeSettings',
+  'feedSettings',
+  'mediaPlayerSettings',
+];
+const UPGRADED_STORE_NAMES = ['episodeSettings', 'mediaPlayerSettings'];
 const FEED_URL = 'https://example.com/feed.xml';
+const EPISODE_REFERENCE = { episodeIdentity: 'episode-1', feedUrl: FEED_URL };
+// A version 6 build writes this key, so the version 7 code must read it.
+const VERSION_6_EPISODE_KEY = JSON.stringify([FEED_URL, 'episode-1']);
+const EPISODE_SETTINGS_ITEM = { currentTime: 120, duration: 3600 };
 const FEED_SETTINGS_ITEM = {
   image: 'https://example.com/image.jpg',
   podcastIndexId: 920666,
@@ -71,7 +80,7 @@ function deleteDatabase() {
 
 async function createVersion5Database({
   blocking,
-  storeNames = STORE_NAMES,
+  storeNames = OLD_STORE_NAMES,
 }: { blocking?: () => void; storeNames?: Array<string> } = {}) {
   const database = await openDB(DATABASE_NAME, 5, {
     blocking,
@@ -105,6 +114,33 @@ async function createVersion5Database({
       'mediaPlayerSettings',
     );
   }
+
+  return database;
+}
+
+async function createVersion6Database({
+  blocking,
+}: { blocking?: () => void } = {}) {
+  const database = await openDB(DATABASE_NAME, 6, {
+    blocking,
+    upgrade(upgradeDatabase) {
+      OLD_STORE_NAMES.forEach((storeName) => {
+        upgradeDatabase.createObjectStore(storeName);
+      });
+    },
+  });
+
+  await database.put('feedSettings', FEED_SETTINGS_ITEM, FEED_URL);
+  await database.put(
+    'episodeSettings',
+    EPISODE_SETTINGS_ITEM,
+    VERSION_6_EPISODE_KEY,
+  );
+  await database.put(
+    'mediaPlayerSettings',
+    MEDIA_PLAYER_SETTINGS,
+    'mediaPlayerSettings',
+  );
 
   return database;
 }
@@ -149,12 +185,30 @@ describe('SettingsContext', () => {
   });
 
   describe('upgrade', () => {
-    it('should open a version 5 database with data at version 6 with three empty stores', async () => {
+    it('should open a version 6 database at version 7 with its saved position and player state, and without its feed store', async () => {
+      (await createVersion6Database()).close();
+
+      const { result } = await renderHydratedSettingsContext();
+
+      expect(result.current.getEpisodeSettingsItem(EPISODE_REFERENCE)).toEqual(
+        EPISODE_SETTINGS_ITEM,
+      );
+      expect(result.current.hydratedMediaPlayerSettings).toEqual(
+        MEDIA_PLAYER_SETTINGS,
+      );
+      expect(await readDatabase()).toEqual({
+        counts: [1, 1],
+        storeNames: UPGRADED_STORE_NAMES,
+        version: 7,
+      });
+      expect(captureMessage).not.toHaveBeenCalled();
+    });
+
+    it('should open a version 5 database with data at version 7 with two empty stores', async () => {
       (await createVersion5Database()).close();
 
       const { result } = await renderHydratedSettingsContext();
 
-      expect(result.current.feedSettings).toEqual({});
       expect(
         result.current.getEpisodeSettingsItem({
           episodeIdentity: '1234',
@@ -163,33 +217,33 @@ describe('SettingsContext', () => {
       ).toBeUndefined();
       expect(result.current.hydratedMediaPlayerSettings).toBeUndefined();
       expect(await readDatabase()).toEqual({
-        counts: [0, 0, 0],
-        storeNames: STORE_NAMES,
-        version: 6,
+        counts: [0, 0],
+        storeNames: UPGRADED_STORE_NAMES,
+        version: 7,
       });
 
       await act(() =>
-        result.current.setFeedSettingsItem(
-          { feedUrl: FEED_URL },
-          FEED_SETTINGS_ITEM,
+        result.current.setEpisodeSettingsItem(
+          EPISODE_REFERENCE,
+          EPISODE_SETTINGS_ITEM,
         ),
       );
 
-      expect(result.current.getFeedSettingsItem({ feedUrl: FEED_URL })).toEqual(
-        FEED_SETTINGS_ITEM,
+      expect(result.current.getEpisodeSettingsItem(EPISODE_REFERENCE)).toEqual(
+        EPISODE_SETTINGS_ITEM,
       );
-      expect((await readDatabase()).counts).toEqual([0, 1, 0]);
+      expect((await readDatabase()).counts).toEqual([1, 0]);
     });
 
-    it('should open a new database at version 6 with three stores', async () => {
-      const { result } = await renderHydratedSettingsContext();
+    it('should open a new database at version 7 with two stores', async () => {
+      await renderHydratedSettingsContext();
 
-      expect(result.current.feedSettings).toEqual({});
       expect(await readDatabase()).toEqual({
-        counts: [0, 0, 0],
-        storeNames: STORE_NAMES,
-        version: 6,
+        counts: [0, 0],
+        storeNames: UPGRADED_STORE_NAMES,
+        version: 7,
       });
+      expect(captureMessage).not.toHaveBeenCalled();
     });
 
     it('should create the missing store of a version 5 database', async () => {
@@ -202,9 +256,9 @@ describe('SettingsContext', () => {
       await renderHydratedSettingsContext();
 
       expect(await readDatabase()).toEqual({
-        counts: [0, 0, 0],
-        storeNames: STORE_NAMES,
-        version: 6,
+        counts: [0, 0],
+        storeNames: UPGRADED_STORE_NAMES,
+        version: 7,
       });
     });
 
@@ -220,14 +274,17 @@ describe('SettingsContext', () => {
       expect(window.localStorage.getItem('pod2.settings')).toBeNull();
     });
 
-    it('should finish the upgrade when an old connection closes on versionchange', async () => {
-      const oldConnection = await createVersion5Database({
+    it('should finish the upgrade and keep the saved position when a version 6 connection closes on versionchange', async () => {
+      const oldConnection = await createVersion6Database({
         blocking: () => oldConnection.close(),
       });
 
-      await renderHydratedSettingsContext();
+      const { result } = await renderHydratedSettingsContext();
 
-      expect((await readDatabase()).version).toBe(6);
+      expect(result.current.getEpisodeSettingsItem(EPISODE_REFERENCE)).toEqual(
+        EPISODE_SETTINGS_ITEM,
+      );
+      expect((await readDatabase()).version).toBe(7);
       expect(captureMessage).not.toHaveBeenCalled();
     });
   });
@@ -264,19 +321,19 @@ describe('SettingsContext', () => {
         );
 
         await act(() =>
-          result.current.setFeedSettingsItem(
-            { feedUrl: FEED_URL },
-            FEED_SETTINGS_ITEM,
+          result.current.setEpisodeSettingsItem(
+            EPISODE_REFERENCE,
+            EPISODE_SETTINGS_ITEM,
           ),
         );
 
         expect(
-          result.current.getFeedSettingsItem({ feedUrl: FEED_URL }),
-        ).toEqual(FEED_SETTINGS_ITEM);
+          result.current.getEpisodeSettingsItem(EPISODE_REFERENCE),
+        ).toEqual(EPISODE_SETTINGS_ITEM);
         expect(await readDatabase()).toEqual({
-          counts: [0, 1, 0],
-          storeNames: STORE_NAMES,
-          version: 6,
+          counts: [1, 0],
+          storeNames: UPGRADED_STORE_NAMES,
+          version: 7,
         });
       } finally {
         if (isOldConnectionOpen) {
@@ -327,7 +384,10 @@ describe('SettingsContext', () => {
       await act(() => vi.advanceTimersByTimeAsync(1));
 
       expect(result.current.isDoneHydratingFromIdb).toBe(true);
-      expect(result.current.feedSettings).toEqual({});
+      expect(
+        result.current.getEpisodeSettingsItem(EPISODE_REFERENCE),
+      ).toBeUndefined();
+      expect(result.current.hydratedMediaPlayerSettings).toBeUndefined();
       expect(captureMessage).toHaveBeenCalledWith(
         'settings_db_open_failed',
         expect.objectContaining({
@@ -337,11 +397,32 @@ describe('SettingsContext', () => {
     });
 
     it('should end hydration with empty state when the database has a newer version', async () => {
-      (await openDB(DATABASE_NAME, 7)).close();
+      const newerDatabase = await openDB(DATABASE_NAME, 8, {
+        upgrade(upgradeDatabase) {
+          UPGRADED_STORE_NAMES.forEach((storeName) => {
+            upgradeDatabase.createObjectStore(storeName);
+          });
+        },
+      });
+
+      await newerDatabase.put(
+        'episodeSettings',
+        EPISODE_SETTINGS_ITEM,
+        VERSION_6_EPISODE_KEY,
+      );
+      await newerDatabase.put(
+        'mediaPlayerSettings',
+        MEDIA_PLAYER_SETTINGS,
+        'mediaPlayerSettings',
+      );
+      newerDatabase.close();
 
       const { result } = await renderHydratedSettingsContext();
 
-      expect(result.current.feedSettings).toEqual({});
+      expect(
+        result.current.getEpisodeSettingsItem(EPISODE_REFERENCE),
+      ).toBeUndefined();
+      expect(result.current.hydratedMediaPlayerSettings).toBeUndefined();
       expect(captureMessage).toHaveBeenCalledWith(
         'settings_db_open_failed',
         expect.objectContaining({
@@ -354,18 +435,20 @@ describe('SettingsContext', () => {
   describe('connection lifecycle', () => {
     it('should not write after another tab upgrades the database', async () => {
       const { result } = await renderHydratedSettingsContext();
-      const newerConnection = await openDB(DATABASE_NAME, 7);
+      const newerConnection = await openDB(DATABASE_NAME, 8);
 
       try {
         await act(() =>
-          result.current.setFeedSettingsItem(
-            { feedUrl: FEED_URL },
-            FEED_SETTINGS_ITEM,
+          result.current.setEpisodeSettingsItem(
+            EPISODE_REFERENCE,
+            EPISODE_SETTINGS_ITEM,
           ),
         );
 
-        expect(result.current.feedSettings).toEqual({});
-        expect(await newerConnection.count('feedSettings')).toBe(0);
+        expect(
+          result.current.getEpisodeSettingsItem(EPISODE_REFERENCE),
+        ).toBeUndefined();
+        expect(await newerConnection.count('episodeSettings')).toBe(0);
       } finally {
         newerConnection.close();
       }
@@ -400,59 +483,39 @@ describe('SettingsContext', () => {
       const { result } = await renderHydratedSettingsContext();
 
       await act(() =>
-        result.current.setFeedSettingsItem(
-          { feedUrl: FEED_URL },
+        result.current.setEpisodeSettingsItem(EPISODE_REFERENCE, {
           // A function cannot be cloned, so the write fails.
-          { ...FEED_SETTINGS_ITEM, title: (() => {}) as unknown as string },
-        ),
+          currentTime: (() => {}) as unknown as number,
+        }),
       );
 
-      expect(result.current.feedSettings).toEqual({});
+      expect(
+        result.current.getEpisodeSettingsItem(EPISODE_REFERENCE),
+      ).toBeUndefined();
       expect(captureMessage).toHaveBeenCalledWith(
         'settings_db_write_failed',
         expect.objectContaining({
-          extra: { errorName: 'DataCloneError', storeName: 'feedSettings' },
+          extra: { errorName: 'DataCloneError', storeName: 'episodeSettings' },
         }),
       );
     });
 
-    it('should keep the library after a new render of the provider', async () => {
+    it('should keep a saved position after a new render of the provider', async () => {
       const firstRender = await renderHydratedSettingsContext();
 
       await act(() =>
-        firstRender.result.current.setFeedSettingsItem(
-          { feedUrl: FEED_URL },
-          FEED_SETTINGS_ITEM,
+        firstRender.result.current.setEpisodeSettingsItem(
+          EPISODE_REFERENCE,
+          EPISODE_SETTINGS_ITEM,
         ),
       );
       firstRender.unmount();
 
       const { result } = await renderHydratedSettingsContext();
 
-      expect(result.current.getFeedSettingsItem({ feedUrl: FEED_URL })).toEqual(
-        FEED_SETTINGS_ITEM,
+      expect(result.current.getEpisodeSettingsItem(EPISODE_REFERENCE)).toEqual(
+        EPISODE_SETTINGS_ITEM,
       );
-    });
-
-    it('should replace the library with the feed URL keys of setAllFeedSettings', async () => {
-      const { result } = await renderHydratedSettingsContext();
-
-      await act(() =>
-        result.current.setFeedSettingsItem(
-          { feedUrl: FEED_URL },
-          FEED_SETTINGS_ITEM,
-        ),
-      );
-      await act(() =>
-        result.current.setAllFeedSettings({
-          'https://EXAMPLE.com/other.xml#top': FEED_SETTINGS_ITEM,
-        }),
-      );
-
-      expect(result.current.feedSettings).toEqual({
-        'https://example.com/other.xml': FEED_SETTINGS_ITEM,
-      });
-      expect((await readDatabase()).counts).toEqual([0, 1, 0]);
     });
   });
 
@@ -461,48 +524,58 @@ describe('SettingsContext', () => {
       const { result } = await renderHydratedSettingsContext();
 
       await act(() =>
-        result.current.setFeedSettingsItem(
-          { feedUrl: 'https://EXAMPLE.com/feed.xml#latest' },
-          FEED_SETTINGS_ITEM,
+        result.current.setEpisodeSettingsItem(
+          {
+            episodeIdentity: 'episode-1',
+            feedUrl: 'https://EXAMPLE.com/feed.xml#latest',
+          },
+          { currentTime: 30 },
         ),
       );
       await act(() =>
-        result.current.setFeedSettingsItem(
-          { feedUrl: FEED_URL },
-          { ...FEED_SETTINGS_ITEM, title: 'Renamed Show' },
-        ),
+        result.current.setEpisodeSettingsItem(EPISODE_REFERENCE, {
+          currentTime: 60,
+        }),
       );
 
-      expect(Object.keys(result.current.feedSettings)).toEqual([FEED_URL]);
       expect(
-        result.current.getFeedSettingsItem({
+        result.current.getEpisodeSettingsItem({
+          episodeIdentity: 'episode-1',
           feedUrl: 'https://Example.com/feed.xml',
-        })?.title,
-      ).toBe('Renamed Show');
+        }),
+      ).toEqual({ currentTime: 60 });
+      expect((await readDatabase()).counts).toEqual([1, 0]);
     });
 
     it('should give two feed keys to feed URLs that differ only in the query case', async () => {
       const { result } = await renderHydratedSettingsContext();
 
       await act(() =>
-        result.current.setFeedSettingsItem(
-          { feedUrl: 'https://example.com/feed.xml?token=ABC' },
-          { ...FEED_SETTINGS_ITEM, title: 'Uppercase Token' },
+        result.current.setEpisodeSettingsItem(
+          {
+            episodeIdentity: 'episode-1',
+            feedUrl: 'https://example.com/feed.xml?token=ABC',
+          },
+          { currentTime: 10 },
         ),
       );
       await act(() =>
-        result.current.setFeedSettingsItem(
-          { feedUrl: 'https://example.com/feed.xml?token=abc' },
-          { ...FEED_SETTINGS_ITEM, title: 'Lowercase Token' },
+        result.current.setEpisodeSettingsItem(
+          {
+            episodeIdentity: 'episode-1',
+            feedUrl: 'https://example.com/feed.xml?token=abc',
+          },
+          { currentTime: 20 },
         ),
       );
 
-      expect(Object.keys(result.current.feedSettings)).toHaveLength(2);
       expect(
-        result.current.getFeedSettingsItem({
+        result.current.getEpisodeSettingsItem({
+          episodeIdentity: 'episode-1',
           feedUrl: 'https://example.com/feed.xml?token=ABC',
-        })?.title,
-      ).toBe('Uppercase Token');
+        }),
+      ).toEqual({ currentTime: 10 });
+      expect((await readDatabase()).counts).toEqual([2, 0]);
     });
 
     it('should give an episode key that matches only its own guid when the guid holds a quote and a comma', async () => {
@@ -557,7 +630,7 @@ describe('SettingsContext', () => {
     it('should drop a stored player state with numeric ids', async () => {
       const database = await openDB(DATABASE_NAME, 6, {
         upgrade(upgradeDatabase) {
-          STORE_NAMES.forEach((storeName) => {
+          OLD_STORE_NAMES.forEach((storeName) => {
             upgradeDatabase.createObjectStore(storeName);
           });
         },

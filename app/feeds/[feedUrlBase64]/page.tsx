@@ -66,8 +66,8 @@ const toEpisodeListEpisode = ({
  * Returns the segment when it is the canonical base64url form of its
  * normalized feed URL. Else, redirects to the canonical path. The decoder also
  * accepts standard base64, padding, and a feed URL that is not normalized, but
- * one show must have one path. Thus, `og:url`, the library key, and the path
- * check of the player agree with the address bar.
+ * one show must have one path. Thus, `og:url`, the key of the saved episode
+ * data, and the path check of the player agree with the address bar.
  */
 async function getCanonicalSegment({
   params,
