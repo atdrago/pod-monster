@@ -16,6 +16,14 @@ A podcast feed whose URL carries a member token or credentials, so that anyone w
 
 The site and the app use one rule to decide that a feed URL is private. The rule reads only the URL, so it can miss a private feed, and every share link page gets the telemetry protection whether the rule fires or not. For a feed that the rule marks private, the site sends the URL to no third-party podcast index, reads the feed directly, and asks search engines not to index the page.
 
+## Browser storage
+
+### Saved episode data
+
+The play position of each episode and the state of the player, which the site keeps in the browser of each visitor, with no account.
+
+The data stays in that one browser. Its schema has one version number. A deploy that raises the number upgrades the data of each visitor at the next open, and the change is one-way: a build with a lower number cannot open the data again. That build then shows no saved position and saves none, until a deploy at the same or a higher number. Thus a fix after such a deploy rolls forward, never back. When an open tab of an older build does not let go of the data, the upgrade waits, and the site asks the visitor to close that tab.
+
 ## Server fetches
 
 ### Feed guard

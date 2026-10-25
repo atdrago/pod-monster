@@ -25,8 +25,8 @@ export const AnotherTabNotice = ({ className }: AnotherTabNoticeProps) => {
       role="alert"
     >
       <Typography as="p" size="paragraph">
-        Pod Monster is open in another tab. Close that tab, and this page will
-        finish loading your library.
+        Pod Monster is open in another tab or window. Close it, and you&apos;ll
+        be able to play episodes.
       </Typography>
     </div>
   );

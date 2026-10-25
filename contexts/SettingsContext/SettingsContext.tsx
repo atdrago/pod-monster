@@ -1,7 +1,7 @@
 'use client';
 
 import { captureMessage } from '@sentry/nextjs';
-import { openDB } from 'idb';
+import { openDB, unwrap } from 'idb';
 import {
   type FunctionComponent,
   type PropsWithChildren,
@@ -16,7 +16,7 @@ import {
 import type { DBSchema, IDBPDatabase, StoreNames } from 'idb';
 
 import { normalizeFeedUrl } from 'utils/normalizeFeedUrl';
-import type { EpisodeReference, FeedReference } from 'utils/paths';
+import type { EpisodeReference } from 'utils/paths';
 import type { PlaybackRate } from 'utils/playbackRates';
 
 interface EpisodeSettingsItem {
@@ -25,19 +25,6 @@ interface EpisodeSettingsItem {
 }
 
 type EpisodeSettings = Record<string, EpisodeSettingsItem>;
-
-interface FeedSettingsItem {
-  htmlUrl?: string;
-  image?: string;
-  /** Present when Podcast Index knows the show. */
-  podcastIndexId?: number;
-  subscribedAt: string | null;
-  title: string;
-  type?: 'rss' | 'atom';
-}
-
-/** Each key is a feed URL. */
-export type FeedSettings = Record<string, FeedSettingsItem>;
 
 type MediaPlayerSettings = {
   chaptersUrl: string | null;
@@ -65,10 +52,6 @@ interface PodMonsterDb extends DBSchema {
     key: string;
     value: EpisodeSettingsItem;
   };
-  feedSettings: {
-    key: string;
-    value: FeedSettingsItem;
-  };
   mediaPlayerSettings: {
     key: 'mediaPlayerSettings';
     value: MediaPlayerSettings;
@@ -76,13 +59,9 @@ interface PodMonsterDb extends DBSchema {
 }
 
 interface SettingsContext {
-  feedSettings: FeedSettings;
   getEpisodeSettingsItem: (
     episodeReference: EpisodeReference,
   ) => EpisodeSettingsItem | undefined;
-  getFeedSettingsItem: (
-    feedReference: FeedReference,
-  ) => FeedSettingsItem | undefined;
   /** The player state that the database held when hydration ended. */
   hydratedMediaPlayerSettings?: HydratedMediaPlayerSettings;
   /**
@@ -92,39 +71,29 @@ interface SettingsContext {
    */
   isBlockedByAnotherTab: boolean;
   isDoneHydratingFromIdb: boolean;
-  /** Replaces the library. Each key of `nextFeedSettings` is a feed URL. */
-  setAllFeedSettings: (nextFeedSettings: FeedSettings) => Promise<void>;
   setEpisodeSettingsItem: (
     episodeReference: EpisodeReference,
     value: EpisodeSettingsItem,
-  ) => Promise<void>;
-  setFeedSettingsItem: (
-    feedReference: FeedReference,
-    value: FeedSettingsItem,
   ) => Promise<void>;
   setMediaPlayerSettings: (value: MediaPlayerSettings) => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContext>({
-  feedSettings: {},
   getEpisodeSettingsItem: (_) => undefined,
-  getFeedSettingsItem: (_) => undefined,
   isBlockedByAnotherTab: false,
   isDoneHydratingFromIdb: false,
-  setAllFeedSettings: async (_) => {},
   setEpisodeSettingsItem: async (_) => {},
-  setFeedSettingsItem: async (_) => {},
   setMediaPlayerSettings: async (_) => {},
 });
 
 const DATABASE_NAME = 'pod.monster';
-const SETTINGS_VERSION = 6;
+const SETTINGS_VERSION = 7;
 const HYDRATION_TIME_LIMIT_MS = 5000;
+const LEGACY_FEED_SETTINGS_STORE_NAME = 'feedSettings';
 const LEGACY_LOCAL_STORAGE_KEY = 'pod2.settings';
 const MEDIA_PLAYER_SETTINGS_KEY = 'mediaPlayerSettings';
 const STORE_NAMES: Array<StoreNames<PodMonsterDb>> = [
   'episodeSettings',
-  'feedSettings',
   'mediaPlayerSettings',
 ];
 
@@ -223,8 +192,10 @@ const logInvalidFeedUrl = (storeName: StoreNames<PodMonsterDb>) => {
 
 /**
  * Version 6 keys the data by feed URL. The data under the Podcast Index ids of
- * an older version does not carry over. Each call here is synchronous, so the
- * upgrade transaction does not commit early.
+ * an older version does not carry over. Version 7 deletes the `feedSettings`
+ * store when the database has it. The schema does not name that store, so the
+ * step uses the plain `IDBDatabase` from `unwrap`. Each call here is
+ * synchronous, so the upgrade transaction does not commit early.
  */
 const upgradeDatabase = (
   database: IDBPDatabase<PodMonsterDb>,
@@ -245,38 +216,38 @@ const upgradeDatabase = (
       // A browser that blocks storage throws here. No code reads the key.
     }
   }
+
+  if (oldVersion < 7) {
+    const unwrappedDatabase = unwrap(database);
+
+    if (
+      unwrappedDatabase.objectStoreNames.contains(
+        LEGACY_FEED_SETTINGS_STORE_NAME,
+      )
+    ) {
+      unwrappedDatabase.deleteObjectStore(LEGACY_FEED_SETTINGS_STORE_NAME);
+    }
+  }
 };
 
 const readSettings = async (database: IDBPDatabase<PodMonsterDb>) => {
   const transaction = database.transaction(STORE_NAMES, 'readonly');
   const episodeSettingsStore = transaction.objectStore('episodeSettings');
-  const feedSettingsStore = transaction.objectStore('feedSettings');
-  const [
-    episodeKeys,
-    episodeValues,
-    feedKeys,
-    feedValues,
-    storedMediaPlayerSettings,
-  ] = await Promise.all([
-    episodeSettingsStore.getAllKeys(),
-    episodeSettingsStore.getAll(),
-    feedSettingsStore.getAllKeys(),
-    feedSettingsStore.getAll(),
-    transaction
-      .objectStore('mediaPlayerSettings')
-      .get(MEDIA_PLAYER_SETTINGS_KEY),
-    transaction.done,
-  ]);
+  const [episodeKeys, episodeValues, storedMediaPlayerSettings] =
+    await Promise.all([
+      episodeSettingsStore.getAllKeys(),
+      episodeSettingsStore.getAll(),
+      transaction
+        .objectStore('mediaPlayerSettings')
+        .get(MEDIA_PLAYER_SETTINGS_KEY),
+      transaction.done,
+    ]);
   const episodeSettings: EpisodeSettings = Object.fromEntries(
     episodeKeys.map((episodeKey, index) => [episodeKey, episodeValues[index]]),
-  );
-  const feedSettings: FeedSettings = Object.fromEntries(
-    feedKeys.map((feedKey, index) => [feedKey, feedValues[index]]),
   );
 
   return {
     episodeSettings,
-    feedSettings,
     hydratedMediaPlayerSettings: isHydratedMediaPlayerSettings(
       storedMediaPlayerSettings,
     )
@@ -289,7 +260,6 @@ export const SettingsProvider: FunctionComponent<
   PropsWithChildren<unknown>
 > = ({ children }) => {
   const [episodeSettings, setEpisodeSettings] = useState<EpisodeSettings>({});
-  const [feedSettings, setFeedSettings] = useState<FeedSettings>({});
   const [hydratedMediaPlayerSettings, setHydratedMediaPlayerSettings] =
     useState<HydratedMediaPlayerSettings | undefined>();
   const [isBlockedByAnotherTab, setIsBlockedByAnotherTab] = useState(false);
@@ -405,7 +375,6 @@ export const SettingsProvider: FunctionComponent<
       // `null`. The state then hydrates, but writes do nothing.
       databaseRef.current = database;
       setEpisodeSettings(settings.episodeSettings);
-      setFeedSettings(settings.feedSettings);
       setHydratedMediaPlayerSettings(settings.hydratedMediaPlayerSettings);
       setIsBlockedByAnotherTab(false);
       setIsDoneHydratingFromIdb(true);
@@ -432,15 +401,6 @@ export const SettingsProvider: FunctionComponent<
       return episodeKey === null ? undefined : episodeSettings[episodeKey];
     },
     [episodeSettings],
-  );
-
-  const getFeedSettingsItem = useCallback(
-    (feedReference: FeedReference): FeedSettingsItem | undefined => {
-      const feedKey = getFeedKey(feedReference.feedUrl);
-
-      return feedKey === null ? undefined : feedSettings[feedKey];
-    },
-    [feedSettings],
   );
 
   const setEpisodeSettingsItem = useCallback(
@@ -476,85 +436,6 @@ export const SettingsProvider: FunctionComponent<
     [],
   );
 
-  const setFeedSettingsItem = useCallback(
-    async (feedReference: FeedReference, value: FeedSettingsItem) => {
-      const database = databaseRef.current;
-
-      if (database === null) {
-        return;
-      }
-
-      const feedKey = getFeedKey(feedReference.feedUrl);
-
-      if (feedKey === null) {
-        logInvalidFeedUrl('feedSettings');
-
-        return;
-      }
-
-      try {
-        await database.put('feedSettings', value, feedKey);
-      } catch (error) {
-        logWriteFailure('feedSettings', error);
-
-        return;
-      }
-
-      setFeedSettings((previousFeedSettings) =>
-        hasEqualFields(previousFeedSettings[feedKey], value)
-          ? previousFeedSettings
-          : { ...previousFeedSettings, [feedKey]: value },
-      );
-    },
-    [],
-  );
-
-  const setAllFeedSettings = useCallback(
-    async (nextFeedSettings: FeedSettings) => {
-      const database = databaseRef.current;
-
-      if (database === null) {
-        return;
-      }
-
-      const nextFeedSettingsByKey: FeedSettings = {};
-
-      Object.entries(nextFeedSettings).forEach(
-        ([feedUrl, feedSettingsItem]) => {
-          const feedKey = getFeedKey(feedUrl);
-
-          if (feedKey === null) {
-            logInvalidFeedUrl('feedSettings');
-
-            return;
-          }
-
-          nextFeedSettingsByKey[feedKey] = feedSettingsItem;
-        },
-      );
-
-      try {
-        const transaction = database.transaction('feedSettings', 'readwrite');
-
-        await Promise.all([
-          transaction.store.clear(),
-          ...Object.entries(nextFeedSettingsByKey).map(
-            ([feedKey, feedSettingsItem]) =>
-              transaction.store.put(feedSettingsItem, feedKey),
-          ),
-          transaction.done,
-        ]);
-      } catch (error) {
-        logWriteFailure('feedSettings', error);
-
-        return;
-      }
-
-      setFeedSettings(nextFeedSettingsByKey);
-    },
-    [],
-  );
-
   const setMediaPlayerSettings = useCallback(
     async (value: MediaPlayerSettings) => {
       const database = databaseRef.current;
@@ -579,15 +460,11 @@ export const SettingsProvider: FunctionComponent<
   return (
     <SettingsContext.Provider
       value={{
-        feedSettings,
         getEpisodeSettingsItem,
-        getFeedSettingsItem,
         hydratedMediaPlayerSettings,
         isBlockedByAnotherTab,
         isDoneHydratingFromIdb,
-        setAllFeedSettings,
         setEpisodeSettingsItem,
-        setFeedSettingsItem,
         setMediaPlayerSettings,
       }}
     >

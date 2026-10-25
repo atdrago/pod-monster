@@ -24,11 +24,6 @@
     rgb(0 0 0 / 0.5),
     rgb(255 255 255 / 0.5)
   );
-  --color-accent-blue: #56b6c2;
-  --color-accent-green: #98c379;
-  --color-accent-pink: #c678dd;
-  --color-accent-red: #e06c75;
-  --color-accent-yellow: #d19a66;
 
   --shadow-elevation-low:
     0.3px 0.5px 0.7px light-dark(hsl(0 0% 50% / 0.34), hsl(70 14% 5% / 0.34)),

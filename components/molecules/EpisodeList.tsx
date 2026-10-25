@@ -10,7 +10,6 @@ import { Badge } from 'components/atoms/Badge';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { EpisodeProgress } from 'components/molecules/EpisodeProgress';
-import { EpisodeUnlistenedDot } from 'components/molecules/EpisodeUnlistenedDot';
 import ExplicitIcon from 'icons/explicit.svg';
 import type { PodcastEpisode } from 'types/PodcastFeed';
 import { getEpisodePath } from 'utils/paths';
@@ -73,44 +72,41 @@ export const EpisodeList = ({ episodes }: EpisodeListProps) => {
             })}
             key={episode.identity}
             kind="flexRow"
-            space="xxsmall"
+            space="small"
           >
-            <EpisodeUnlistenedDot episode={episode} />
-            <Stack align="center" space="small" kind="flexRow">
-              <Artwork
-                alt=""
-                height={80}
-                shadow={true}
-                src={episode.image || episode.feedImage}
-                width={80}
-              />
-              <Stack
-                space="xsmall"
-                style={{ overflowY: 'hidden', padding: '4px 0' }}
-              >
-                <Stack kind="flexRow" space="xxsmall" align="center">
-                  {episode.explicit ? (
-                    <Icon
-                      style={{ verticalAlign: 'middle' }}
-                      as={ExplicitIcon}
-                      size="smallMedium"
-                    />
-                  ) : null}{' '}
-                  {episode.episodeType === 'trailer' ? (
-                    <Badge>Trailer</Badge>
-                  ) : null}
-                  <Typography
-                    as="h3"
-                    className="font-bold"
-                    size="headingSmaller"
-                    shouldTrimTextBox={false}
-                    whitespace="ellipsis"
-                  >
-                    {episode.title}
-                  </Typography>
-                </Stack>
-                <EpisodeProgress episode={episode} />
+            <Artwork
+              alt=""
+              height={80}
+              shadow={true}
+              src={episode.image || episode.feedImage}
+              width={80}
+            />
+            <Stack
+              space="xsmall"
+              style={{ overflowY: 'hidden', padding: '4px 0' }}
+            >
+              <Stack kind="flexRow" space="xxsmall" align="center">
+                {episode.explicit ? (
+                  <Icon
+                    style={{ verticalAlign: 'middle' }}
+                    as={ExplicitIcon}
+                    size="smallMedium"
+                  />
+                ) : null}{' '}
+                {episode.episodeType === 'trailer' ? (
+                  <Badge>Trailer</Badge>
+                ) : null}
+                <Typography
+                  as="h3"
+                  className="font-bold"
+                  size="headingSmaller"
+                  shouldTrimTextBox={false}
+                  whitespace="ellipsis"
+                >
+                  {episode.title}
+                </Typography>
               </Stack>
+              <EpisodeProgress episode={episode} />
             </Stack>
           </Stack>
         );

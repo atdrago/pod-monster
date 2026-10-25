@@ -34,22 +34,8 @@ export const maxDuration = 60;
 
 // The client page gets only the fields of the feed that it reads. Thus, the
 // RSC payload does not hold the rest of the feed.
-const toEpisodePageFeed = ({
-  format,
+const toEpisodePageFeed = ({ funding }: EpisodePageFeed): EpisodePageFeed => ({
   funding,
-  image,
-  link,
-  podcastIndexId,
-  title,
-  url,
-}: EpisodePageFeed): EpisodePageFeed => ({
-  format,
-  funding,
-  image,
-  link,
-  podcastIndexId,
-  title,
-  url,
 });
 
 /**
@@ -57,7 +43,8 @@ const toEpisodePageFeed = ({
  * value, and the feed URL is normalized. Else, redirects to the canonical
  * path. The decoder also accepts standard base64, padding, and a feed URL that
  * is not normalized, but one episode must have one path. Thus, `og:url`, the
- * library key, and the path check of the player agree with the address bar.
+ * key of the saved episode data, and the path check of the player agree with
+ * the address bar.
  */
 async function getCanonicalSegments({
   params,

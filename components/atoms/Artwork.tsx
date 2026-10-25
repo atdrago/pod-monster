@@ -5,7 +5,7 @@ import { Box, type PolymorphicComponentProps } from 'react-polymorphic-box';
 
 import { Typography } from 'components/atoms/Typography';
 
-export type ArtworkComponentProps = PolymorphicComponentProps<
+type ArtworkComponentProps = PolymorphicComponentProps<
   'div',
   {
     alt: string;

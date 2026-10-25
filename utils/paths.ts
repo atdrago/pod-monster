@@ -1,7 +1,7 @@
 import type { PodcastEpisode } from 'types/PodcastFeed';
 import { encodeBase64Url } from 'utils/base64Url';
 
-export type FeedReference = Pick<PodcastEpisode, 'feedUrl'>;
+type FeedReference = Pick<PodcastEpisode, 'feedUrl'>;
 
 export type EpisodeReference = FeedReference & {
   episodeIdentity: PodcastEpisode['identity'];

@@ -13,7 +13,6 @@ import { Artwork } from 'components/atoms/Artwork';
 import { Details } from 'components/atoms/Details';
 import { Icon } from 'components/atoms/Icon';
 import { LinkStack } from 'components/atoms/LinkStack';
-import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { Funding } from 'components/molecules/Funding';
@@ -46,10 +45,7 @@ import { toTitleCase } from 'utils/toTitleCase';
 interface EpisodePageProps {
   episode: PodcastEpisode;
   episodeImageDimensions?: ImageDimensions;
-  feed: Pick<
-    PodcastFeed,
-    'format' | 'funding' | 'image' | 'link' | 'podcastIndexId' | 'title' | 'url'
-  >;
+  feed: Pick<PodcastFeed, 'funding'>;
   /** The raw `t` value of the URL, when the URL has one. */
   startTimeParam?: string;
 }
@@ -515,7 +511,6 @@ export const EpisodePage = ({
               )}.`}
             </Typography>
           )}
-          <SubscribeButton feed={feed} />
         </Stack>
       </Stack>
     </>

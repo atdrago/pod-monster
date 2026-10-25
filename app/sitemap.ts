@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 import { notNullOrUndefined } from 'utils/notNullOrUndefined';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPageMap = ['about', 'settings']
+  const staticPageMap = ['about']
     .map((staticPagePath) => {
       const url =
         typeof staticPagePath === 'string'

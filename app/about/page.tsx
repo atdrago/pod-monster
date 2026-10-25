@@ -1,6 +1,4 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import type { ReactNode } from 'react';
 
 import { ExternalLink } from 'components/atoms/ExternalLink';
 import { Typography } from 'components/atoms/Typography';
@@ -19,7 +17,6 @@ type Heading =
   | 'How it works'
   | 'Releases'
   | 'Principles'
-  | 'Known Issues'
   | 'Technologies';
 
 const HeadingAnchor = ({ label }: { label?: Heading }) => {
@@ -34,28 +31,6 @@ const HeadingAnchor = ({ label }: { label?: Heading }) => {
   return (
     <a className="no-underline hover:underline" href={`#${slug}`} id={slug}>
       {label}
-    </a>
-  );
-};
-
-const HeadingAnchorLink = ({
-  children,
-  to,
-}: {
-  children?: ReactNode;
-  to: Heading;
-}) => {
-  const slug = to?.replace(/\W+/g, '-').toLowerCase();
-
-  // If the slug is empty or undefined, don't render an anchor. Instead, return
-  // the label as-is.
-  if (!slug) {
-    return <>label</>;
-  }
-
-  return (
-    <a className="underline" href={`#${slug}`}>
-      {children}
     </a>
   );
 };
@@ -87,20 +62,6 @@ export default function Page() {
           </ExternalLink>{' '}
           for retrieving all of its data about podcasts to perform things like
           search, podcast lookups, and episode lookups.
-        </Typography>
-        <Typography as="p" size="paragraph">
-          When you &ldquo;subscribe&rdquo; to a podcast, it will appear in your
-          &ldquo;
-          <Link className="underline" href={'/'}>
-            Subscriptions
-          </Link>
-          &rdquo; list for easy access. Subscribing is and will always be free
-          and private. Currently, settings and subscriptions exist only on your
-          device. In the future, you will have the option of creating an account
-          that will allow a more reliant layer of persistence (see &ldquo;
-          <HeadingAnchorLink to="Known Issues">Known Issues</HeadingAnchorLink>
-          &rdquo;) and the synchronization of settings and subscriptions between
-          devices.
         </Typography>
       </Stack>
       <Stack as="section">
@@ -135,9 +96,8 @@ export default function Page() {
           shouldTrimTextBox={false}
         >
           <li>
-            No account is required to subscribe to or listen to podcasts (though
-            certain limits may need to be imposed eventually due to browser
-            restrictions).
+            No account is required to listen to podcasts (though certain limits
+            may need to be imposed eventually due to browser restrictions).
           </li>
           <li>
             None of your usage data or personal information will ever be sold to
@@ -157,55 +117,6 @@ export default function Page() {
           <li>
             Every consumer-focused feature of the Podcast Index is in the plans,
             and I will implement them in the order that I see fit.
-          </li>
-        </Typography>
-      </Stack>
-
-      <Stack as="section">
-        <Typography as="h3" className="font-bold" size="headingSmall">
-          <HeadingAnchor label="Known Issues" />
-        </Typography>
-        <Typography
-          as="ul"
-          className="list-layout"
-          size="paragraph"
-          shouldTrimTextBox={false}
-        >
-          <li>
-            <Typography as="p" size="paragraph" shouldTrimTextBox={false}>
-              All settings, including subscriptions, are currently stored in
-              LocalStorage, making them reasonably persistent. Unfortunately,
-              browser processes like &ldquo;
-              <ExternalLink href="https://web.dev/storage-for-the-web/#eviction">
-                data eviction
-              </ExternalLink>
-              &rdquo; and &ldquo;
-              <ExternalLink href="https://webkit.org/blog/9521/intelligent-tracking-prevention-2-3/">
-                Intelligent Tracking Prevention
-              </ExternalLink>
-              &rdquo;, can clear them at any time.{' '}
-              <ExternalLink href="https://web.dev/persistent-storage/#how-is-permission-granted">
-                Using the site often
-              </ExternalLink>{' '}
-              is a great signal to your web browser that Pod Monster&apos;s
-              storage should be persistent. Still, there is no surefire way to
-              keep reliably persistent data in a web browser. For this reason, I
-              encourage you to{' '}
-              <Link className="underline" href="/settings">
-                keep an OPML back-up
-              </Link>{' '}
-              of your subscriptions, just in case your subscriptions get wiped
-              out. OPML is also a great way to experiment with different podcast
-              apps!
-            </Typography>
-            <br />
-            <Typography as="p" size="paragraph" shouldTrimTextBox={false}>
-              In the future, the plan is to fix this in two ways. First,
-              migrating from LocalStorage to IndexedDB will increase storage
-              limits, which should help avoid data eviction. And, second, adding
-              user accounts to allow off-device storage and synchronization of
-              data between devices.
-            </Typography>
           </li>
         </Typography>
       </Stack>

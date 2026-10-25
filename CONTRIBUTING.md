@@ -59,7 +59,6 @@ It is generally fine to leave out commit `scope`, but if specified it should be 
 - feed - Changes to the feed page
 - episode - Changes to the episode page
 - about - Changes to the about page
-- settings - Changes to the settings page
 - artwork - Changes to how artwork is handled
 
 ### Branch Organization

@@ -64,8 +64,15 @@ describe('Header', () => {
 
   describe('static page', () => {
     it('should render the logo and the name of the page', async () => {
-      const element = renderHeader('/settings');
+      const element = renderHeader('/about');
       await expect(element).toMatchScreenshot('header-static-page.png');
+    });
+
+    it('should show no crumb for a path that is not a static page', () => {
+      renderHeader('/settings');
+
+      expect(screen.queryByText('/')).toBeNull();
+      expect(screen.queryByText('Settings')).toBeNull();
     });
   });
 
@@ -131,7 +138,7 @@ describe('Header', () => {
     });
 
     it('should trim the slash and the name of the page on a static page', () => {
-      const element = renderHeader('/settings');
+      const element = renderHeader('/about');
       const texts = Array.from(
         element?.querySelectorAll(':scope > :not(h1)') ?? [],
       );
@@ -180,8 +187,8 @@ describe('Header', () => {
     });
 
     it('should underline the name of the page on hover', async () => {
-      renderHeader('/settings');
-      const link = screen.getByRole('link', { name: 'Settings' });
+      renderHeader('/about');
+      const link = screen.getByRole('link', { name: 'About' });
 
       expect(link).toHaveStyle({ textDecorationLine: 'none' });
 

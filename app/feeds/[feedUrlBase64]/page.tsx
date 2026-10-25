@@ -4,14 +4,13 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { connection } from 'next/server';
 import type { ComponentProps } from 'react';
 
+import { Artwork } from 'components/atoms/Artwork';
 import { Badge } from 'components/atoms/Badge';
 import { Details } from 'components/atoms/Details';
 import { Label } from 'components/atoms/Label';
-import { SubscribeButton } from 'components/atoms/SubscribeButton';
 import { Typography } from 'components/atoms/Typography';
 import { Stack } from 'components/layouts/Stack';
 import { EpisodeList } from 'components/molecules/EpisodeList';
-import { FeedArtwork } from 'components/molecules/FeedArtwork';
 import { Funding } from 'components/molecules/Funding';
 import { Header } from 'components/molecules/Header';
 import { decodeFeedUrlSegment, encodeBase64Url } from 'utils/base64Url';
@@ -20,8 +19,6 @@ import { getPodcastPath, type SearchParams, toQueryString } from 'utils/paths';
 import { loadShow } from 'utils/server/loadFeed';
 
 type HeaderFeed = NonNullable<ComponentProps<typeof Header>['feed']>;
-
-type SubscribeButtonFeed = ComponentProps<typeof SubscribeButton>['feed'];
 
 type EpisodeListEpisode = ComponentProps<
   typeof EpisodeList
@@ -39,22 +36,6 @@ export const maxDuration = 60;
 // Each client component gets only the fields that it reads. Thus, the RSC
 // payload does not hold the rest of the feed or of the episodes.
 const toHeaderFeed = ({ title, url }: HeaderFeed): HeaderFeed => ({
-  title,
-  url,
-});
-
-const toSubscribeButtonFeed = ({
-  format,
-  image,
-  link,
-  podcastIndexId,
-  title,
-  url,
-}: SubscribeButtonFeed): SubscribeButtonFeed => ({
-  format,
-  image,
-  link,
-  podcastIndexId,
   title,
   url,
 });
@@ -85,8 +66,8 @@ const toEpisodeListEpisode = ({
  * Returns the segment when it is the canonical base64url form of its
  * normalized feed URL. Else, redirects to the canonical path. The decoder also
  * accepts standard base64, padding, and a feed URL that is not normalized, but
- * one show must have one path. Thus, `og:url`, the library key, and the path
- * check of the player agree with the address bar.
+ * one show must have one path. Thus, `og:url`, the key of the saved episode
+ * data, and the path check of the player agree with the address bar.
  */
 async function getCanonicalSegment({
   params,
@@ -161,9 +142,8 @@ export default async function Page(props: PageProps) {
       <Stack as="main" maxWidth="small">
         <Stack as="article" space="small">
           <Stack kind="flexRow" space="small" align="center">
-            <FeedArtwork
+            <Artwork
               alt={`Podcast artwork for "${feed.title}"`}
-              feedUrl={feed.url}
               height={128}
               shadow={true}
               src={feed.image}
@@ -204,7 +184,6 @@ export default async function Page(props: PageProps) {
               ))}
             </Stack>
           ) : null}
-          <SubscribeButton feed={toSubscribeButtonFeed(feed)} />
         </Stack>
         {feed.description ? (
           <Details
